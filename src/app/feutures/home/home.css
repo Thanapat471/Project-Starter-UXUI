@@ -1,0 +1,66 @@
+/* Minimal Black & White Theme Styling */
+
+/* Typography enhancements */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* Button styling */
+.btn {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-outline {
+  border-width: 1px;
+}
+
+/* Card hover effects */
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* Product image zoom effect on hover */
+.card figure {
+  overflow: hidden;
+}
+
+.card figure img {
+  transition: transform 0.5s ease;
+}
+
+.card:hover figure img {
+  transform: scale(1.05);
+}
+
+/* Custom styling for the hero section */
+.hero {
+  position: relative;
+}
+
+/* Newsletter input focus */
+.input:focus {
+  outline: none;
+  border-color: black;
+  box-shadow: none;
+}
+
+/* Badge styling */
+.badge-outline {
+  border-width: 1px;
+  font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .hero-content {
+    padding: 1rem;
+  }
+}

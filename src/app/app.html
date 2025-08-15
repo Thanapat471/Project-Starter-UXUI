@@ -1,1 +1,48 @@
+
+
+<!-- Navbar -->
+<nav class="bg-white border-b border-gray-200">
+  <div class="container mx-auto px-4 flex items-center justify-between h-16">
+    <div class="flex items-center gap-8">
+      <a class="text-2xl font-bold tracking-widest" href="#">MINIMAL</a>
+      <ul class="hidden md:flex gap-8 font-medium text-sm tracking-wider">
+        <li><a class="hover:underline" href="#">HOME</a></li>
+        <li><a class="hover:underline" href="#">SHOP</a></li>
+        <li><a class="hover:underline" href="#">COLLECTIONS</a></li>
+        <li><a class="hover:underline" href="#">ABOUT</a></li>
+      </ul>
+    </div>
+    <div class="flex gap-4 items-center">
+      <button class="btn btn-ghost btn-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </button>
+
+      <button class="btn btn-ghost btn-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+      </button>
+      <!-- Mobile menu button -->
+      <div class="md:hidden">
+        <button class="btn btn-ghost btn-circle" id="mobile-menu-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Mobile menu -->
+  <div class="md:hidden px-4 pb-4" id="mobile-menu" style="display:none;">
+    <ul class="flex flex-col gap-2 font-medium text-sm tracking-wider">
+      <li><a class="hover:underline" href="#">HOME</a></li>
+      <li><a class="hover:underline" href="#">SHOP</a></li>
+      <li><a class="hover:underline" href="#">COLLECTIONS</a></li>
+      <li><a class="hover:underline" href="#">ABOUT</a></li>
+    </ul>
+  </div>
+</nav>
+
 <router-outlet></router-outlet>

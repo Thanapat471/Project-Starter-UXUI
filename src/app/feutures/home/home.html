@@ -1,1 +1,195 @@
-<p class="text-2xl font-bold">home works!</p>
+
+<!-- Hero Section -->
+<section class="bg-white text-black py-16">
+  <div class="container mx-auto px-4 flex flex-col-reverse lg:flex-row items-center gap-12">
+    <div class="flex-1 flex flex-col items-start justify-center">
+      <h1 class="text-5xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight">MINIMAL. ELEGANT. TIMELESS.</h1>
+      <p class="mb-8 text-lg max-w-xl">Experience our new collection designed for those who appreciate simplicity and quality. Crafted with premium materials and attention to detail.</p>
+    <div class="flex gap-4 mt-6">
+  <button class="btn btn-outline border-black rounded-lg px-8 py-3 text-lg font-semibold shadow-sm transition-all duration-200 hover:bg-black hover:text-white hover:scale-105 focus:ring-2 focus:ring-black focus:outline-none">SHOP NOW</button>
+  <button class="btn bg-black text-white rounded-lg px-8 py-3 text-lg font-semibold shadow-sm transition-all duration-200 hover:bg-gray-900 hover:scale-105 focus:ring-2 focus:ring-black focus:outline-none">EXPLORE</button>
+    </div>
+    </div>
+    <div class="flex-1 flex justify-center items-center">
+      <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80" 
+        class="w-full max-w-md rounded-xl shadow-2xl object-cover" alt="Featured product" />
+    </div>
+  </div>
+</section>
+
+<!-- Category Filter -->
+<div class="bg-white text-black py-8 border-y border-gray-200">
+  <div class="container mx-auto px-4">
+    <div class="flex flex-wrap justify-center gap-4 items-center">
+  <button class="btn btn-sm btn-ghost rounded-lg shadow-sm transition-all duration-200 px-4 py-2 font-medium hover:bg-black hover:text-white hover:scale-105 focus:ring-2 focus:ring-black focus:outline-none" [ngClass]="{'btn-active': selectedCategory() === null}" (click)="filterByCategory(null)">ALL</button>
+  <button class="btn btn-sm btn-ghost rounded-lg shadow-sm transition-all duration-200 px-4 py-2 font-medium hover:bg-black hover:text-white hover:scale-105 focus:ring-2 focus:ring-black focus:outline-none" [ngClass]="{'btn-active': selectedCategory() === 'footwear'}" (click)="filterByCategory('footwear')">FOOTWEAR</button>
+  <button class="btn btn-sm btn-ghost rounded-lg shadow-sm transition-all duration-200 px-4 py-2 font-medium hover:bg-black hover:text-white hover:scale-105 focus:ring-2 focus:ring-black focus:outline-none" [ngClass]="{'btn-active': selectedCategory() === 'technology'}" (click)="filterByCategory('technology')">TECHNOLOGY</button>
+  <button class="btn btn-sm btn-ghost rounded-lg shadow-sm transition-all duration-200 px-4 py-2 font-medium hover:bg-black hover:text-white hover:scale-105 focus:ring-2 focus:ring-black focus:outline-none" [ngClass]="{'btn-active': selectedCategory() === 'accessories'}" (click)="filterByCategory('accessories')">ACCESSORIES</button>
+  <button class="btn btn-sm btn-ghost rounded-lg shadow-sm transition-all duration-200 px-4 py-2 font-medium hover:bg-black hover:text-white hover:scale-105 focus:ring-2 focus:ring-black focus:outline-none" [ngClass]="{'btn-active': selectedCategory() === 'home'}" (click)="filterByCategory('home')">HOME</button>
+    </div>
+  </div>
+</div>
+
+<!-- Featured Collection -->
+<div class="bg-black text-white py-20">
+  <div class="container mx-auto px-4">
+    <h2 class="text-4xl font-bold mb-4 text-center">FEATURED COLLECTION</h2>
+    <p class="text-center mb-12 max-w-2xl mx-auto">Discover our curated selection of premium products designed for modern living.</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div *ngFor="let product of products()" 
+           class="card bg-black border border-gray-800 rounded-none hover:shadow-xl transition-all"
+           [ngClass]="{'hidden': selectedCategory() !== null && product.category !== selectedCategory()}">
+        <figure class="relative">
+          <img [src]="product.img" alt="{{ product.name }}" class="w-full h-64 object-cover" />
+          
+          <!-- Badges -->
+          <div class="absolute top-2 left-2 flex flex-col gap-2">
+            <div class="badge badge-outline bg-white text-black" *ngIf="product.isNew">NEW</div>
+            <div class="badge bg-black text-white border-white" *ngIf="product.isFeatured">FEATURED</div>
+            <div class="badge bg-red-600 text-white border-none" *ngIf="product.discountPercent">-{{product.discountPercent}}%</div>
+          </div>
+          
+          <!-- Quick actions -->
+          <div class="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button class="btn btn-circle btn-sm bg-white text-black shadow-sm transition-all duration-200 hover:bg-gray-200 hover:scale-110 focus:ring-2 focus:ring-black focus:outline-none" (click)="quickView(product)">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </button>
+            <button class="btn btn-circle btn-sm bg-white text-black shadow-sm transition-all duration-200 hover:bg-gray-200 hover:scale-110 focus:ring-2 focus:ring-black focus:outline-none" (click)="addToWishlist(product)">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </button>
+          </div>
+        </figure>
+        <div class="card-body p-4">
+          <div class="flex justify-between items-center">
+            <h2 class="card-title">{{ product.name }}</h2>
+          </div>
+          <p class="text-sm text-gray-300">{{ product.desc }}</p>
+          
+          <!-- Colors -->
+          <div class="flex gap-1 mt-2" *ngIf="product.colors">
+            <!-- Use specific tailwind classes instead of ngStyle -->
+            <div *ngFor="let color of product.colors" class="w-4 h-4 rounded-full border border-gray-300"
+                 [class.bg-black]="color === 'black'"
+                 [class.bg-white]="color === 'white'"
+                 [class.bg-gray-400]="color === 'gray'"
+                 [class.bg-gray-300]="color === 'silver'"
+                 [class.bg-yellow-600]="color === 'gold'">
+            </div>
+          </div>
+          
+          <div class="flex justify-between items-center mt-4">
+            <div>
+              <span class="text-xl font-bold" [ngClass]="{'line-through text-gray-400 mr-2': product.discountPercent}">
+                ${{ product.price }}
+              </span>
+              <span class="text-xl font-bold text-red-400" *ngIf="product.discountPercent">
+                ${{ calculateDiscountedPrice(product.price, product.discountPercent) }}
+              </span>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-outline border-white text-white rounded-lg shadow-sm transition-all duration-200 flex items-center gap-2 px-5 py-2 text-base font-semibold hover:bg-white hover:text-black hover:scale-105 focus:ring-2 focus:ring-white focus:outline-none"
+                (click)="addToCart(product)">
+                <span class="flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <span>ADD</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Featured Banner -->
+<div class="relative bg-white">
+  <div class="grid grid-cols-1 md:grid-cols-2">
+    <div class="bg-gray-100 p-12 md:p-24 flex items-center justify-center">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold mb-6">PREMIUM MATERIALS</h2>
+        <p class="mb-8 text-gray-700">Our products are crafted with the highest quality materials sourced from around the world, ensuring durability and timeless style.</p>
+  <button class="btn bg-black text-white rounded-lg shadow-sm transition-all duration-200 px-8 py-3 text-lg font-bold tracking-widest uppercase hover:bg-gray-900 hover:scale-105 focus:ring-2 focus:ring-black focus:outline-none mt-6">LEARN MORE</button>
+      </div>
+    </div>
+    <div class="h-64 md:h-auto">
+      <img src="https://images.unsplash.com/photo-1600950207944-0d63e8edbc3f?auto=format&fit=crop&w=800&q=80" 
+        class="w-full h-full object-cover" alt="Premium materials" />
+    </div>
+  </div>
+</div>
+
+<!-- Newsletter Section -->
+<div class="bg-white text-black py-20">
+  <div class="container mx-auto px-4 text-center">
+    <h2 class="text-4xl font-bold mb-6">JOIN OUR NEWSLETTER</h2>
+    <p class="mb-8 max-w-md mx-auto">Stay updated with our latest releases and exclusive offers.</p>
+    <div class="join max-w-md mx-auto">
+  <input class="input input-bordered join-item rounded-lg w-full px-5 py-3 text-lg font-medium bg-white border-2 border-black placeholder-gray-600 shadow focus:ring-2 focus:ring-black focus:outline-none" placeholder="Your email address"/>
+  <button class="btn btn-outline border-black join-item rounded-lg shadow-sm transition-all duration-200 px-8 py-3 text-lg font-bold tracking-widest uppercase hover:bg-black hover:text-white hover:scale-105 focus:ring-2 focus:ring-black focus:outline-none mt-4">SUBSCRIBE</button>
+    </div>
+  </div>
+</div>
+
+<!-- Featured Products Categories -->
+<div class="py-20 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <h2 class="text-4xl font-bold mb-6 text-center text-black">SHOP BY CATEGORY</h2>
+    <p class="text-center mb-12 max-w-2xl mx-auto">Browse our collections organized by category</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="card bg-base-100 rounded-none shadow-sm hover:shadow-md transition-all group">
+        <figure class="h-80 overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=600&q=80" 
+            alt="Footwear" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+        </figure>
+        <div class="card-body items-center text-center">
+          <h3 class="card-title">FOOTWEAR</h3>
+      <button class="btn btn-ghost border-b border-black rounded-lg shadow-sm transition-all duration-200 hover:bg-black hover:text-white hover:scale-105 focus:ring-2 focus:ring-black focus:outline-none" (click)="filterByCategory('footwear')">View Collection</button>
+        </div>
+      </div>
+      
+      <div class="card bg-base-100 rounded-none shadow-sm hover:shadow-md transition-all group">
+        <figure class="h-80 overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?auto=format&fit=crop&w=600&q=80" 
+            alt="Accessories" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+        </figure>
+        <div class="card-body items-center text-center">
+          <h3 class="card-title">ACCESSORIES</h3>
+      <button class="btn btn-ghost border-b border-black rounded-lg shadow-sm transition-all duration-200 hover:bg-black hover:text-white hover:scale-105 focus:ring-2 focus:ring-black focus:outline-none" (click)="filterByCategory('accessories')">View Collection</button>
+        </div>
+      </div>
+      
+      <div class="card bg-base-100 rounded-none shadow-sm hover:shadow-md transition-all group">
+        <figure class="h-80 overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=600&q=80" 
+            alt="Technology" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+        </figure>
+        <div class="card-body items-center text-center">
+          <h3 class="card-title">TECHNOLOGY</h3>
+      <button class="btn btn-ghost border-b border-black rounded-lg shadow-sm transition-all duration-200 hover:bg-black hover:text-white hover:scale-105 focus:ring-2 focus:ring-black focus:outline-none" (click)="filterByCategory('technology')">View Collection</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer Banner -->
+<div class="bg-black text-white py-16">
+  <div class="container mx-auto px-4 text-center">
+    <h2 class="text-3xl font-bold mb-4">DESIGNED FOR MINIMALISTS</h2>
+    <p class="mb-8 max-w-2xl mx-auto">Our products are designed for those who appreciate clean lines, subtle details, and timeless aesthetics.</p>
+    <div class="flex justify-center gap-4">
+  <button class="btn btn-outline border-white text-white rounded-lg shadow-sm transition-all duration-200 px-8 py-3 text-lg font-bold tracking-widest uppercase hover:bg-white hover:text-black hover:scale-105 focus:ring-2 focus:ring-white focus:outline-none mt-6">SHOP MEN</button>
+  <button class="btn btn-outline border-white text-white rounded-lg shadow-sm transition-all duration-200 px-8 py-3 text-lg font-bold tracking-widest uppercase hover:bg-white hover:text-black hover:scale-105 focus:ring-2 focus:ring-white focus:outline-none mt-6">SHOP WOMEN</button>
+    </div>
+  </div>
+</div>
