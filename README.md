@@ -57,3 +57,30 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+src/
+├── app/
+│   ├── core/                # Core functionality
+│   │   ├── auth/            # Authentication services
+│   │   ├── guards/          # Route guards
+│   │   ├── interceptors/    # HTTP interceptors
+│   │   ├── services/        # Core services (i18n, etc.)
+│   │   └── store/           # NgRx store configuration
+│   ├── features/            # Feature modules
+│   │   ├── home/            # Home page feature
+│   │   ├── dashboard/       # Dashboard feature
+│   │   └── settings/        # Settings feature
+│   ├── layouts/             # Layout components
+│   │   └── simple-layout/   # Main application layout
+│   └── shared/              # Shared components
+│       ├── components/      # Reusable components
+│       ├── directives/      # Custom directives
+│       ├── pipes/           # Custom pipes
+│       ├── models/          # Type definitions
+│       └── utils/           # Utility functions
+├── assets/
+│   └── i18n/                # Translation files
+│       ├── en/              # English translations
+│       └── th/              # Thai translations
+└── styles/
+    └── theme.less           # ng-zorro theme customization
