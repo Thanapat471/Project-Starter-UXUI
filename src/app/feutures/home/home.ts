@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
-import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [TranslatePipe, ButtonModule, TableModule],
+  imports: [TranslatePipe, ButtonModule],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })

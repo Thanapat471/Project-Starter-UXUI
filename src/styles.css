@@ -1,9 +1,10 @@
+@import 'primeicons/primeicons.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import 'primeng/resources/themes/lara-light-blue/theme.css';
-@import 'primeng/resources/primeng.min.css';
-@import 'primeicons/primeicons.css';
+
+/* custom CSS variables */
 :root {
   --color-primary: #2563eb;
   --color-secondary: #60a5fa;
