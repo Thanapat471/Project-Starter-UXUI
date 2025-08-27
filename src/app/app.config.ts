@@ -8,7 +8,8 @@ import { TranslationLoader } from './core/services/translation-loade';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeuix/themes/aura'; // เลือกธีมอื่นก็ได้ เช่น Nora, Lara, Soho ฯลฯ
+import Aura from '@primeuix/themes/aura';
+import Lara from '@primeuix/themes/lara';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -20,8 +21,10 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {
-        preset: Aura
-        // options: { darkModeSelector: '.dark' } // ถ้าจะสลับโหมดแบบกำหนด selector เอง
+        preset: Aura,
+        options: {
+          darkModeSelector: '.app-dark' // Add/remove this class on <body> or <html>
+        }
       }
     }),
 

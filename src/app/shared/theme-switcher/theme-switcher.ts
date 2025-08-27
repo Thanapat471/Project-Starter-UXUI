@@ -1,69 +1,48 @@
 import { Component } from '@angular/core';
-import { NgFor, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common'; // เพิ่มตรงนี้
 
 @Component({
   selector: 'app-theme-switcher',
   standalone: true,
-  imports: [NgFor, NgIf],
+  imports: [CommonModule], // เพิ่มตรงนี้
   templateUrl: './theme-switcher.html',
   styleUrl: './theme-switcher.css'
 })
 export class ThemeSwitcher {
   themes = [
-    {
-      class: 'theme-blue',
-      label: 'Blue',
-      primary: '#2563eb',
-      secondary: '#60a5fa',
-      bg: '#f8fafc',
-      text: '#1e293b'
-    },
-    {
-      class: 'theme-green',
-      label: 'Green',
-      primary: '#22c55e',
-      secondary: '#bbf7d0',
-      bg: '#f0fdf4',
-      text: '#166534'
-    },
-    {
-      class: 'theme-brown',
-      label: 'Brown',
-      primary: '#a16207',
-      secondary: '#fbbf24',
-      bg: '#f5f3ea',
-      text: '#7c4700'
-    },
-    {
-      class: 'theme-pink',
-      label: 'Pink',
-      primary: '#ec4899',
-      secondary: '#f472b6',
-      bg: '#fdf2f8',
-      text: '#831843'
-    }
+    { label: 'Aura Light', file: 'aura-light.css' },
+    { label: 'Aura Dark', file: 'aura-dark.css' },
+    { label: 'Lara Light Indigo', file: 'lara-light-indigo.css' },
+    { label: 'Lara Dark Indigo', file: 'lara-dark-indigo.css' }
   ];
-  currentTheme = 'theme-blue';
+  currentTheme = this.themes[0].file;
   dropdownOpen = false;
 
   toggleDropdown() {
     this.dropdownOpen = !this.dropdownOpen;
   }
 
-  selectTheme(themeClass: string) {
-    document.body.classList.remove(this.currentTheme);
-    document.body.classList.add(themeClass);
-    this.currentTheme = themeClass;
-    localStorage.setItem('theme_color', themeClass);
+  selectTheme(themeFile: string) {
+    this.setPrimeNGTheme(themeFile);
+    this.currentTheme = themeFile;
+    localStorage.setItem('primeng_theme', themeFile);
     this.dropdownOpen = false;
   }
 
+  setPrimeNGTheme(themeFile: string) {
+    const themeLink = document.getElementById('primeng-theme-css') as HTMLLinkElement;
+    if (themeLink) {
+      themeLink.href = `assets/themes/${themeFile}`;
+    }
+  }
+
   constructor() {
-    const saved = localStorage.getItem('theme_color');
+    const saved = localStorage.getItem('primeng_theme');
     if (saved) {
-      document.body.classList.remove(this.currentTheme);
-      document.body.classList.add(saved);
+      this.setPrimeNGTheme(saved);
       this.currentTheme = saved;
+    } else {
+      this.setPrimeNGTheme(this.currentTheme);
     }
   }
 }

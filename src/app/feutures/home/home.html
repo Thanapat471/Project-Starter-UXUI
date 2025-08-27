@@ -1,10 +1,13 @@
 <p>{{ 'HELLO' | translate }}</p>
 <p>{{ 'WELCOME' | translate }}</p>
-<main class="bg-theme text-theme p-6">
-  <button class="btn-theme px-4 py-2 rounded">Primary</button>
-  <button class="btn-theme-secondary px-4 py-2 rounded ml-2">Secondary</button>
+<main class="p-6">
+  <button pButton type="button" label="{{ 'PRIMARY' | translate }}"></button>
+  <button pButton type="button" label="{{ 'SECONDARY' | translate }}" class="p-button-secondary ml-2"></button>
 </main>
 <button pButton>
     <i class="pi pi-check" pButtonIcon></i>
-    <span pButtonLabel>Save</span>
+    <span pButtonLabel>{{ 'SAVE' | translate }}</span>
 </button>
+<div class="mt-4">
+  <input pInputText [(ngModel)]="value" placeholder="Username" />
+</div>

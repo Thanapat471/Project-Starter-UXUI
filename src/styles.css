@@ -3,37 +3,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* custom CSS variables */
-:root {
-  --color-primary: #2563eb;
-  --color-secondary: #60a5fa;
-  --color-bg: #f8fafc;
-  --color-text: #1e293b;
-}
-
-.theme-green {
-  --color-primary: #22c55e;
-  --color-secondary: #bbf7d0;
-  --color-bg: #f0fdf4;
-  --color-text: #166534;
-}
-
-.theme-brown {
-  --color-primary: #a16207;
-  --color-secondary: #fbbf24;
-  --color-bg: #f5f3ea;
-  --color-text: #7c4700;
-}
-
-.theme-pink {
-  --color-primary: #ec4899;
-  --color-secondary: #f472b6;
-  --color-bg: #fdf2f8;
-  --color-text: #831843;
-}
-
-.bg-theme { background-color: var(--color-bg); }
-.text-theme { color: var(--color-text); }
-.btn-theme { background-color: var(--color-primary); color: #fff; }
-.btn-theme-secondary { background-color: var(--color-secondary); color: #fff; }

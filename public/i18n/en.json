@@ -1,4 +1,7 @@
 {
   "HELLO": "Hello",
-  "WELCOME": "Welcome"
+  "WELCOME": "Welcome",
+  "PRIMARY": "Primary",
+  "SECONDARY": "Secondary",
+  "SAVE": "Save"
 }
