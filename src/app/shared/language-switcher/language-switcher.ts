@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgFor } from '@angular/common';
 
+const LANG_KEY = 'app_lang';
+
 @Component({
   selector: 'app-language-switcher',
   standalone: true,
@@ -17,14 +19,19 @@ export class LanguageSwitcher {
   currentLang: string;
 
   constructor(private translate: TranslateService) {
-    this.currentLang = this.translate.currentLang || this.translate.defaultLang || 'en';
+    const savedLang = localStorage.getItem(LANG_KEY);
+    this.currentLang = savedLang || this.translate.currentLang || this.translate.defaultLang || 'en';
+    this.translate.use(this.currentLang);
+
     this.translate.onLangChange.subscribe(e => {
       this.currentLang = e.lang;
+      localStorage.setItem(LANG_KEY, e.lang);
     });
   }
 
   switchLanguage(lang: string) {
     this.translate.use(lang);
+    localStorage.setItem(LANG_KEY, lang);
     this.currentLang = lang;
   }
 }
