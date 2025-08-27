@@ -1,0 +1,38 @@
+<div class="relative inline-block">
+  <button
+    class="flex items-center gap-2 px-3 py-1 rounded-full border font-medium shadow-sm bg-white hover:bg-gray-100 transition"
+    (click)="toggleDropdown()"
+    aria-label="Change theme"
+  >
+    <span class="text-xl">🎨</span>
+    <span class="hidden md:inline text-blue-600 font-semibold">Theme</span>
+  </button>
+  <div
+    *ngIf="dropdownOpen"
+    class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg border z-50 p-4 flex flex-col gap-4"
+  >
+    <div *ngFor="let theme of themes" class="mb-2">
+      <button
+        (click)="selectTheme(theme.class)"
+        class="w-full flex items-center gap-4 p-2 rounded-lg border transition-all duration-200 hover:bg-gray-50"
+        [class.bg-blue-50]="theme.class === currentTheme"
+        [class.border-blue-500]="theme.class === currentTheme"
+      >
+        <div class="flex flex-col gap-1">
+          <span class="font-semibold text-sm" [style.color]="theme.text"> {{ theme.label }} </span>
+          <span class="text-xs text-gray-400" *ngIf="theme.class === currentTheme">Current</span>
+        </div>
+        <div class="flex gap-2 ml-auto">
+          <span class="w-6 h-6 rounded bg-white border" [style.background]="theme.bg" title="Background"></span>
+          <span class="w-6 h-6 rounded" [style.background]="theme.primary" title="Primary"></span>
+          <span class="w-6 h-6 rounded" [style.background]="theme.secondary" title="Secondary"></span>
+          <span class="w-6 h-6 rounded border" [style.background]="theme.text" title="Text"></span>
+        </div>
+      </button>
+    </div>
+    <button
+      class="mt-2 text-xs text-gray-500 hover:text-blue-600 transition"
+      (click)="dropdownOpen = false"
+    >Close</button>
+  </div>
+</div>

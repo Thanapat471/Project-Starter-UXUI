@@ -1,14 +1,36 @@
-<div class="flex gap-2 items-center">
-  <span class="font-semibold mr-2 text-blue-600 text-lg">🌐</span>
+<div class="relative inline-block">
   <button
-    *ngFor="let lang of languages"
-    (click)="switchLanguage(lang.code)"
-    [class.bg-blue-600]="currentLang === lang.code"
-    [class.text-white]="currentLang === lang.code"
-    [class.bg-gray-100]="currentLang !== lang.code"
-    [class.text-gray-800]="currentLang !== lang.code"
-    class="px-3 py-1 rounded-full transition-colors duration-200 border border-gray-300 hover:bg-blue-500 hover:text-white font-medium shadow-sm"
+    class="flex items-center gap-2 px-4 py-2 rounded-full border font-bold shadow bg-white hover:bg-gray-100 transition"
+    (click)="toggleDropdown()"
+    aria-label="Change language"
+    [ngStyle]="{ color: 'var(--color-primary)' }"
   >
-    {{ lang.label }}
+    <span class="text-xl">🌐</span>
+    <span class="hidden md:inline font-semibold" style="color: var(--color-primary);">
+      {{ getCurrentLangLabel() }}
+    </span>
   </button>
+  <div
+    *ngIf="dropdownOpen"
+    class="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg border z-50 p-4 flex flex-col gap-3"
+  >
+    <button
+      *ngFor="let lang of languages"
+      (click)="selectLanguage(lang.code)"
+      [ngStyle]="{
+        background: currentLang === lang.code ? 'var(--color-primary)' : 'var(--color-bg)',
+        color: currentLang === lang.code ? '#fff' : 'var(--color-text)',
+        borderColor: currentLang === lang.code ? 'var(--color-primary)' : 'var(--color-primary)'
+      }"
+      class="w-full flex items-center gap-2 px-3 py-2 rounded-full border font-bold transition-all duration-200 hover:scale-105 hover:opacity-90"
+    >
+      <span *ngIf="lang.code === 'en'">🇬🇧</span>
+      <span *ngIf="lang.code === 'th'">🇹🇭</span>
+      <span class="ml-2">{{ lang.label }}</span>
+    </button>
+    <button
+      class="mt-2 text-xs text-gray-500 hover:text-theme transition"
+      (click)="dropdownOpen = false"
+    >Close</button>
+  </div>
 </div>

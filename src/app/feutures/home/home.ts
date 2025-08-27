@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
-import { LanguageSwitcher } from '../../shared/language-switcher/language-switcher';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [LanguageSwitcher, TranslatePipe],
+  imports: [TranslatePipe],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })

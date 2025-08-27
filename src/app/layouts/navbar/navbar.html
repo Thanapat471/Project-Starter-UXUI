@@ -1,8 +1,9 @@
-<nav class="bg-white shadow px-6 py-3 flex items-center justify-between">
+<nav class="bg-white shadow px-6 py-3 flex items-center justify-between text-theme transition-colors duration-300">
   <div class="flex items-center gap-2">
-    <span class="text-xl font-bold text-blue-600">UXUI Project</span>
+    <span class="text-xl font-bold text-theme">UXUI Project</span>
   </div>
-  <div>
+  <div class="flex gap-4 items-center">
+    <app-theme-switcher></app-theme-switcher>
     <app-language-switcher></app-language-switcher>
   </div>
 </nav>

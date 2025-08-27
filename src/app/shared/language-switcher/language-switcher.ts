@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { NgFor } from '@angular/common';
+import { NgFor, NgStyle, NgIf } from '@angular/common';
 
 const LANG_KEY = 'app_lang';
 
 @Component({
   selector: 'app-language-switcher',
   standalone: true,
-  imports: [NgFor],
+  imports: [NgFor, NgStyle, NgIf],
   templateUrl: './language-switcher.html',
   styleUrl: './language-switcher.css'
 })
@@ -17,6 +17,7 @@ export class LanguageSwitcher {
     { code: 'th', label: 'ไทย' }
   ];
   currentLang: string;
+  dropdownOpen = false;
 
   constructor(private translate: TranslateService) {
     const savedLang = localStorage.getItem(LANG_KEY);
@@ -29,9 +30,23 @@ export class LanguageSwitcher {
     });
   }
 
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  selectLanguage(lang: string) {
+    this.switchLanguage(lang);
+    this.dropdownOpen = false;
+  }
+
   switchLanguage(lang: string) {
     this.translate.use(lang);
     localStorage.setItem(LANG_KEY, lang);
     this.currentLang = lang;
+  }
+
+  getCurrentLangLabel(): string {
+    const lang = this.languages.find(l => l.code === this.currentLang);
+    return lang ? lang.label : '';
   }
 }
