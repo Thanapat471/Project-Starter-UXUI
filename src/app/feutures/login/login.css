@@ -91,21 +91,55 @@ nz-form-label {
   font-weight: 500;
 }
 
-nz-input-group {
-  border-radius: 14px;
+:host ::ng-deep .ant-input-affix-wrapper {
+  border-radius: 18px;
+  border: 1.5px solid #e6dcd1;
+  padding: 0 14px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.88);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   overflow: hidden;
 }
 
-input[nz-input] {
-  padding: 12px 14px;
-  border-radius: 14px;
-  border: 1px solid #e6dcd1;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+:host ::ng-deep .ant-input-affix-wrapper:hover {
+  border-color: #b98963;
 }
 
-input[nz-input]:focus {
+:host ::ng-deep .ant-input-affix-wrapper-focused {
   border-color: #94694c;
   box-shadow: 0 0 0 3px rgba(148, 105, 76, 0.2);
+}
+
+:host ::ng-deep .ant-input-affix-wrapper .ant-input {
+  padding: 12px 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  font-size: 1rem;
+  color: #4f2f1f;
+}
+
+:host ::ng-deep .ant-input-affix-wrapper .ant-input:focus {
+  box-shadow: none;
+}
+
+:host ::ng-deep .ant-input-prefix {
+  color: #b98963;
+  margin-right: 12px;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+}
+
+:host ::ng-deep .ant-input-prefix nz-icon {
+  font-size: 1.1rem;
+}
+
+:host ::ng-deep nz-form-control.ng-invalid.ng-touched .ant-input-affix-wrapper {
+  border-color: #e07a5f !important;
+  box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.22);
 }
 
 .form-options {
@@ -127,10 +161,17 @@ button[nz-button][nzType='primary'] {
   height: 48px;
   font-weight: 600;
   letter-spacing: 0.02em;
+  border-radius: 18px;
+  transition: transform 0.15s ease, filter 0.2s ease;
 }
 
 button[nz-button][nzType='primary']:hover {
   filter: brightness(1.04);
+  transform: translateY(-1px);
+}
+
+.form-options button[nz-button][nzType='link'] {
+  border-radius: 999px;
 }
 
 .register-info {
@@ -162,7 +203,7 @@ button[nz-button][nzType='primary']:hover {
 
   .login-card {
     padding: 32px 24px;
-    border-radius: 24px !important;
+    border-radius: 12px !important;
   }
 
   .card-header {
