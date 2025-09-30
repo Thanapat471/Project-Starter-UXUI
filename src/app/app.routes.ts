@@ -3,6 +3,7 @@ import { MainLayout } from './layouts/main-layout/main-layout';
 import { Home } from './feutures/home/home';
 import { Dashboard } from './feutures/dashboard/dashboard';
 import { Login } from './feutures/login/login';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
 	{ path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -10,6 +11,7 @@ export const routes: Routes = [
 	{
 		path: 'features',
 		component: MainLayout,
+		canActivate: [authGuard],
 		children: [
 			{ path: 'home', component: Home },
 			{ path: 'dashboard', component: Dashboard }

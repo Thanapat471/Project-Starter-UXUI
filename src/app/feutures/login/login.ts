@@ -8,7 +8,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzCardModule } from 'ng-zorro-antd/card';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AuthService } from '../../core/services/auth.service';
@@ -37,6 +37,7 @@ export class Login {
   private readonly authService = inject(AuthService);
   private readonly message = inject(NzMessageService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   readonly submitting = signal(false);
   readonly authError = signal<string | null>(null);
   readonly loginForm = this.fb.group({
@@ -61,7 +62,12 @@ export class Login {
         next: response => {
           this.authService.persistSession(response, !!remember);
           this.message.success('เข้าสู่ระบบสำเร็จ');
-          this.router.navigate(['/features/dashboard']);
+          const redirectUrl = this.route.snapshot.queryParamMap.get('redirect');
+          if (redirectUrl) {
+            this.router.navigateByUrl(redirectUrl);
+          } else {
+            this.router.navigate(['/features/dashboard']);
+          }
         },
         error: error => {
           if (error.status === 0) {

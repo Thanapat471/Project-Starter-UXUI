@@ -30,6 +30,19 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${this.baseUrl}/login`, payload);
   }
 
+  isAuthenticated(): boolean {
+    return !!this.getToken();
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(this.tokenKey) ?? sessionStorage.getItem(this.tokenKey);
+  }
+
+  getUser(): LoginResponse['user'] | null {
+    const stored = localStorage.getItem(this.userKey) ?? sessionStorage.getItem(this.userKey);
+    return stored ? (JSON.parse(stored) as LoginResponse['user']) : null;
+  }
+
   persistSession(response: LoginResponse, remember: boolean): void {
     const primaryStorage = remember ? localStorage : sessionStorage;
     const secondaryStorage = remember ? sessionStorage : localStorage;
