@@ -42,6 +42,9 @@
 
 .app-sidebar.collapsed .sidebar-menu {
   width: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 :host ::ng-deep .sidebar-menu .ant-menu-item {
@@ -64,9 +67,13 @@
 }
 
 :host ::ng-deep .app-sidebar.collapsed .ant-menu-item {
-  padding: 10px 8px;
+  padding: 12px;
   justify-content: center;
+  align-items: center;
   gap: 0;
+  width: 56px;
+  margin: 4px auto;
+  display: flex !important;
 }
 
 :host ::ng-deep .sidebar-menu .ant-menu-item:hover,
@@ -93,8 +100,12 @@
 }
 
 :host ::ng-deep .app-sidebar.collapsed .ant-menu-item .ant-menu-item-icon {
-  margin-inline-end: 0;
+  margin-inline-end: 0 !important;
+  margin: 0 !important;
   font-size: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .menu-label {

@@ -8,10 +8,10 @@
   justify-content: space-between;
   gap: 24px;
   padding: 20px 32px;
-  background: linear-gradient(160deg, rgba(255, 252, 247, 0.97), rgba(249, 238, 226, 0.92));
-  border-bottom: 1px solid rgba(151, 112, 83, 0.14);
-  box-shadow: 0 18px 44px -34px rgba(92, 61, 46, 0.45);
-  backdrop-filter: blur(7px);
+  background: linear-gradient(135deg, rgba(252, 247, 238, 0.98) 0%, rgba(247, 235, 220, 0.97) 100%);
+  border-bottom: 1px solid rgba(201, 176, 153, 0.25);
+  box-shadow: 0 8px 32px -8px rgba(107, 72, 50, 0.12);
+  backdrop-filter: blur(10px);
 }
 
 .nav-brand {
@@ -24,19 +24,20 @@
   width: 48px;
   height: 48px;
   border-radius: 16px;
-  background: linear-gradient(150deg, #6a4532, #b07a56);
-  color: #fff9f3;
+  background: linear-gradient(135deg, #8b6b47 0%, #a67c5a 50%, #c19976 100%);
+  color: #fff;
   display: grid;
   place-items: center;
   font-weight: 700;
   letter-spacing: 0.08em;
+  box-shadow: 0 4px 16px rgba(107, 72, 50, 0.2);
 }
 
 .brand-copy {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  color: #4a2f1f;
+  color: #5a3d2b;
 }
 
 .brand-title {
@@ -46,7 +47,7 @@
 
 .brand-subtitle {
   font-size: 0.85rem;
-  color: rgba(74, 47, 31, 0.58);
+  color: rgba(90, 61, 43, 0.7);
 }
 
 .nav-actions {
@@ -57,7 +58,13 @@
 
 .nav-icon {
   border-radius: 50px !important;
-  color: #6a4835;
+  color: #7a5439;
+  transition: all 0.2s ease;
+}
+
+.nav-icon:hover {
+  color: #5a3d2b;
+  transform: translateY(-1px);
 }
 
 .nav-icon span[nz-icon] {
@@ -68,25 +75,34 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
-  background: rgba(148, 105, 76, 0.14);
-  color: #4b2f1f;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, rgba(199, 180, 161, 0.15) 0%, rgba(215, 195, 175, 0.12) 100%);
+  color: #5a3d2b;
+  border: 1px solid rgba(199, 180, 161, 0.2);
+  transition: all 0.2s ease;
+}
+
+.nav-profile:hover {
+  background: linear-gradient(135deg, rgba(199, 180, 161, 0.25) 0%, rgba(215, 195, 175, 0.2) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(107, 72, 50, 0.1);
 }
 
 .profile-name {
   font-weight: 600;
-  color: #4a3122;
+  color: #5a3d2b;
 }
 
 .logout {
   padding: 0;
-  color: #8a6043;
+  color: #9d7a5f;
+  transition: all 0.2s ease;
 }
 
 .logout:hover {
-  color: #6a4632;
+  color: #7a5439;
+  transform: scale(1.05);
 }
 
 @media (max-width: 720px) {
@@ -112,11 +128,15 @@
 }
 .collapse-trigger {
   margin-right: 16px;
-  color: #5c3d2e;
+  color: #7a5439;
   font-size: 18px;
-  transition: transform 0.2s ease;
+  transition: all 0.2s ease;
+  padding: 8px;
+  border-radius: 8px;
 }
 
 .collapse-trigger:hover {
+  color: #5a3d2b;
+  background: rgba(199, 180, 161, 0.15);
   transform: translateY(-1px);
 }
