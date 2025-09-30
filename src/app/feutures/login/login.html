@@ -8,6 +8,11 @@
       </div>
     </div>
 
+    <div class="auth-error" *ngIf="authError() as error">
+      <span nz-icon nzType="info-circle"></span>
+      <span>{{ error }}</span>
+    </div>
+
     <form nz-form [formGroup]="loginForm" (ngSubmit)="submit()" nzLayout="vertical">
       <nz-form-item nz-form-item>
         <nz-form-label>อีเมล</nz-form-label>

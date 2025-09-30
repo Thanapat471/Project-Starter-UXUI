@@ -41,7 +41,7 @@
 .login-card {
   position: relative;
   z-index: 1;
-  max-width: 40rem;
+  max-width: 43rem;
   width: 100%;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 32px !important;
@@ -80,6 +80,22 @@
 .card-header p {
   margin: 4px 0 0;
   color: #8a6b55;
+}
+
+.auth-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  background: rgba(224, 122, 95, 0.1);
+  color: #9d3d2d;
+  font-size: 0.95rem;
+}
+
+.auth-error span[nz-icon] {
+  font-size: 18px;
 }
 
 nz-form-item {

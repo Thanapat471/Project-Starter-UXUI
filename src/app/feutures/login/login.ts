@@ -8,6 +8,11 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzCardModule } from 'ng-zorro-antd/card';
+import { Router } from '@angular/router';
+import { finalize } from 'rxjs';
+
+import { AuthService } from '../../core/services/auth.service';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-login',
@@ -23,12 +28,17 @@ import { NzCardModule } from 'ng-zorro-antd/card';
     NzIconModule,
     NzTypographyModule
   ],
+  providers: [NzMessageService],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
 export class Login {
   private readonly fb = inject(FormBuilder);
+  private readonly authService = inject(AuthService);
+  private readonly message = inject(NzMessageService);
+  private readonly router = inject(Router);
   readonly submitting = signal(false);
+  readonly authError = signal<string | null>(null);
   readonly loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
@@ -40,11 +50,26 @@ export class Login {
       return;
     }
 
+    this.authError.set(null);
     this.submitting.set(true);
-    setTimeout(() => {
-      this.submitting.set(false);
-      // Replace this with real authentication logic when available.
-      console.log('Login payload', this.loginForm.value);
-    }, 1200);
+    const { email, password, remember } = this.loginForm.value;
+
+    this.authService
+      .login({ email: email!, password: password! })
+      .pipe(finalize(() => this.submitting.set(false)))
+      .subscribe({
+        next: response => {
+          this.authService.persistSession(response, !!remember);
+          this.message.success('เข้าสู่ระบบสำเร็จ');
+          this.router.navigate(['/features/dashboard']);
+        },
+        error: error => {
+          if (error.status === 0) {
+            this.authError.set('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
+          } else {
+            this.authError.set('อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+          }
+        }
+      });
   }
 }
