@@ -6,8 +6,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #fdf9f4 0%, #f3e4d3 45%, #eedbc5 100%);
-  color: #4f2f1f;
+  background: linear-gradient(180deg, rgba(248, 242, 232, 0.97) 0%, rgba(242, 228, 211, 0.97) 55%, rgba(236, 218, 201, 0.96) 100%);
+  color: #6b4832;
 }
 
 .layout-body {
@@ -21,19 +21,18 @@
   flex: 1;
   padding: 32px;
   overflow-y: auto;
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(6px);
-  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.4);
-  transition: border-top-left-radius 0.25s ease, padding 0.25s ease;
+  background: linear-gradient(160deg, rgba(255, 253, 248, 0.93), rgba(250, 240, 228, 0.88));
+  backdrop-filter: blur(8px);
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.45);
+  transition: border-top-left-radius 0.25s ease, border-top-right-radius 0.25s ease, padding 0.25s ease;
 }
 
-.layout-shell.sidebar-collapsed .layout-content {
-  border-top-left-radius: 0;
-}
+
 
 @media (max-width: 860px) {
   .layout-content {
     border-top-left-radius: 0;
+    border-top-right-radius: 0;
   }
 }
 

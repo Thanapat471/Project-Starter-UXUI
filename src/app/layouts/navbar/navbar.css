@@ -8,10 +8,10 @@
   justify-content: space-between;
   gap: 24px;
   padding: 20px 32px;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.95), rgba(247, 235, 223, 0.92));
-  border-bottom: 1px solid rgba(148, 105, 76, 0.12);
-  box-shadow: 0 18px 40px -32px rgba(92, 61, 46, 0.5);
-  backdrop-filter: blur(6px);
+  background: linear-gradient(160deg, rgba(255, 252, 247, 0.97), rgba(249, 238, 226, 0.92));
+  border-bottom: 1px solid rgba(151, 112, 83, 0.14);
+  box-shadow: 0 18px 44px -34px rgba(92, 61, 46, 0.45);
+  backdrop-filter: blur(7px);
 }
 
 .nav-brand {
@@ -24,8 +24,8 @@
   width: 48px;
   height: 48px;
   border-radius: 16px;
-  background: linear-gradient(160deg, #5c3d2e, #94694c);
-  color: #fff8f1;
+  background: linear-gradient(150deg, #6a4532, #b07a56);
+  color: #fff9f3;
   display: grid;
   place-items: center;
   font-weight: 700;
@@ -36,7 +36,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  color: #4f2f1f;
+  color: #4a2f1f;
 }
 
 .brand-title {
@@ -46,7 +46,7 @@
 
 .brand-subtitle {
   font-size: 0.85rem;
-  color: rgba(79, 47, 31, 0.7);
+  color: rgba(74, 47, 31, 0.58);
 }
 
 .nav-actions {
@@ -57,7 +57,7 @@
 
 .nav-icon {
   border-radius: 50px !important;
-  color: #5c3d2e;
+  color: #6a4835;
 }
 
 .nav-icon span[nz-icon] {
@@ -68,23 +68,25 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 4px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
-  background: rgba(148, 105, 76, 0.12);
-  color: #4f2f1f;
+  background: rgba(148, 105, 76, 0.14);
+  color: #4b2f1f;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
 .profile-name {
   font-weight: 600;
+  color: #4a3122;
 }
 
 .logout {
   padding: 0;
-  color: #94694c;
+  color: #8a6043;
 }
 
 .logout:hover {
-  color: #5c3d2e;
+  color: #6a4632;
 }
 
 @media (max-width: 720px) {
