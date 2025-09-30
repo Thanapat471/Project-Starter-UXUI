@@ -1,0 +1,44 @@
+:host {
+  display: block;
+}
+
+.layout-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #fdf9f4 0%, #f3e4d3 45%, #eedbc5 100%);
+  color: #4f2f1f;
+}
+
+.layout-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  gap: 0;
+}
+
+.layout-content {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(6px);
+  box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.4);
+  transition: border-top-left-radius 0.25s ease, padding 0.25s ease;
+}
+
+.layout-shell.sidebar-collapsed .layout-content {
+  border-top-left-radius: 0;
+}
+
+@media (max-width: 860px) {
+  .layout-content {
+    border-top-left-radius: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .layout-content {
+    padding: 20px;
+  }
+}

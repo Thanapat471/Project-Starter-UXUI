@@ -14,7 +14,13 @@ import {
   CoffeeOutline,
   LockOutline,
   UserOutline,
-  InfoCircleOutline
+  InfoCircleOutline,
+  BellOutline,
+  MessageOutline,
+  HomeOutline,
+  DashboardOutline,
+  MenuFoldOutline,
+  MenuUnfoldOutline
 } from '@ant-design/icons-angular/icons';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
@@ -37,7 +43,13 @@ export const appConfig: ApplicationConfig = {
       CoffeeOutline,
       LockOutline,
       UserOutline,
-      InfoCircleOutline
+      InfoCircleOutline,
+      BellOutline,
+      MessageOutline,
+      HomeOutline,
+      DashboardOutline,
+      MenuFoldOutline,
+      MenuUnfoldOutline
     ]),
     provideNzConfig({
       theme: {

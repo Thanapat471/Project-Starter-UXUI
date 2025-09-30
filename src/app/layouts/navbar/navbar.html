@@ -1,9 +1,28 @@
-<nav class="bg-white shadow px-6 py-3 flex items-center justify-between text-theme transition-colors duration-300">
-  <div class="flex items-center gap-2">
-    <span class="text-xl font-bold text-theme">UXUI Project</span>
+<header class="app-navbar">
+  <div class="nav-brand">
+    <button nz-button nzType="text" nzShape="circle" class="collapse-trigger" (click)="toggleSidebar()">
+      <span nz-icon [nzType]="collapsed ? 'menu-unfold' : 'menu-fold'"></span>
+    </button>
+    <div class="brand-mark">POS</div>
+    <div class="brand-copy">
+      <span class="brand-title">POS Dashboard</span>
+      <span class="brand-subtitle">Warm & mindful workspace</span>
+    </div>
   </div>
-  <div class="flex gap-4 items-center">
-    <app-theme-switcher></app-theme-switcher>
-    <app-language-switcher></app-language-switcher>
+
+  <div class="nav-actions">
+    <button nz-button nzType="default" nzGhost class="nav-icon" nzShape="circle">
+      <nz-badge nzDot>
+        <span nz-icon nzType="bell"></span>
+      </nz-badge>
+    </button>
+
+    <div class="nav-profile">
+      <nz-avatar nzIcon="user" nzSize="small"></nz-avatar>
+      <span class="profile-name">{{ userName() }}</span>
+      <button nz-button nzType="link" class="logout" (click)="logout()">
+        ออกจากระบบ
+      </button>
+    </div>
   </div>
-</nav>
+</header>

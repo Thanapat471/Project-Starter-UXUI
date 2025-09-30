@@ -1,6 +1,14 @@
-<aside class="w-56 bg-white border-r shadow-sm flex flex-col py-6 px-4 text-theme transition-colors duration-300">
-  <nav class="flex flex-col gap-4">
-    <a routerLink="/features/home" routerLinkActive="font-bold" class="text-theme hover:text-[color:var(--color-primary)] transition">🏠 Home</a>
-    <a routerLink="/features/dashboard" routerLinkActive="font-bold" class="text-theme hover:text-[color:var(--color-primary)] transition">📊 Dashboard</a>
-  </nav>
+<aside class="app-sidebar" [class.collapsed]="collapsed">
+
+
+  <ul nz-menu nzMode="inline" nzSelectable class="sidebar-menu">
+    <ng-container *ngFor="let item of items">
+      <li nz-menu-item nzMatchRouter [routerLink]="item.route" nzMatchRouterExact>
+        <span nz-icon [nzType]="item.icon"></span>
+        <span class="menu-label" *ngIf="!collapsed">{{ item.label }}</span>
+      </li>
+    </ng-container>
+  </ul>
+
+
 </aside>
