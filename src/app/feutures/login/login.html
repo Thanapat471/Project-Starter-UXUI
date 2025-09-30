@@ -1,0 +1,45 @@
+<div class="login-page">
+  <nz-card class="login-card" nzBordered="false">
+    <div class="card-header">
+      <div class="brand-mark">UXUI</div>
+      <div>
+        <h2>เข้าสู่ระบบ</h2>
+        <p>กรอกข้อมูลเพื่อเริ่มต้นจัดการงานของคุณ</p>
+      </div>
+    </div>
+
+    <form nz-form [formGroup]="loginForm" (ngSubmit)="submit()" nzLayout="vertical">
+      <nz-form-item nz-form-item>
+        <nz-form-label>อีเมล</nz-form-label>
+        <nz-form-control nzErrorTip="กรุณากรอกอีเมลให้ถูกต้อง">
+          <nz-input-group nzPrefixIcon="user">
+            <input nz-input type="email" formControlName="email" placeholder="name@example.com" autocomplete="email" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>รหัสผ่าน</nz-form-label>
+        <nz-form-control nzErrorTip="รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร">
+          <nz-input-group nzPrefixIcon="lock">
+            <input nz-input type="password" formControlName="password" placeholder="••••••••" autocomplete="current-password" />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+
+      <div class="form-options">
+        <label nz-checkbox formControlName="remember">จำฉันไว้</label>
+        <button nz-button nzType="link" type="button">ลืมรหัสผ่าน?</button>
+      </div>
+
+      <button nz-button nzType="primary" nzBlock [nzLoading]="submitting()" [disabled]="submitting()">
+        เข้าสู่ระบบ
+      </button>
+
+      <div class="register-info">
+        ยังไม่มีบัญชี?
+        <a nz-typography class="register-link">สร้างบัญชีใหม่</a>
+      </div>
+    </form>
+  </nz-card>
+</div>

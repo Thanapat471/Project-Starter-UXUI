@@ -1,1 +1,45 @@
-<p>dashboard works!</p>
+<div nz-row [nzGutter]="16">
+  <div nz-col nzSpan="8">
+    <nz-card nzTitle="สถิติผู้ใช้" [nzExtra]="extraTemplate">
+      <p>จำนวนผู้ใช้ทั้งหมด: 1,234</p>
+      <p>ผู้ใช้ใหม่วันนี้: 56</p>
+    </nz-card>
+  </div>
+  
+  <div nz-col nzSpan="8">
+    <nz-card nzTitle="ยอดขาย" [nzExtra]="extraTemplate">
+      <p>ยอดขายวันนี้: ฿123,456</p>
+      <p>ยอดขายเดือนนี้: ฿3,456,789</p>
+    </nz-card>
+  </div>
+  
+  <div nz-col nzSpan="8">
+    <nz-card nzTitle="คำสั่งซื้อ" [nzExtra]="extraTemplate">
+      <p>คำสั่งซื้อวันนี้: 89</p>
+      <p>คำสั่งซื้อค้างชำระ: 12</p>
+    </nz-card>
+  </div>
+</div>
+
+<div style="margin-top: 16px;">
+  <nz-card nzTitle="การดำเนินการ">
+    <button nz-button nzType="primary" nzSize="large">
+      <span nz-icon nzType="plus-circle"></span>
+      เพิ่มข้อมูลใหม่
+    </button>
+    
+    <button nz-button nzType="default" nzSize="large" style="margin-left: 8px;">
+      <span nz-icon nzType="download"></span>
+      ดาวน์โหลดรายงาน
+    </button>
+    
+    <button nz-button nzType="dashed" nzSize="large" style="margin-left: 8px;">
+      <span nz-icon nzType="setting"></span>
+      ตั้งค่า
+    </button>
+  </nz-card>
+</div>
+
+<ng-template #extraTemplate>
+  <span nz-icon nzType="ellipsis"></span>
+</ng-template>
