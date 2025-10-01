@@ -8,6 +8,7 @@
   flex-direction: column;
   background: linear-gradient(170deg, #fcf7f2 0%, #f3e5d9 48%, #e6cfba 100%);
   color: #4a2e1f;
+  padding-top: 88px;
 }
 
 .layout-body {
@@ -15,6 +16,7 @@
   flex: 1;
   min-height: 0;
   gap: 0;
+  padding-left: 240px;
 }
 
 .layout-content {
@@ -25,14 +27,24 @@
   backdrop-filter: blur(6px);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 18px 38px -24px rgba(139, 98, 67, 0.22);
   transition: border-top-left-radius 0.25s ease, border-top-right-radius 0.25s ease, padding 0.25s ease;
+  min-height: calc(100vh - 88px);
 }
 
 
 
 @media (max-width: 860px) {
+  .layout-shell {
+    padding-top: 88px;
+  }
+  
+  .layout-body {
+    padding-left: 0;
+  }
+  
   .layout-content {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+    min-height: calc(100vh - 88px);
   }
 }
 

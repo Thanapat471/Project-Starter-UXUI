@@ -1,16 +1,23 @@
 :host {
   display: block;
-  height: 100%;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 88px;
+  z-index: 999;
 }
 
 .app-sidebar {
   width: 240px;
+  height: calc(100vh - 88px);
   border-right: 1px solid rgba(148, 105, 76, 0.12);
   padding: 20px 12px 28px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   transition: width 0.25s ease, padding 0.25s ease, background 0.3s ease;
+  overflow-y: auto;
+  background: linear-gradient(180deg, rgba(248, 242, 232, 0.97) 0%, rgba(242, 228, 211, 0.97) 55%, rgba(236, 218, 201, 0.96) 100%);
 }
 
 .app-sidebar.collapsed {
@@ -151,7 +158,7 @@
 }
 
 @media (max-width: 860px) {
-  .app-sidebar {
+  :host {
     display: none;
   }
 }
