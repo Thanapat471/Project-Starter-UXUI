@@ -5,6 +5,7 @@ import { Dashboard } from './feutures/dashboard/dashboard';
 import { Login } from './feutures/login/login';
 import { authGuard } from './core/guards/auth.guard';
 import { Table } from './feutures/table/table';
+import { CustomerMenuComponent } from './feutures/customer-menu/customer-menu.component';
 
 export const routes: Routes = [
 	{ path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -16,7 +17,8 @@ export const routes: Routes = [
 		children: [
 			{ path: 'home', component: Home },
 			{ path: 'dashboard', component: Dashboard },
-			{ path: 'table',component: Table }
+			{ path: 'table',component: Table },
+			{ path: 'customer-menu', component: CustomerMenuComponent }
 		]
 	}
 ];

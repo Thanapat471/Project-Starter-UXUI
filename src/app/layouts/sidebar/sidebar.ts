@@ -44,6 +44,11 @@ export class Sidebar {
       icon: 'coffee',
       route: '/features/home'
     },
+{
+      label: 'เมนูลูกค้า',
+      icon: 'coffee',
+      route: '/features/customer-menu'
+    }
 
   ];
 
