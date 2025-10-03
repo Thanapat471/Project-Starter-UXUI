@@ -3,13 +3,13 @@
   height: 100vh;
   position: fixed;
   left: 0;
-  top: 88px;
+  top: var(--navbar-height);
   z-index: 980;
 }
 
 .app-sidebar {
   width: 248px;
-  height: calc(100vh - 88px);
+  height: calc(100vh - var(--navbar-height));
   padding: 28px 20px 32px;
   display: flex;
   flex-direction: column;
@@ -196,7 +196,7 @@
 
   .app-sidebar {
     width: min(300px, 85vw);
-    height: 100vh;
+    height: calc(100vh - var(--navbar-height));
     border-right: none;
     border-radius: 0 24px 24px 0;
     box-shadow: 0 28px 48px -24px rgba(36, 12, 4, 0.8);

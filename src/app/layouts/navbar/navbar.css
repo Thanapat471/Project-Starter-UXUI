@@ -11,10 +11,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 32px;
+  min-height: var(--navbar-height);
+  padding: 0 32px;
   gap: 24px;
   background: linear-gradient(90deg, #3d1f10 0%, #2d150a 100%);
-  border-bottom: 1px solid rgba(255, 228, 204, 0.12);
   box-shadow: 0 12px 32px -22px rgba(26, 10, 4, 0.8);
 }
 
@@ -136,7 +136,7 @@
 
 @media (max-width: 860px) {
   .app-navbar {
-    padding: 16px 22px;
+    padding: 0 22px;
   }
 
   .nav-brand-copy {
@@ -146,7 +146,7 @@
 
 @media (max-width: 600px) {
   .app-navbar {
-    padding: 14px 18px;
+    padding: 0 18px;
   }
 
   .nav-right {
@@ -160,7 +160,7 @@
 
 @media (max-width: 480px) {
   .app-navbar {
-    padding: 12px 14px;
+    padding: 0 14px;
   }
 
   .nav-left {
