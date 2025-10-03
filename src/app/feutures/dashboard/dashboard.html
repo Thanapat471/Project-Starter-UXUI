@@ -1,45 +1,89 @@
-<div nz-row [nzGutter]="16">
-  <div nz-col nzSpan="8">
-    <nz-card nzTitle="สถิติผู้ใช้" [nzExtra]="extraTemplate">
-      <p>จำนวนผู้ใช้ทั้งหมด: 1,234</p>
-      <p>ผู้ใช้ใหม่วันนี้: 56</p>
-    </nz-card>
-  </div>
-  
-  <div nz-col nzSpan="8">
-    <nz-card nzTitle="ยอดขาย" [nzExtra]="extraTemplate">
-      <p>ยอดขายวันนี้: ฿123,456</p>
-      <p>ยอดขายเดือนนี้: ฿3,456,789</p>
-    </nz-card>
-  </div>
-  
-  <div nz-col nzSpan="8">
-    <nz-card nzTitle="คำสั่งซื้อ" [nzExtra]="extraTemplate">
-      <p>คำสั่งซื้อวันนี้: 89</p>
-      <p>คำสั่งซื้อค้างชำระ: 12</p>
-    </nz-card>
-  </div>
+<div class="dashboard-page">
+  <section class="page-header">
+    <h1>แดชบอร์ด</h1>
+    <p class="page-subtitle">ภาพรวมการทำงานของระบบ</p>
+  </section>
+
+  <section class="metrics-grid">
+    <article
+      class="metric-card"
+      *ngFor="let metric of metrics()"
+      [ngClass]="'metric-card--' + metric.accent"
+    >
+      <div class="metric-icon">
+        <span nz-icon [nzType]="metric.icon"></span>
+      </div>
+      <div class="metric-info">
+        <p class="metric-title">{{ metric.title }}</p>
+        <p class="metric-value" [ngSwitch]="metric.format">
+          <ng-container *ngSwitchCase="'currency'">
+            {{ metric.value | currency: 'THB':'symbol':'1.0-0' }}
+          </ng-container>
+          <ng-container *ngSwitchDefault>
+            {{ metric.value }}
+          </ng-container>
+        </p>
+        <p class="metric-description">{{ metric.description }}</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="orders-card">
+    <header class="orders-card__header">
+      <div class="orders-card__title">
+        <span nz-icon nzType="clock-circle" class="orders-card__icon"></span>
+        <div>
+          <h2>ออเดอร์ที่กำลังดำเนินการ</h2>
+          <p>ติดตามสถานะออเดอร์ที่ยังไม่เสร็จสิ้น</p>
+        </div>
+      </div>
+      <span class="orders-count">{{ ordersCount() }} ออเดอร์</span>
+    </header>
+
+    <ng-container *ngIf="!loading(); else loadingOrders">
+      <ng-container *ngIf="!error(); else errorOrders">
+        <div class="order-list" *ngIf="orders().length; else emptyOrders">
+          <article class="order-card" *ngFor="let order of orders()">
+            <div class="order-card__meta">
+              <div class="order-card__id-row">
+                <span class="order-code">{{ order.code }}</span>
+                <span class="status-chip" [ngClass]="order.statusClass">{{ order.statusLabel }}</span>
+                <span class="table-chip" *ngIf="order.tableLabel">{{ order.tableLabel }}</span>
+              </div>
+              <p class="order-items">{{ order.itemsSummary }}</p>
+              <p class="order-note" *ngIf="order.note">
+                หมายเหตุ: <span>{{ order.note }}</span>
+              </p>
+            </div>
+            <div class="order-card__totals">
+              <span class="order-amount">{{ order.totalAmount | currency: 'THB':'symbol':'1.0-0' }}</span>
+              <span class="order-time">{{ order.displayTime | date: 'HH:mm' }}</span>
+            </div>
+          </article>
+        </div>
+      </ng-container>
+    </ng-container>
+  </section>
 </div>
 
-<div style="margin-top: 16px;">
-  <nz-card nzTitle="การดำเนินการ">
-    <button nz-button nzType="primary" nzSize="large">
-      <span nz-icon nzType="plus-circle"></span>
-      เพิ่มข้อมูลใหม่
-    </button>
-    
-    <button nz-button nzType="default" nzSize="large" style="margin-left: 8px;">
-      <span nz-icon nzType="download"></span>
-      ดาวน์โหลดรายงาน
-    </button>
-    
-    <button nz-button nzType="dashed" nzSize="large" style="margin-left: 8px;">
-      <span nz-icon nzType="setting"></span>
-      ตั้งค่า
-    </button>
-  </nz-card>
-</div>
+<ng-template #emptyOrders>
+  <div class="empty-orders">
+    <span nz-icon nzType="inbox"></span>
+    <p>ยังไม่มีออเดอร์ที่กำลังดำเนินการ</p>
+  </div>
+</ng-template>
 
-<ng-template #extraTemplate>
-  <span nz-icon nzType="ellipsis"></span>
+<ng-template #loadingOrders>
+  <div class="orders-loading">
+    <span nz-icon nzType="loading"></span>
+    <p>กำลังโหลดข้อมูลออเดอร์...</p>
+  </div>
+</ng-template>
+
+<ng-template #errorOrders>
+  <div class="orders-error">
+    <span nz-icon nzType="warning"></span>
+    <p>{{ error() }}</p>
+    <button type="button" class="orders-retry" (click)="reload()">ลองอีกครั้ง</button>
+  </div>
 </ng-template>
