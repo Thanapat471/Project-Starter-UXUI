@@ -1,9 +1,147 @@
-<nav>
-  <ul>
-    <li><a routerLink="/features/home">Home</a></li>
-    <li><a routerLink="/features/dashboard">Dashboard</a></li>
-    <li><a routerLink="/features/table">Table</a></li>
-    <li><a routerLink="/simplelayout/customer-menu">Customer Menu</a></li>
-  </ul>
-</nav>
-<router-outlet></router-outlet>
+<div class="bg-login-theme min-h-screen">
+  <!-- Fixed Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-brown-200 shadow-sm">
+    <div class="px-4 py-3">
+      <div class="flex items-center justify-between">
+        <!-- Restaurant Info -->
+        <div class="flex items-center space-x-3">
+          <div class="restaurant-logo w-10 h-10 rounded-lg flex items-center justify-center">
+            <i class="fas fa-coffee text-white text-lg"></i>
+          </div>
+          <div>
+            <h1 class="restaurant-name text-lg font-bold">CaféPOS</h1>
+            <p class="table-info text-xs">Table #5 • Scan & Order</p>
+          </div>
+        </div>
+
+        <!-- Cart Button -->
+        <button
+          class="cart-button relative text-white px-4 py-2 rounded-full font-medium transition-all flex items-center space-x-2"
+          (click)="openCartModal()"
+        >
+          <i class="fas fa-shopping-cart"></i>
+          <span class="hidden sm:inline">Cart</span>
+          <!-- Cart Badge -->
+          <span
+            *ngIf="cartCount > 0"
+            class="cart-badge absolute -top-2 -right-2 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold"
+          >
+            {{ cartCount }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content with top padding for fixed header -->
+  <main class="pt-20">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Cart Modal -->
+  <div
+    *ngIf="showCartModal"
+    class="cart-modal-overlay fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4"
+    (click)="closeCartModal()"
+    role="presentation"
+  >
+    <div
+      class="cart-modal bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
+      (click)="$event.stopPropagation()"
+      role="dialog"
+      aria-modal="true"
+      aria-label="หน้าต่างตะกร้าสินค้า"
+    >
+      <!-- Modal Header -->
+      <div class="modal-header bg-orange-500 text-white p-4 flex items-center justify-between">
+        <h2 class="text-xl font-bold flex items-center gap-2">
+          <i class="fas fa-shopping-cart"></i>
+          ออร์เดอร์ของคุณ
+        </h2>
+        <button
+          (click)="closeCartModal()"
+          class="text-white hover:text-orange-200 transition-colors"
+        >
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Cart Items -->
+      <div class="cart-items max-h-96 overflow-y-auto">
+        <div *ngIf="cartItems.length === 0" class="empty-cart text-center py-8">
+          <i class="fas fa-shopping-cart text-4xl text-gray-300 mb-4"></i>
+          <p class="text-gray-500">ตะกร้าของคุณว่างเปล่า</p>
+        </div>
+
+        <div *ngFor="let item of cartItems" class="cart-item flex items-center gap-4 p-4 border-b border-gray-100 dark:border-gray-700">
+          <!-- Item Image -->
+          <div class="item-image w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+            <img [src]="item.image" [alt]="item.name" class="w-full h-full object-cover">
+          </div>
+
+          <!-- Item Details -->
+          <div class="item-details flex-1 min-w-0">
+            <h4 class="item-name font-semibold text-gray-800 dark:text-white text-sm truncate">
+              {{ item.name }}
+            </h4>
+            <p class="item-price text-orange-500 font-bold text-sm">
+              ฿{{ item.price }}
+            </p>
+          </div>
+
+          <!-- Quantity Controls -->
+          <div class="quantity-controls flex items-center gap-2">
+            <button
+              (click)="updateCartItemQuantity(item.id, item.quantity - 1)"
+              class="qty-btn bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+            >
+              <i class="fas fa-minus text-xs"></i>
+            </button>
+
+            <span class="quantity text-gray-800 dark:text-white font-semibold min-w-[2rem] text-center">
+              {{ item.quantity }}
+            </span>
+
+            <button
+              (click)="updateCartItemQuantity(item.id, item.quantity + 1)"
+              class="qty-btn bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
+            >
+              <i class="fas fa-plus text-xs"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart Footer -->
+      <div *ngIf="cartItems.length > 0" class="cart-footer p-4 bg-gray-50 dark:bg-gray-700">
+        <!-- Total -->
+        <div class="total-section flex items-center justify-between mb-4 pb-4 border-b border-gray-200 dark:border-gray-600">
+          <span class="total-label text-lg font-semibold text-gray-800 dark:text-white">
+            ยอดรวมทั้งหมด:
+          </span>
+          <span class="total-amount text-2xl font-bold text-orange-500">
+            ฿{{ cartTotal.toFixed(2) }}
+          </span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons space-y-2">
+          <button
+            class="order-btn w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95"
+          >
+            <i class="fas fa-check mr-2"></i>
+            สั่งออร์เดอร์
+          </button>
+
+          <button
+            (click)="clearCart()"
+            class="clear-btn w-full bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300 py-2 rounded-xl font-medium transition-colors"
+          >
+            <i class="fas fa-trash mr-2"></i>
+            ล้างตะกร้า
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

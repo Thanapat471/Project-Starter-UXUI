@@ -5,6 +5,74 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Login Theme Utility Classes */
+.bg-login-theme {
+  background: radial-gradient(circle at top left, #fdf9f4 0%, #f4e6d6 60%, #f0dfcc 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-login-theme::before,
+.bg-login-theme::after {
+  content: '';
+  position: absolute;
+  border-radius: 999px;
+  background: linear-gradient(160deg, rgba(148, 105, 76, 0.16), rgba(92, 61, 46, 0.08));
+  filter: blur(0);
+  z-index: 0;
+}
+
+.bg-login-theme::before {
+  width: 520px;
+  height: 520px;
+  top: -220px;
+  left: -140px;
+}
+
+.bg-login-theme::after {
+  width: 420px;
+  height: 420px;
+  bottom: -180px;
+  right: -120px;
+}
+
+.card-login-theme {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 32px;
+  box-shadow: 0 38px 90px -40px rgba(92, 61, 46, 0.55);
+  backdrop-filter: blur(6px);
+}
+
+.btn-login-theme {
+  background: linear-gradient(160deg, #5c3d2e, #94694c);
+  border: 2px solid #915f3e;
+  color: #fdfcf8;
+  border-radius: 18px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: all 0.3s ease;
+}
+
+.btn-login-theme:hover {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(92, 61, 46, 0.4);
+}
+
+.text-login-primary {
+  color: #5c3d2e;
+}
+
+.text-login-secondary {
+  color: #8a6b55;
+}
+
+.text-login-accent {
+  color: #94694c;
+}
+
 /* Global responsive styles */
 * {
   box-sizing: border-box;

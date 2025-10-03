@@ -1,19 +1,19 @@
-<div class="menu-container bg-theme text-theme min-h-screen p-6">
+<div class="menu-container bg-login-theme min-h-screen px-4 py-6 pb-8">
   <!-- Search Bar -->
   <div class="search-container mb-6">
     <div class="search-wrapper relative max-w-md mx-auto">
       <div class="search-input-container relative">
-        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
-        <input 
-          type="text" 
+        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-login-secondary text-lg"></i>
+        <input
+          type="text"
           [(ngModel)]="searchTerm"
           placeholder="ค้นหาเมนูอาหาร..."
-          class="search-input w-full pl-12 pr-12 py-4 rounded-2xl bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 focus:border-orange-500 focus:outline-none text-gray-800 dark:text-white placeholder-gray-400 shadow-lg transition-all duration-300"
+          class="search-input w-full pl-12 pr-12 py-4 rounded-2xl bg-white border-2 border-gray-200 focus:border-[#94694c] focus:outline-none text-login-primary placeholder-login-secondary shadow-lg transition-all duration-300"
         />
-        <button 
+        <button
           *ngIf="searchTerm"
           (click)="clearSearch()"
-          class="clear-search-btn absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-500 transition-colors"
+          class="clear-search-btn absolute right-4 top-1/2 transform -translate-y-1/2 text-login-secondary hover:text-login-accent transition-colors"
         >
           <i class="fas fa-times text-lg"></i>
         </button>
@@ -21,60 +21,62 @@
     </div>
   </div>
 
-  <!-- Category Filter Tabs -->
-  <div class="category-tabs mb-8">
-    <div class="flex flex-wrap gap-3 justify-center">
-      <button 
-        *ngFor="let category of categories"
-        (click)="selectCategory(category)"
-        [class]="'category-btn px-6 py-3 rounded-full font-medium transition-all duration-300 ' + 
-                 (selectedCategory === category ? 'active' : '')"
-      >
-        <i [class]="getCategoryIcon(category)" class="mr-2"></i>
-        {{ category }}
-      </button>
+  <!-- Category Filter Tabs - Horizontal Scrollable -->
+  <div class="category-tabs-container sticky top-0 z-40 bg-white/95 backdrop-blur-md rounded-2xl mx-4 my-8 p-6 shadow-lg border border-gray-200">
+    <div class="overflow-x-auto scrollbar-hide">
+      <div class="flex gap-3 min-w-max pb-2 justify-center">
+        <button
+          *ngFor="let category of categories"
+          (click)="selectCategory(category)"
+          [class]="'category-btn px-6 py-3 rounded-full font-medium transition-all duration-300 whitespace-nowrap flex-shrink-0 ' +
+                   (selectedCategory === category ? 'active' : '')"
+        >
+          <i [class]="getCategoryIcon(category)" class="mr-2"></i>
+          {{ category }}
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- Menu Items Grid -->
   <div class="menu-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div 
-      *ngFor="let item of filteredItems" 
-      class="menu-card bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
+    <div
+      *ngFor="let item of filteredItems"
+      class="menu-card card-login-theme rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
     >
       <!-- Food Image -->
       <div class="image-container relative overflow-hidden">
-        <img 
-          [src]="item.image" 
+        <img
+          [src]="item.image"
           [alt]="item.name"
           class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
         />
         <div class="image-overlay absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300"></div>
       </div>
-      
+
       <!-- Card Content -->
       <div class="card-content p-6">
         <!-- Food Name -->
-        <h3 class="food-name text-xl font-bold text-gray-800 dark:text-white mb-2 line-clamp-1">
+        <h3 class="food-name text-xl font-bold text-login-primary mb-2 line-clamp-1">
           {{ item.name }}
         </h3>
-        
+
         <!-- Description -->
-        <p class="food-description text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2 leading-relaxed">
+        <p class="food-description text-login-secondary text-sm mb-4 line-clamp-2 leading-relaxed">
           {{ item.description }}
         </p>
-        
+
         <!-- Price and Add Button -->
         <div class="flex items-center justify-between">
           <div class="price-section">
-            <span class="price text-2xl font-bold text-orange-500">
+            <span class="price text-2xl font-bold text-login-accent">
               ฿{{ item.price }}
             </span>
           </div>
-          
-          <button 
+
+          <button
             (click)="addToCart(item)"
-            class="add-btn bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-full font-medium transition-all duration-300 flex items-center gap-2 hover:scale-105 active:scale-95"
+            class="add-btn btn-login-theme px-6 py-2 rounded-full font-medium transition-all duration-300 flex items-center gap-2 hover:scale-105 active:scale-95"
           >
             <i class="fas fa-plus"></i>
             Add
@@ -96,9 +98,9 @@
     </h3>
     <p class="text-gray-500 dark:text-gray-500">
       <span *ngIf="searchTerm">ลองค้นหาด้วยคำอื่น หรือ</span>
-      <button 
-        *ngIf="searchTerm" 
-        (click)="clearSearch()" 
+      <button
+        *ngIf="searchTerm"
+        (click)="clearSearch()"
         class="text-orange-500 hover:text-orange-600 underline ml-1"
       >
         ล้างการค้นหา
@@ -107,46 +109,22 @@
     </p>
   </div>
 
-  <!-- Floating Cart Button - Always Visible -->
-  <div 
-    class="floating-cart-btn group"
-    (click)="openCartModal()"
-  >
-    <div class="cart-btn bg-orange-500 hover:bg-orange-600 text-white rounded-full p-4 shadow-2xl cursor-pointer transition-all duration-300 hover:scale-110 active:scale-95 relative">
-      <i class="fas fa-shopping-cart text-2xl"></i>
-      
-      <!-- Cart count badge -->
-      <div 
-        *ngIf="cartCount > 0"
-        class="cart-badge absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold animate-pulse"
-      >
-        {{ cartCount }}
-      </div>
-      
-      <!-- Empty cart indicator -->
-      <div 
-        *ngIf="cartCount === 0"
-        class="empty-indicator absolute -top-1 -right-1 w-4 h-4 bg-gray-400 rounded-full opacity-50"
-      ></div>
-    </div>
-    
-    <!-- Tooltip -->
-    <div class="cart-tooltip absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
-      <span *ngIf="cartCount === 0">ตะกร้าสินค้า</span>
-      <span *ngIf="cartCount > 0">{{ cartCount }} รายการในตะกร้า</span>
-      <div class="tooltip-arrow absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-800"></div>
-    </div>
-  </div>
+
 
   <!-- Cart Modal -->
-  <div 
-    *ngIf="showCartModal" 
+  <div
+    *ngIf="showCartModal"
     class="cart-modal-overlay fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4"
     (click)="closeCartModal()"
+    (keydown.escape)="closeCartModal()"
+    role="presentation"
   >
-    <div 
+    <div
       class="cart-modal bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
       (click)="$event.stopPropagation()"
+      role="dialog"
+      aria-modal="true"
+      aria-label="หน้าต่างตะกร้าสินค้า"
     >
       <!-- Modal Header -->
       <div class="modal-header bg-orange-500 text-white p-4 flex items-center justify-between">
@@ -154,7 +132,7 @@
           <i class="fas fa-shopping-cart"></i>
           ออร์เดอร์ของคุณ
         </h2>
-        <button 
+        <button
           (click)="closeCartModal()"
           class="text-white hover:text-orange-200 transition-colors"
         >
@@ -187,18 +165,18 @@
 
           <!-- Quantity Controls -->
           <div class="quantity-controls flex items-center gap-2">
-            <button 
+            <button
               (click)="updateCartItemQuantity(item.id, item.quantity - 1)"
               class="qty-btn bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
             >
               <i class="fas fa-minus text-xs"></i>
             </button>
-            
+
             <span class="quantity text-gray-800 dark:text-white font-semibold min-w-[2rem] text-center">
               {{ item.quantity }}
             </span>
-            
-            <button 
+
+            <button
               (click)="updateCartItemQuantity(item.id, item.quantity + 1)"
               class="qty-btn bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
             >
@@ -222,14 +200,14 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons space-y-2">
-          <button 
+          <button
             class="order-btn w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95"
           >
             <i class="fas fa-check mr-2"></i>
             สั่งออร์เดอร์
           </button>
-          
-          <button 
+
+          <button
             (click)="clearCart()"
             class="clear-btn w-full bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300 py-2 rounded-xl font-medium transition-colors"
           >
