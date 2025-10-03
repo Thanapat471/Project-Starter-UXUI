@@ -5,11 +5,60 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global responsive styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Responsive text and spacing utilities */
+@media (max-width: 1024px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+
+  :root {
+    --navbar-height: 76px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 13px;
+  }
+
+  :root {
+    --navbar-height: 68px;
+  }
+}
+
+@media (max-width: 360px) {
+  html {
+    font-size: 12px;
+  }
+
+  :root {
+    --navbar-height: 60px;
+  }
+}
+
 :root {
   --color-primary: #2563eb;
   --color-secondary: #60a5fa;
   --color-bg: #f8fafc;
   --color-text: #1e293b;
+  --navbar-height: 88px;
 }
 
 .theme-green {

@@ -1,10 +1,21 @@
-<div class="layout-shell" [class.sidebar-collapsed]="sidebarCollapsed()">
+<div
+  class="layout-shell"
+  [class.sidebar-collapsed]="!isMobile() && desktopSidebarCollapsed()"
+  [class.sidebar-open]="isMobile() && sidebarMobileOpen()"
+>
   <app-navbar
-    [collapsed]="sidebarCollapsed()"
-    (collapsedChange)="sidebarCollapsed.set($event)"
+    [collapsed]="navbarCollapsed()"
+    (collapsedChange)="handleSidebarToggle($event)"
   ></app-navbar>
   <div class="layout-body">
-    <app-sidebar [collapsed]="sidebarCollapsed()"></app-sidebar>
+    <app-sidebar [collapsed]="!isMobile() && desktopSidebarCollapsed()"></app-sidebar>
+    <button
+      *ngIf="isMobile() && sidebarMobileOpen()"
+      type="button"
+      class="sidebar-backdrop"
+      (click)="closeMobileSidebar()"
+      aria-label="Close sidebar"
+    ></button>
     <main class="layout-content">
       <router-outlet></router-outlet>
     </main>

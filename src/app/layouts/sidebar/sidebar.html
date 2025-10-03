@@ -1,6 +1,5 @@
 <aside class="app-sidebar" [class.collapsed]="collapsed">
 
-
   <ul nz-menu nzMode="inline" nzSelectable class="sidebar-menu">
     <ng-container *ngFor="let item of items">
       <li nz-menu-item nzMatchRouter [routerLink]="item.route" nzMatchRouterExact>
@@ -9,6 +8,4 @@
       </li>
     </ng-container>
   </ul>
-
-
 </aside>

@@ -1,10 +1,13 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
+import { Router } from '@angular/router';
+
+import { AuthService } from '../../core/services/auth.service';
 
 interface SidebarItem {
   label: string;
@@ -22,16 +25,25 @@ interface SidebarItem {
 export class Sidebar {
   @Input({ required: true }) collapsed = false;
 
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+
   readonly items: SidebarItem[] = [
     {
-      label: 'หน้าแรก',
-      icon: 'home',
-      route: '/features/home'
+      label: 'แดชบอร์ด',
+      icon: 'appstore',
+      route: '/features/dashboard'
     },
     {
-      label: 'แดชบอร์ด',
-      icon: 'dashboard',
-      route: '/features/dashboard'
-    }
+      label: 'จัดการเมนู',
+      icon: 'coffee',
+      route: '/features/home'
+    },
+
   ];
+
+  logout(): void {
+    this.auth.clearSession();
+    this.router.navigate(['/login']);
+  }
 }
