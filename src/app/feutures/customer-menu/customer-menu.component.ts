@@ -22,11 +22,11 @@ interface MenuItem {
 })
 export class CustomerMenuComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  
+
   categories = ['All', 'Coffee', 'Pastries', 'Food', 'Desserts'];
   selectedCategory = 'All';
   searchTerm = '';
-  
+
   // Cart properties
   cartItems: CartItem[] = [];
   cartCount = 0;
@@ -88,21 +88,21 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
 
   get filteredItems(): MenuItem[] {
     let items = this.menuItems;
-    
+
     // Filter by category
     if (this.selectedCategory !== 'All') {
       items = items.filter(item => item.category === this.selectedCategory);
     }
-    
+
     // Filter by search term
     if (this.searchTerm.trim()) {
       const searchLower = this.searchTerm.toLowerCase().trim();
-      items = items.filter(item => 
+      items = items.filter(item =>
         item.name.toLowerCase().includes(searchLower) ||
         item.description.toLowerCase().includes(searchLower)
       );
     }
-    
+
     return items;
   }
 
@@ -141,6 +141,19 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
       price: item.price,
       image: item.image
     });
+  }
+
+  getItemQuantityInCart(itemId: number): number {
+    const cartItem = this.cartItems.find(item => item.id === itemId);
+    return cartItem ? cartItem.quantity : 0;
+  }
+
+  updateItemQuantity(itemId: number, newQuantity: number): void {
+    if (newQuantity <= 0) {
+      this.cartService.removeFromCart(itemId);
+    } else {
+      this.cartService.updateQuantity(itemId, newQuantity);
+    }
   }
 
   getCategoryIcon(category: string): string {

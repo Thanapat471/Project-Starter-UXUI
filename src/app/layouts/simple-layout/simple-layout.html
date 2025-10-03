@@ -53,24 +53,24 @@
       aria-label="หน้าต่างตะกร้าสินค้า"
     >
       <!-- Modal Header -->
-      <div class="modal-header bg-orange-500 text-white p-4 flex items-center justify-between">
-        <h2 class="text-xl font-bold flex items-center gap-2">
-          <i class="fas fa-shopping-cart"></i>
-          ออร์เดอร์ของคุณ
+      <div class="modal-header bg-white text-gray-800 p-4 border-b border-gray-200">
+        <h2 class="text-xl font-bold text-gray-800">
+          Your Order
         </h2>
         <button
           (click)="closeCartModal()"
-          class="text-white hover:text-orange-200 transition-colors"
+          class="text-gray-400 hover:text-gray-600 transition-colors p-1"
         >
-          <i class="fas fa-times text-xl"></i>
+          <i class="fas fa-times text-lg"></i>
         </button>
       </div>
 
       <!-- Cart Items -->
       <div class="cart-items max-h-96 overflow-y-auto">
-        <div *ngIf="cartItems.length === 0" class="empty-cart text-center py-8">
-          <i class="fas fa-shopping-cart text-4xl text-gray-300 mb-4"></i>
-          <p class="text-gray-500">ตะกร้าของคุณว่างเปล่า</p>
+        <div *ngIf="cartItems.length === 0" class="empty-cart text-center py-12">
+          <i class="fas fa-shopping-basket text-6xl text-gray-300 mb-4"></i>
+          <p class="text-gray-500 text-lg">Your cart is empty</p>
+          <p class="text-gray-400 text-sm mt-2">Add some delicious items to get started!</p>
         </div>
 
         <div *ngFor="let item of cartItems" class="cart-item flex items-center gap-4 p-4 border-b border-gray-100 dark:border-gray-700">
@@ -81,32 +81,34 @@
 
           <!-- Item Details -->
           <div class="item-details flex-1 min-w-0">
-            <h4 class="item-name font-semibold text-gray-800 dark:text-white text-sm truncate">
+            <h4 class="item-name font-semibold text-gray-800 dark:text-white text-base mb-1">
               {{ item.name }}
             </h4>
-            <p class="item-price text-orange-500 font-bold text-sm">
+            <p class="item-price font-bold text-lg" style="color: #5c3d2e;">
               ฿{{ item.price }}
             </p>
           </div>
 
           <!-- Quantity Controls -->
-          <div class="quantity-controls flex items-center gap-2">
+          <div class="quantity-controls flex items-center gap-3">
             <button
               (click)="updateCartItemQuantity(item.id, item.quantity - 1)"
-              class="qty-btn bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
+              class="qty-btn w-10 h-10 rounded-full flex items-center justify-center transition-all"
+              style="background-color: #f7f3f0; border: 2px solid #94694c; color: #5c3d2e;"
             >
-              <i class="fas fa-minus text-xs"></i>
+              <i class="fas fa-minus text-sm"></i>
             </button>
 
-            <span class="quantity text-gray-800 dark:text-white font-semibold min-w-[2rem] text-center">
+            <span class="quantity font-bold text-lg min-w-[2rem] text-center" style="color: #5c3d2e;">
               {{ item.quantity }}
             </span>
 
             <button
               (click)="updateCartItemQuantity(item.id, item.quantity + 1)"
-              class="qty-btn bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
+              class="qty-btn text-white w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-md hover:shadow-lg"
+              style="background-color: #94694c;"
             >
-              <i class="fas fa-plus text-xs"></i>
+              <i class="fas fa-plus text-sm"></i>
             </button>
           </div>
         </div>
@@ -114,31 +116,24 @@
 
       <!-- Cart Footer -->
       <div *ngIf="cartItems.length > 0" class="cart-footer p-4 bg-gray-50 dark:bg-gray-700">
-        <!-- Total -->
-        <div class="total-section flex items-center justify-between mb-4 pb-4 border-b border-gray-200 dark:border-gray-600">
-          <span class="total-label text-lg font-semibold text-gray-800 dark:text-white">
-            ยอดรวมทั้งหมด:
+                <!-- Total -->
+        <div class="total-section flex items-center justify-between mb-6 pb-4 border-b border-gray-200 dark:border-gray-600">
+          <span class="total-label text-xl font-semibold text-gray-800 dark:text-white">
+            Total:
           </span>
-          <span class="total-amount text-2xl font-bold text-orange-500">
-            ฿{{ cartTotal.toFixed(2) }}
+          <span class="total-amount text-2xl font-bold" style="color: #5c3d2e;">
+            ฿{{ cartTotal.toFixed(0) }}
           </span>
         </div>
 
         <!-- Action Buttons -->
-        <div class="action-buttons space-y-2">
+        <div class="action-buttons">
           <button
-            class="order-btn w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95"
+            class="order-btn w-full py-4 rounded-2xl font-bold text-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-white"
+            style="background: linear-gradient(135deg, #94694c, #5c3d2e);"
           >
-            <i class="fas fa-check mr-2"></i>
-            สั่งออร์เดอร์
-          </button>
-
-          <button
-            (click)="clearCart()"
-            class="clear-btn w-full bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300 py-2 rounded-xl font-medium transition-colors"
-          >
-            <i class="fas fa-trash mr-2"></i>
-            ล้างตะกร้า
+            <i class="fas fa-utensils text-lg"></i>
+            Place Order
           </button>
         </div>
       </div>
