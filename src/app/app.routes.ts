@@ -7,6 +7,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { Table } from './feutures/table/table';
 import { CustomerMenuComponent } from './feutures/customer-menu/customer-menu.component';
 import { SimpleLayout } from './layouts/simple-layout/simple-layout';
+import { NotFound } from './feutures/not-found/not-found';
 
 export const routes: Routes = [
 	{ path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -25,5 +26,6 @@ export const routes: Routes = [
     children: [
       			{ path: 'customer-menu', component: CustomerMenuComponent }
     ]
-  }
+  },
+  { path: '**', component: NotFound }
 ];
