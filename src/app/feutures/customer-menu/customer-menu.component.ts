@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CartService, CartItem } from '../../core/services/cart.service';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -15,7 +16,7 @@ interface MenuItem {
 @Component({
   selector: 'app-customer-menu',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './customer-menu.component.html',
   styleUrl: './customer-menu.component.css'
 })
@@ -24,6 +25,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
   
   categories = ['All', 'Coffee', 'Pastries', 'Food', 'Desserts'];
   selectedCategory = 'All';
+  searchTerm = '';
   
   // Cart properties
   cartItems: CartItem[] = [];
@@ -85,14 +87,31 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
   ];
 
   get filteredItems(): MenuItem[] {
-    if (this.selectedCategory === 'All') {
-      return this.menuItems;
+    let items = this.menuItems;
+    
+    // Filter by category
+    if (this.selectedCategory !== 'All') {
+      items = items.filter(item => item.category === this.selectedCategory);
     }
-    return this.menuItems.filter(item => item.category === this.selectedCategory);
+    
+    // Filter by search term
+    if (this.searchTerm.trim()) {
+      const searchLower = this.searchTerm.toLowerCase().trim();
+      items = items.filter(item => 
+        item.name.toLowerCase().includes(searchLower) ||
+        item.description.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    return items;
   }
 
   selectCategory(category: string): void {
     this.selectedCategory = category;
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
   }
 
   ngOnInit(): void {
