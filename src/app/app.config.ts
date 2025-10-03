@@ -1,12 +1,14 @@
 import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { provideNzConfig } from 'ng-zorro-antd/core/config';
 import { provideNzI18n, en_US } from 'ng-zorro-antd/i18n';
 import { provideNzIcons } from 'ng-zorro-antd/icon';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
 import {
   PlusCircleOutline,
+  PlusOutline,
   DownloadOutline,
   SettingOutline,
   EllipsisOutline,
@@ -15,6 +17,7 @@ import {
   LockOutline,
   UserOutline,
   InfoCircleOutline,
+  ExclamationCircleOutline,
   BellOutline,
   MessageOutline,
   HomeOutline,
@@ -38,9 +41,11 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimationsAsync(),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideNzI18n(en_US),
     provideNzIcons([
       PlusCircleOutline,
+      PlusOutline,
       DownloadOutline,
       SettingOutline,
       EllipsisOutline,
@@ -49,17 +54,13 @@ export const appConfig: ApplicationConfig = {
       LockOutline,
       UserOutline,
       InfoCircleOutline,
+      ExclamationCircleOutline,
       BellOutline,
       MessageOutline,
       HomeOutline,
       DashboardOutline,
       MenuFoldOutline,
-      MenuUnfoldOutline,
-      AppstoreOutline,
-      TableOutline,
-      ShoppingCartOutline,
-      CreditCardOutline,
-      LogoutOutline
+      MenuUnfoldOutline
     ]),
     provideNzConfig({
       theme: {

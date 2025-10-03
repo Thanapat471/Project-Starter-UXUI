@@ -35,6 +35,11 @@ export class Sidebar {
       route: '/features/dashboard'
     },
     {
+      label: 'จัดการโต๊ะ',
+      icon: 'coffee',
+      route: '/features/table'
+    },
+    {
       label: 'จัดการเมนู',
       icon: 'coffee',
       route: '/features/home'

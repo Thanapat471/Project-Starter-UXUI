@@ -4,6 +4,7 @@ import { Home } from './feutures/home/home';
 import { Dashboard } from './feutures/dashboard/dashboard';
 import { Login } from './feutures/login/login';
 import { authGuard } from './core/guards/auth.guard';
+import { Table } from './feutures/table/table';
 
 export const routes: Routes = [
 	{ path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -14,7 +15,8 @@ export const routes: Routes = [
 		canActivate: [authGuard],
 		children: [
 			{ path: 'home', component: Home },
-			{ path: 'dashboard', component: Dashboard }
+			{ path: 'dashboard', component: Dashboard },
+			{ path: 'table',component: Table }
 		]
 	}
 ];
