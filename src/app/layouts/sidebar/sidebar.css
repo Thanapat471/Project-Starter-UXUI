@@ -4,20 +4,21 @@
   position: fixed;
   left: 0;
   top: 88px;
-  z-index: 999;
+  z-index: 980;
 }
 
 .app-sidebar {
   width: 240px;
   height: calc(100vh - 88px);
-  border-right: 1px solid rgba(148, 105, 76, 0.12);
+  border-right: 1px solid var(--warm-border);
   padding: 20px 12px 28px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  transition: width 0.25s ease, padding 0.25s ease, background 0.3s ease;
+  transition: width 0.25s ease, padding 0.25s ease, background 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
   overflow-y: auto;
-  background: linear-gradient(180deg, rgba(248, 242, 232, 0.97) 0%, rgba(242, 228, 211, 0.97) 55%, rgba(236, 218, 201, 0.96) 100%);
+  background: linear-gradient(180deg, rgba(255, 247, 234, 0.96) 0%, rgba(250, 234, 210, 0.95) 55%, rgba(244, 223, 199, 0.94) 100%);
+  box-shadow: 12px 0 32px -24px var(--warm-shadow);
 }
 
 .app-sidebar.collapsed {
@@ -31,7 +32,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  color: #6b4832;
+  color: var(--warm-text-strong);
 }
 
 .sidebar-title {
@@ -63,10 +64,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #6b4832;
+  color: var(--warm-text-strong);
   transition: all 0.25s ease;
   border: none;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 :host ::ng-deep .sidebar-menu .ant-menu-item::after {
@@ -85,15 +86,15 @@
 
 :host ::ng-deep .sidebar-menu .ant-menu-item:hover,
 :host ::ng-deep .sidebar-menu .ant-menu-item-selected {
-  background: linear-gradient(130deg, rgba(107, 72, 50, 0.15), rgba(107, 72, 50, 0.08)) !important;
-  color: #6b4832 !important;
-  box-shadow: inset 0 0 0 1px rgba(107, 72, 50, 0.2), 0 2px 6px rgba(107, 72, 50, 0.04);
+  background: linear-gradient(130deg, rgba(216, 163, 95, 0.18), rgba(216, 163, 95, 0.1)) !important;
+  color: var(--warm-text-strong) !important;
+  box-shadow: inset 0 0 0 1px rgba(216, 163, 95, 0.3), 0 4px 12px rgba(216, 163, 95, 0.08);
   transform: translateY(-1px);
 }
 
 :host ::ng-deep .sidebar-menu .ant-menu-item .ant-menu-item-icon {
   font-size: 18px;
-  color: #6b4832;
+  color: var(--warm-text-muted);
   margin-inline-end: 8px;
   transition: all 0.25s ease;
   opacity: 0.7;
@@ -101,7 +102,7 @@
 
 :host ::ng-deep .sidebar-menu .ant-menu-item-selected .ant-menu-item-icon,
 :host ::ng-deep .sidebar-menu .ant-menu-item:hover .ant-menu-item-icon {
-  color: #6b4832;
+  color: var(--warm-text-strong);
   opacity: 1;
   transform: scale(1.05);
 }
@@ -118,7 +119,7 @@
 .menu-label {
   font-weight: 600;
   font-size: 0.92rem;
-  color: #6b4832;
+  color: var(--warm-text-strong);
 }
 
 .sidebar-foot {
@@ -132,20 +133,20 @@
 .support-card {
   padding: 16px;
   border-radius: 18px;
-  background: rgba(107, 72, 50, 0.08);
-  border: 1px solid rgba(107, 72, 50, 0.12);
+  background: rgba(255, 244, 227, 0.65);
+  border: 1px solid rgba(216, 163, 95, 0.25);
   display: flex;
   flex-direction: column;
   gap: 10px;
-  color: #6b4832;
+  color: var(--warm-text-strong);
   backdrop-filter: blur(2px);
 }
 
 .support-card button[nz-button] {
   align-self: flex-start;
   border-radius: 18px;
-  border-color: rgba(107, 72, 50, 0.3);
-  color: #6b4832;
+  border-color: rgba(216, 163, 95, 0.4);
+  color: var(--warm-text-strong);
 }
 
 .support-title {
@@ -154,11 +155,86 @@
 
 .support-text {
   font-size: 0.84rem;
-  color: #6b4832ad;
+  color: var(--warm-text-muted);
 }
 
+/* Large tablet and below */
+@media (max-width: 1024px) {
+  .app-sidebar {
+    width: 220px;
+    padding: 18px 10px 24px;
+  }
+}
+
+/* Medium tablet */
 @media (max-width: 860px) {
   :host {
-    display: none;
+    height: auto;
+    z-index: 1005;
+  }
+
+  .app-sidebar {
+    width: min(280px, 85vw);
+    padding: 24px 20px 32px;
+    border-radius: 0 18px 18px 0;
+    border-right: none;
+    box-shadow: 0 18px 36px -18px rgba(70, 45, 15, 0.4);
+    transform: translateX(-110%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  :host-context(.sidebar-open) .app-sidebar {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .app-sidebar.collapsed {
+    width: min(280px, 85vw);
+    align-items: flex-start;
+  }
+
+  :host ::ng-deep .app-sidebar.collapsed .ant-menu-item {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* Small tablet */
+@media (max-width: 640px) {
+  .app-sidebar {
+    width: min(260px, 90vw);
+    padding: 20px 16px 28px;
+  }
+}
+
+/* Large mobile */
+@media (max-width: 480px) {
+  .app-sidebar {
+    width: min(240px, 95vw);
+    padding: 18px 14px 24px;
+    border-radius: 0 12px 12px 0;
+  }
+  
+  .sidebar-title {
+    font-size: 0.9rem;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 360px) {
+  .app-sidebar {
+    width: 100vw;
+    padding: 16px 12px 20px;
+    border-radius: 0;
+  }
+  
+  .sidebar-title {
+    font-size: 0.85rem;
+  }
+  
+  .support-text {
+    font-size: 0.8rem;
   }
 }
