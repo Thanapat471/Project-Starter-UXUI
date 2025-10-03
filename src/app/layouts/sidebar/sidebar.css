@@ -198,7 +198,6 @@
     width: min(300px, 85vw);
     height: calc(100vh - var(--navbar-height));
     border-right: none;
-    border-radius: 0 24px 24px 0;
     box-shadow: 0 28px 48px -24px rgba(36, 12, 4, 0.8);
     transform: translateX(-110%);
     opacity: 0;

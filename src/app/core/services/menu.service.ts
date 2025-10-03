@@ -15,6 +15,7 @@ export interface MenuItemDto {
   id: string | number;
   name?: string | null;
   category?: string | MenuCategoryDto | null;
+  categoryId?: string | number | null;
   description?: string | null;
   price?: number | string | null;
   status?: MenuItemStatus | null;
@@ -37,4 +38,23 @@ export class MenuService {
 
     return this.http.get<MenuItemDto[]>(this.baseUrl, { headers });
   }
+
+  createMenuItem(payload: CreateMenuItemPayload): Observable<MenuItemDto> {
+    const token = this.authService.getToken();
+    const headers = token
+      ? new HttpHeaders({
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        })
+      : undefined;
+
+    return this.http.post<MenuItemDto>(this.baseUrl, payload, { headers });
+  }
+}
+export interface CreateMenuItemPayload {
+  name: string;
+  categoryId: string;
+  price: number;
+  description?: string | null;
+  isAvailable?: boolean;
 }

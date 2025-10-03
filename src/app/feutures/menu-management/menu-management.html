@@ -4,7 +4,7 @@
       <h1>จัดการเมนู</h1>
       <p class="page-subtitle">เพิ่ม แก้ไข และจัดการรายการเมนู</p>
     </div>
-    <button type="button" class="add-menu-btn">
+    <button type="button" class="add-menu-btn" (click)="openCreateModal()">
       <span nz-icon nzType="plus"></span>
       เพิ่มเมนูใหม่
     </button>
@@ -29,7 +29,7 @@
         (change)="onSelectCategory(categorySelect.value)"
       >
         <option value="all">ทุกหมวดหมู่</option>
-        <option *ngFor="let category of categories()" [value]="category">{{ category }}</option>
+        <option *ngFor="let category of categories()" [value]="category.id">{{ category.name }}</option>
       </select>
     </label>
   </div>
@@ -69,6 +69,91 @@
     </ng-container>
   </section>
 </div>
+
+<nz-modal
+  nzClassName="menu-create-modal"
+  [nzVisible]="addModalOpen()"
+  [nzFooter]="null"
+  nzTitle="เพิ่มเมนูใหม่"
+  nzCentered
+  nzWidth="640"
+  [nzMaskClosable]="!submitting()"
+  (nzOnCancel)="closeCreateModal()"
+>
+  <ng-container *nzModalContent>
+    <p class="modal-subtitle">กรอกข้อมูลเมนูใหม่</p>
+    <form [formGroup]="addMenuForm" (ngSubmit)="submitCreateMenu()" class="add-menu-form" nz-form>
+      <label class="form-field form-field--full" nz-form-item>
+        <span class="form-label">ชื่อเมนู</span>
+        <input nz-input nzSize="large" formControlName="name" placeholder="เช่น กาแฟลาเต้" />
+        <span class="form-error" *ngIf="addMenuForm.controls.name.invalid && addMenuForm.controls.name.touched">
+          กรุณากรอกชื่อเมนู
+        </span>
+      </label>
+
+      <label class="form-field" nz-form-item>
+        <span class="form-label">หมวดหมู่</span>
+        <nz-select
+          formControlName="categoryId"
+          nzPlaceHolder="เลือกหมวดหมู่"
+          nzSize="large"
+          nzNotFoundContent="ไม่มีหมวดหมู่"
+          [nzDisabled]="!hasCategories()"
+        >
+          <nz-option
+            *ngFor="let category of categories()"
+            [nzLabel]="category.name"
+            [nzValue]="category.id"
+          ></nz-option>
+        </nz-select>
+        <span class="form-error" *ngIf="addMenuForm.controls.categoryId.invalid && addMenuForm.controls.categoryId.touched">
+          กรุณาเลือกหมวดหมู่
+        </span>
+        <span class="form-hint" *ngIf="!hasCategories()">
+          ยังไม่มีหมวดหมู่ในระบบ กรุณาสร้างหมวดหมู่ก่อน
+        </span>
+      </label>
+
+      <label class="form-field" nz-form-item>
+        <span class="form-label">ราคา (บาท)</span>
+        <nz-input-number
+          formControlName="price"
+          nzSize="large"
+          nzMin="0"
+          nzStep="1"
+          [nzFormatter]="priceFormatter"
+          [nzParser]="priceParser"
+        ></nz-input-number>
+        <span class="form-error" *ngIf="addMenuForm.controls.price.invalid && addMenuForm.controls.price.touched">
+          กรุณาระบุราคาให้ถูกต้อง
+        </span>
+      </label>
+
+      <label class="form-field form-field--full" nz-form-item>
+        <span class="form-label">รายละเอียด (ถ้ามี)</span>
+        <textarea
+          nz-input
+          formControlName="description"
+          rows="4"
+          placeholder="อธิบายเมนู..."
+        ></textarea>
+      </label>
+
+      <div class="form-submit-wrapper">
+        <button
+          nz-button
+          nzType="primary"
+          class="form-submit"
+          type="submit"
+          [disabled]="submitting() || addMenuForm.invalid || !hasCategories()"
+          [nzLoading]="submitting()"
+        >
+          เพิ่มเมนู
+        </button>
+      </div>
+    </form>
+  </ng-container>
+</nz-modal>
 
 <ng-template #loadingState>
   <div class="menu-state menu-state--loading">
