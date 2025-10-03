@@ -7,6 +7,7 @@ import { provideNzI18n, en_US } from 'ng-zorro-antd/i18n';
 import { provideNzIcons } from 'ng-zorro-antd/icon';
 import {
   PlusCircleOutline,
+  PlusOutline,
   DownloadOutline,
   SettingOutline,
   EllipsisOutline,
@@ -18,6 +19,9 @@ import {
   InboxOutline,
   LoadingOutline,
   WarningOutline,
+  SearchOutline,
+  EditOutline,
+  DeleteOutline,
   CoffeeOutline,
   LockOutline,
   UserOutline,
@@ -48,6 +52,7 @@ export const appConfig: ApplicationConfig = {
     provideNzI18n(en_US),
     provideNzIcons([
       PlusCircleOutline,
+      PlusOutline,
       DownloadOutline,
       SettingOutline,
       EllipsisOutline,
@@ -59,6 +64,9 @@ export const appConfig: ApplicationConfig = {
       InboxOutline,
       LoadingOutline,
       WarningOutline,
+      SearchOutline,
+      EditOutline,
+      DeleteOutline,
       CoffeeOutline,
       LockOutline,
       UserOutline,

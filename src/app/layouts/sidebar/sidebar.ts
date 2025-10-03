@@ -37,9 +37,8 @@ export class Sidebar {
     {
       label: 'จัดการเมนู',
       icon: 'coffee',
-      route: '/features/home'
-    },
-
+      route: '/features/menu'
+    }
   ];
 
   logout(): void {

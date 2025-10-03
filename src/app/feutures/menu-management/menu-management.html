@@ -1,0 +1,93 @@
+<div class="menu-page">
+  <header class="page-header">
+    <div>
+      <h1>จัดการเมนู</h1>
+      <p class="page-subtitle">เพิ่ม แก้ไข และจัดการรายการเมนู</p>
+    </div>
+    <button type="button" class="add-menu-btn">
+      <span nz-icon nzType="plus"></span>
+      เพิ่มเมนูใหม่
+    </button>
+  </header>
+
+  <div class="page-filters">
+    <label class="search-group">
+      <span nz-icon nzType="search"></span>
+      <input
+        #searchBox
+        type="search"
+        placeholder="ค้นหาเมนู..."
+        [value]="searchTerm()"
+        (input)="onSearch(searchBox.value)"
+      />
+    </label>
+
+    <label class="select-group">
+      <select
+        #categorySelect
+        [value]="selectedCategory()"
+        (change)="onSelectCategory(categorySelect.value)"
+      >
+        <option value="all">ทุกหมวดหมู่</option>
+        <option *ngFor="let category of categories()" [value]="category">{{ category }}</option>
+      </select>
+    </label>
+  </div>
+
+  <section class="menu-content">
+    <ng-container *ngIf="!loading(); else loadingState">
+      <ng-container *ngIf="!error(); else errorState">
+        <ng-container *ngIf="filteredMenuItems().length; else emptyState">
+          <div class="menu-grid">
+            <article class="menu-card" *ngFor="let item of filteredMenuItems(); trackBy: trackByMenuId">
+              <div class="menu-card__header">
+                <h3>{{ item.name }}</h3>
+                <span class="status-badge" [ngClass]="item.statusClass">{{ item.statusLabel }}</span>
+              </div>
+
+          <div class="menu-card__meta" *ngIf="item.category">
+            <span class="menu-category">{{ item.category }}</span>
+          </div>
+
+          <p class="menu-desc" *ngIf="item.description">{{ item.description }}</p>
+
+              <div class="menu-card__footer">
+                <span class="menu-price">{{ item.priceLabel }}</span>
+                <div class="menu-actions">
+                  <button type="button" class="menu-action menu-action--edit" aria-label="แก้ไขเมนู">
+                    <span nz-icon nzType="edit"></span>
+                  </button>
+                  <button type="button" class="menu-action menu-action--delete" aria-label="ลบเมนู">
+                    <span nz-icon nzType="delete"></span>
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </section>
+</div>
+
+<ng-template #loadingState>
+  <div class="menu-state menu-state--loading">
+    <span nz-icon nzType="loading"></span>
+    <p>กำลังโหลดรายการเมนู...</p>
+  </div>
+</ng-template>
+
+<ng-template #errorState>
+  <div class="menu-state menu-state--error">
+    <span nz-icon nzType="warning"></span>
+    <p>{{ error() }}</p>
+    <button type="button" class="menu-retry" (click)="reload()">ลองอีกครั้ง</button>
+  </div>
+</ng-template>
+
+<ng-template #emptyState>
+  <div class="menu-state menu-state--empty">
+    <span nz-icon nzType="inbox"></span>
+    <p>ยังไม่มีรายการเมนู</p>
+  </div>
+</ng-template>
