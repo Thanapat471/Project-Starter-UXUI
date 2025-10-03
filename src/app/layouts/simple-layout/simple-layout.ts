@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-simple-layout',
-  imports: [],
+  imports: [RouterOutlet],
   templateUrl: './simple-layout.html',
-  styleUrl: './simple-layout.css'
+  styleUrls: ['./simple-layout.css']
 })
 export class SimpleLayout {
 

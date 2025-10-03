@@ -6,6 +6,7 @@ import { Login } from './feutures/login/login';
 import { authGuard } from './core/guards/auth.guard';
 import { Table } from './feutures/table/table';
 import { CustomerMenuComponent } from './feutures/customer-menu/customer-menu.component';
+import { SimpleLayout } from './layouts/simple-layout/simple-layout';
 
 export const routes: Routes = [
 	{ path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -18,7 +19,11 @@ export const routes: Routes = [
 			{ path: 'home', component: Home },
 			{ path: 'dashboard', component: Dashboard },
 			{ path: 'table',component: Table },
-			{ path: 'customer-menu', component: CustomerMenuComponent }
 		]
-	}
+	},
+  { path: 'simplelayout', component: SimpleLayout,
+    children: [
+      			{ path: 'customer-menu', component: CustomerMenuComponent }
+    ]
+  }
 ];
