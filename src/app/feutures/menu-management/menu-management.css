@@ -205,12 +205,12 @@
 .form-submit-wrapper {
   grid-column: 1 / -1;
   display: flex;
-  justify-content: flex-end;
+  justify-content: stretch;
   margin-top: 8px;
 }
 
 .form-submit {
-  min-width: 240px;
+  width: 100%;
   min-height: 48px;
   border-radius: 50px !important;
   padding: 14px 28px !important;
@@ -233,18 +233,28 @@
 }
 
 .menu-create-modal .ant-modal-content {
-  border-radius: 40px;
-  padding: 36px 40px 40px;
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.98), rgba(255, 245, 232, 0.95));
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8);
+  border-radius: 80px !important;
+  padding: 40px 44px 44px;
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.98), rgba(255, 245, 232, 0.95)) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8) !important;
   backdrop-filter: blur(10px);
+  overflow: hidden !important;
+}
+
+.menu-create-modal .ant-modal {
+  border-radius: 80px !important;
+}
+
+.menu-create-modal .ant-modal-wrap {
+  border-radius: 80px !important;
 }
 
 .menu-create-modal .ant-modal-header {
   border-bottom: none;
   background: transparent;
-  padding: 0 40px 10px;
+  padding: 0 44px 10px;
   margin-bottom: 12px;
+  border-radius: 80px 80px 0 0 !important;
 }
 
 .menu-create-modal .ant-modal-title {
@@ -256,8 +266,8 @@
 
 .menu-create-modal .ant-modal-close {
   color: rgba(59, 28, 13, 0.6);
-  top: 22px;
-  right: 24px;
+  top: 26px;
+  right: 28px;
   border-radius: 50%;
   width: 32px;
   height: 32px;
@@ -273,7 +283,35 @@
 }
 
 .menu-create-modal .ant-modal-body {
-  padding: 16px 40px 0;
+  padding: 16px 44px 0;
+  border-radius: 0 0 80px 80px !important;
+}
+
+/* Additional selectors to ensure rounded corners */
+:host ::ng-deep .menu-create-modal .ant-modal-content {
+  border-radius: 80px !important;
+  overflow: hidden !important;
+}
+
+:host ::ng-deep .menu-create-modal .ant-modal {
+  border-radius: 80px !important;
+}
+
+/* Global modal override for extreme rounded corners */
+.menu-create-modal.ant-modal {
+  border-radius: 80px !important;
+}
+
+.menu-create-modal .ant-modal-wrap .ant-modal {
+  border-radius: 80px !important;
+}
+
+.menu-create-modal * {
+  border-radius: inherit;
+}
+
+.menu-create-modal .ant-modal-content * {
+  box-sizing: border-box;
 }
 
 .modal-subtitle {

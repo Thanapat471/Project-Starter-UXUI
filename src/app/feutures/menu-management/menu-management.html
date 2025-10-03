@@ -81,7 +81,6 @@
   (nzOnCancel)="closeCreateModal()"
 >
   <ng-container *nzModalContent>
-    <p class="modal-subtitle">กรอกข้อมูลเมนูใหม่</p>
     <form [formGroup]="addMenuForm" (ngSubmit)="submitCreateMenu()" class="add-menu-form" nz-form>
       <label class="form-field form-field--full" nz-form-item>
         <span class="form-label">ชื่อเมนู</span>
