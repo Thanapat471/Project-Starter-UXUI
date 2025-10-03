@@ -1,0 +1,141 @@
+<div class="payment-management-container">
+  <div class="header">
+    <h2>Payment Management</h2>
+    <button (click)="goBack()" class="btn-secondary">Back to Dashboard</button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">
+    <p>Loading...</p>
+  </div>
+
+  <!-- Table Selection (if no specific order) -->
+  <div *ngIf="!loading && !currentOrder && pendingTables.length > 0" class="table-selection">
+    <h3>Select Table for Payment</h3>
+    <div class="table-grid">
+      <button
+        *ngFor="let table of pendingTables"
+        class="table-card"
+        [class.selected]="selectedTable?.tableId === table.tableId"
+        (click)="selectTable(table)"
+      >
+        <h4>{{ table.tableCode }} - {{ table.tableName }}</h4>
+        <p>{{ table.orderCount }} order(s)</p>
+        <p class="total">Total: ฿{{ table.totalAmount }}</p>
+        <small>Last order: {{ table.lastOrderTime | date:'short' }}</small>
+      </button>
+    </div>
+  </div>
+
+  <!-- No Pending Orders -->
+  <div *ngIf="!loading && !currentOrder && pendingTables.length === 0" class="no-orders">
+    <p>No pending orders found.</p>
+  </div>
+
+  <!-- Payment Processing (when order or table is selected) -->
+  <div *ngIf="(currentOrder || selectedTable) && !loading" class="payment-section">
+
+    <!-- Order Summary -->
+    <div class="order-summary">
+      <h3>Order Summary</h3>
+      <div *ngIf="currentOrder">
+        <p><strong>Order #{{ currentOrder.id }}</strong></p>
+        <p>Status: {{ currentOrder.status }}</p>
+        <p>Source: {{ currentOrder.source }}</p>
+        <p *ngIf="currentOrder.table">Table: {{ currentOrder.table.code }}</p>
+      </div>
+      <div *ngIf="selectedTable && !currentOrder">
+        <p><strong>{{ selectedTable.tableCode }} - {{ selectedTable.tableName }}</strong></p>
+        <p>{{ selectedTable.orderCount }} order(s)</p>
+      </div>
+      <p class="total"><strong>Total Amount: ฿{{ currentOrder?.total || selectedTable?.totalAmount }}</strong></p>
+    </div>
+
+    <!-- Payment Method Selection -->
+    <div class="payment-methods">
+      <h3>Select Payment Method</h3>
+      <div class="method-buttons">
+        <button
+          [class.active]="paymentMethod === 'CASH'"
+          (click)="paymentMethod = 'CASH'"
+          class="method-btn"
+        >
+          Cash Payment
+        </button>
+        <button
+          [class.active]="paymentMethod === 'E_WALLET'"
+          (click)="paymentMethod = 'E_WALLET'"
+          class="method-btn"
+        >
+          PromptPay
+        </button>
+      </div>
+    </div>
+
+    <!-- Cash Payment -->
+    <div *ngIf="paymentMethod === 'CASH'" class="cash-payment">
+      <h4>Cash Payment</h4>
+      <div class="amount-input">
+        <label for="paidAmount">Amount Paid:</label>
+        <input
+          type="number"
+          id="paidAmount"
+          [(ngModel)]="paidAmount"
+          [min]="currentOrder?.total || selectedTable?.totalAmount"
+          step="0.01"
+        >
+      </div>
+      <div class="change-calculation" *ngIf="paidAmount > 0">
+        <p>Change: ฿{{ paidAmount - (currentOrder?.total || selectedTable?.totalAmount || 0) }}</p>
+      </div>
+      <button
+        (click)="processCashPayment()"
+        [disabled]="processingPayment || !validateCashAmount()"
+        class="btn-primary"
+      >
+        {{ processingPayment ? 'Processing...' : 'Process Cash Payment' }}
+      </button>
+    </div>
+
+    <!-- PromptPay Payment -->
+    <div *ngIf="paymentMethod === 'E_WALLET'" class="promptpay-payment">
+      <h4>PromptPay Payment</h4>
+
+      <div *ngIf="!showQRCode">
+        <button
+          (click)="generatePromptPay()"
+          [disabled]="processingPayment"
+          class="btn-primary"
+        >
+          {{ processingPayment ? 'Generating...' : 'Generate PromptPay QR' }}
+        </button>
+      </div>
+
+      <div *ngIf="showQRCode && promptPayData" class="qr-display">
+        <h5>Scan QR Code to Pay</h5>
+        <div class="qr-code">
+          <img [src]="promptPayData.qrCode" alt="PromptPay QR Code">
+        </div>
+        <p>Amount: ฿{{ promptPayData.amount }}</p>
+        <p>Phone: {{ promptPayData.promptpayPhone }}</p>
+        <p>Expires: {{ promptPayData.expiresIn }}</p>
+
+        <div class="qr-actions">
+          <button
+            (click)="confirmPromptPayPayment()"
+            [disabled]="processingPayment"
+            class="btn-success"
+          >
+            {{ processingPayment ? 'Confirming...' : 'Confirm Payment Received' }}
+          </button>
+          <button
+            (click)="showQRCode = false; promptPayData = null"
+            class="btn-secondary"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

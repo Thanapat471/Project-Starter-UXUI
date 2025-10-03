@@ -44,6 +44,11 @@ export class Sidebar {
       icon: 'coffee',
       route: '/features/home'
     },
+    {
+      label: 'ชำระเงิน',
+      icon: 'dollar',
+      route: '/features/payment'
+    }
   ];
 
   logout(): void {
