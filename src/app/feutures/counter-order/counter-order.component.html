@@ -1,0 +1,181 @@
+<div class="counter-order-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <button nz-button nzType="text" class="back-btn" (click)="goBack()">
+        <nz-icon nzType="left" nzTheme="outline"></nz-icon>
+        กลับ
+      </button>
+      <div class="header-content">
+        <h1 class="page-title">สั่งหน้าเคาน์เตอร์</h1>
+        <p class="page-subtitle">เลือกเมนูสำหรับลูกค้า</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Left Panel - Menu -->
+    <div class="menu-panel">
+      <!-- Search Section -->
+      <div class="search-section">
+        <nz-input-group nzSize="large" [nzSuffix]="searchIcon">
+          <input 
+            type="text" 
+            nz-input 
+            placeholder="ค้นหาเมนู..." 
+            [ngModel]="searchTerm()"
+            (ngModelChange)="onSearch($event)"
+          />
+        </nz-input-group>
+        <ng-template #searchIcon>
+          <nz-icon nzType="search" nzTheme="outline"></nz-icon>
+        </ng-template>
+      </div>
+
+      <!-- Category Filters -->
+      <div class="category-filters">
+        <nz-tag 
+          *ngFor="let category of categories"
+          [nzColor]="selectedCategory() === category ? '#8b5a3c' : 'default'"
+          (click)="selectCategory(category)"
+          class="category-tag">
+          {{ category }}
+        </nz-tag>
+      </div>
+
+      <!-- Menu Items Grid -->
+      <div class="menu-grid">
+        <div 
+          *ngFor="let item of filteredMenuItems" 
+          class="menu-item-card">
+          
+          <!-- Menu Item Image -->
+          <div class="menu-item-image">
+            <img [src]="item.imageUrl || 'https://images.unsplash.com/photo-1546173159-315724a31696?w=300&h=200&fit=crop'" 
+                 [alt]="item.name"
+                 (error)="onImageError($event)" />
+          </div>
+          
+          <div class="menu-item-content">
+            <div class="menu-item-info">
+              <h3 class="item-name">{{ item.name }}</h3>
+              <p class="item-description">{{ item.description }}</p>
+              <div class="item-price">฿{{ item.price }}</div>
+            </div>
+            
+            <div class="menu-item-actions">
+              <button 
+                nz-button 
+                nzType="primary" 
+                nzShape="circle" 
+                class="add-btn"
+                (click)="addToCart(item)">
+                <nz-icon nzType="plus" nzTheme="outline"></nz-icon>
+              </button>
+              
+              <button 
+                nz-button 
+                nzType="text" 
+                nzShape="circle" 
+                class="options-btn">
+                <nz-icon nzType="ellipsis" nzTheme="outline"></nz-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel - Cart (Fixed) -->
+    <div class="cart-panel">
+      <div class="cart-container">
+        <!-- Cart Header -->
+        <div class="cart-header">
+          <div class="cart-icon-wrapper">
+            <nz-icon nzType="shopping-cart" nzTheme="outline"></nz-icon>
+          </div>
+          <div class="cart-title-section">
+            <h2 class="cart-title">ตะกร้าสินค้า</h2>
+            <div class="cart-count" *ngIf="cartItemCount > 0">({{ cartItemCount }})</div>
+          </div>
+        </div>
+
+        <!-- Cart Items -->
+        <div class="cart-content">
+          <div *ngIf="cart().length === 0" class="empty-cart">
+            <div class="empty-cart-icon">
+              <nz-icon nzType="shopping-cart" nzTheme="outline"></nz-icon>
+            </div>
+            <p>ไม่มีสินค้าในตะกร้า</p>
+          </div>
+
+          <div *ngIf="cart().length > 0" class="cart-items">
+            <div *ngFor="let item of cart()" class="cart-item">
+              <div class="item-main-info">
+                <div class="item-details">
+                  <div class="item-name">{{ item.name }}</div>
+                  <div class="item-unit-price">฿{{ item.price }} × {{ item.quantity }}</div>
+                </div>
+                <button 
+                  nz-button 
+                  nzType="text" 
+                  nzSize="small"
+                  nzDanger
+                  class="remove-btn"
+                  (click)="removeFromCart(item.id)">
+                  <nz-icon nzType="delete" nzTheme="outline"></nz-icon>
+                </button>
+              </div>
+
+              <div class="item-controls">
+                <div class="quantity-controls">
+                  <button 
+                    nz-button 
+                    nzType="text" 
+                    nzSize="small"
+                    class="qty-btn"
+                    (click)="updateCartItemQuantity(item.id, item.quantity - 1)">
+                    <nz-icon nzType="minus" nzTheme="outline"></nz-icon>
+                  </button>
+                  <span class="quantity">{{ item.quantity }}</span>
+                  <button 
+                    nz-button 
+                    nzType="text" 
+                    nzSize="small"
+                    class="qty-btn"
+                    (click)="updateCartItemQuantity(item.id, item.quantity + 1)">
+                    <nz-icon nzType="plus" nzTheme="outline"></nz-icon>
+                  </button>
+                </div>
+                <div class="item-total">฿{{ item.total }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cart Footer -->
+        <div class="cart-footer" *ngIf="cart().length > 0">
+          <div class="total-section">
+            <div class="total-label">รวม</div>
+            <div class="total-amount">฿{{ cartTotal }}</div>
+          </div>
+          
+          <div class="discount-section">
+            <div class="discount-label">ยอดรวมทั้งหมด</div>
+            <div class="discount-amount">฿{{ cartTotal }}</div>
+          </div>
+
+          <button 
+            nz-button 
+            nzType="primary" 
+            nzBlock
+            nzSize="large"
+            class="checkout-btn">
+            ดำเนินการชำระเงิน
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

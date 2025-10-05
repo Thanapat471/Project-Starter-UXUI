@@ -11,6 +11,7 @@ import { QrDebugComponent } from './feutures/qr-debug/qr-debug.component';
 import { SimpleLayout } from './layouts/simple-layout/simple-layout';
 import { NotFound } from './feutures/not-found/not-found';
 import { PaymentManagementComponent } from './feutures/payment-management/payment-management.component';
+import { CounterOrderComponent } from './feutures/counter-order/counter-order.component';
 
 export const routes: Routes = [
 	{ path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -25,7 +26,8 @@ export const routes: Routes = [
 			{ path: 'dashboard', component: Dashboard },
 			{ path: 'menu', component: MenuManagement },
 			{ path: 'table',component: Table },
-			{ path: 'payment', component: PaymentManagementComponent }
+			{ path: 'payment', component: PaymentManagementComponent },
+			{ path: 'counter-order', component: CounterOrderComponent }
 		]
 	},
   {
