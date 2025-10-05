@@ -1,7 +1,20 @@
 <div class="dashboard-page">
   <section class="page-header">
-    <h1>แดชบอร์ด</h1>
-    <p class="page-subtitle">ภาพรวมการทำงานของระบบ</p>
+    <div>
+      <h1>แดชบอร์ด</h1>
+      <p class="page-subtitle">ภาพรวมการทำงานของระบบ</p>
+    </div>
+    <div class="header-actions">
+      <button 
+        nz-button 
+        nzType="primary" 
+        nzSize="large"
+        class="counter-order-btn" 
+        (click)="navigateToCounterOrder()">
+        <span nz-icon nzType="shopping-cart"></span>
+        สั่งหน้าเคาน์เตอร์
+      </button>
+    </div>
   </section>
 
   <section class="metrics-grid">

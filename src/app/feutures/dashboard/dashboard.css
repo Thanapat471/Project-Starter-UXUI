@@ -49,6 +49,9 @@
   box-shadow: 0 8px 32px rgba(92, 61, 46, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .page-header h1 {
@@ -65,6 +68,40 @@
   margin: 6px 0 0;
   color: rgba(59, 28, 13, 0.7);
   font-size: 0.95rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.counter-order-btn {
+  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  padding: 12px 24px !important;
+  height: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  box-shadow: 0 4px 16px rgba(92, 61, 46, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.counter-order-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(92, 61, 46, 0.4) !important;
+  background: linear-gradient(135deg, #5c3d2e, #4b2a18) !important;
+}
+
+.counter-order-btn:active {
+  transform: translateY(0) !important;
+}
+
+.counter-order-btn span[nz-icon] {
+  font-size: 16px;
 }
 
 .metrics-grid {
@@ -390,6 +427,22 @@
 }
 
 @media (max-width: 720px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .counter-order-btn {
+    width: 100%;
+    justify-content: center !important;
+  }
+
   .orders-card__header {
     flex-direction: column;
     align-items: flex-start;

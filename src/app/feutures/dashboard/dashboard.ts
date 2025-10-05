@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 
 import { OrderDto, OrderStatus, OrdersService } from '../../core/services/orders.service';
 import { Order } from '../../shared/models/menu.model';
@@ -32,13 +34,14 @@ interface MetricCard {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, NzIconModule],
+  imports: [CommonModule, NzIconModule, NzButtonModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
 export class Dashboard {
   private readonly ordersService = inject(OrdersService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
 
   private readonly statusMeta: Record<OrderStatus, { label: string; className: string }> = {
     PENDING: { label: 'รอดำเนินการ', className: 'status--warning' },
@@ -174,5 +177,9 @@ export class Dashboard {
       itemsSummary: itemsSummary || 'ไม่มีรายการเมนู',
       displayTime: new Date(order.createdAt)
     };
+  }
+
+  navigateToCounterOrder(): void {
+    this.router.navigate(['/features/counter-order']);
   }
 }
