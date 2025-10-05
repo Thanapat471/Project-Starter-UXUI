@@ -42,8 +42,8 @@ export class Login {
   readonly submitting = signal(false);
   readonly authError = signal<string | null>(null);
   readonly loginForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
+    email: ['staff@example.com', [Validators.required, Validators.email]],
+    password: ['Passw0rd!', [Validators.required, Validators.minLength(6)]],
     remember: [true]
   });
   submit(): void {
