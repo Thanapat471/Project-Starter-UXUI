@@ -1,52 +1,32 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { CreateOrderRequest, Order } from '../../shared/models/menu.model';
 
-import { AuthService } from './auth.service';
-
-export type OrderStatus = 'PENDING' | 'READY' | 'COMPLETED' | 'CANCELLED';
-
-export interface OrderItemDto {
-  id: string;
-  orderId: string;
-  menuItemId: string;
-  menuItem: {
-    id: string;
-    name: string;
-    price: number;
-  } | null;
-  quantity: number;
-  unitPrice: number;
-  totalPrice: number;
-  options: unknown[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface OrderDto {
-  id: string;
-  status: OrderStatus;
-  totalAmount: number;
-  source: 'COUNTER' | 'TABLE';
-  notes: string | null;
-  table: string | null;
-  orderItems: OrderItemDto[];
-  createdAt: string;
-  updatedAt: string;
-}
+// Export types for use in components
+export type OrderDto = Order;
+export type OrderStatus = 'PENDING' | 'IN_PROGRESS' | 'READY' | 'SERVED';
+export type { Order, CreateOrderRequest };
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
   private readonly http = inject(HttpClient);
-  private readonly authService = inject(AuthService);
-  private readonly baseUrl = 'http://localhost:8080/api/orders';
+  private readonly baseUrl = 'http://localhost:8080/api';
 
-  getOrders(): Observable<OrderDto[]> {
-    const token = this.authService.getToken();
-    const headers = token
-      ? new HttpHeaders({ Authorization: `Bearer ${token}` })
-      : undefined;
+  createOrder(order: CreateOrderRequest): Observable<Order> {
+    return this.http.post<Order>(`${this.baseUrl}/orders`, order);
+  }
 
-    return this.http.get<OrderDto[]>(this.baseUrl, { headers });
+  getOrders(): Observable<Order[]> {
+    return this.http.get<Order[]>(`${this.baseUrl}/orders`);
+  }
+
+  updateOrderStatus(id: number, status: string): Observable<Order> {
+    return this.http.patch<Order>(`${this.baseUrl}/orders/${id}/status`, { status });
+  }
+
+  // Counter ordering with immediate checkout
+  checkout(checkoutData: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/orders/checkout`, checkoutData);
   }
 }

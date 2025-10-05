@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 
 import { OrderDto, OrderStatus, OrdersService } from '../../core/services/orders.service';
+import { Order } from '../../shared/models/menu.model';
 
 interface DashboardOrder {
   id: string;
@@ -41,9 +42,9 @@ export class Dashboard {
 
   private readonly statusMeta: Record<OrderStatus, { label: string; className: string }> = {
     PENDING: { label: 'กำลังเตรียม', className: 'status--warning' },
+    IN_PROGRESS: { label: 'กำลังดำเนินการ', className: 'status--warning' },
     READY: { label: 'พร้อมเสิร์ฟ', className: 'status--success' },
-    COMPLETED: { label: 'เสร็จสิ้น', className: 'status--neutral' },
-    CANCELLED: { label: 'ยกเลิก', className: 'status--danger' }
+    SERVED: { label: 'เสิร์ฟแล้ว', className: 'status--neutral' }
   };
 
   private readonly tablesTotal = 8;
@@ -113,12 +114,12 @@ export class Dashboard {
       .getOrders()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: response => {
-          const mapped = response.map(order => this.mapOrder(order));
+        next: (response: OrderDto[]) => {
+          const mapped = response.map((order: OrderDto) => this.mapOrder(order));
           this.orders.set(mapped);
           this.loading.set(false);
         },
-        error: error => {
+        error: (error: any) => {
           const message =
             error.status === 0
               ? 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'
@@ -130,30 +131,33 @@ export class Dashboard {
   }
 
   private mapOrder(order: OrderDto): DashboardOrder {
-    const metadata = this.statusMeta[order.status] ?? this.statusMeta.PENDING;
-    const itemsSummary = order.orderItems
-      .map(item => `${item.menuItem?.name ?? 'เมนู'} x${item.quantity}`)
+    const metadata = this.statusMeta[order.status] ?? this.statusMeta['PENDING'];
+    const itemsSummary = order.items
+      .map((item: Order['items'][0]) => `${item.menuItem?.name ?? 'เมนู'} x${item.quantity}`)
       .join(', ');
 
     const hasAssignedTable = Boolean(order.table);
+    const tableIdentifier = order.table?.name ?? order.table?.code ?? (order.table?.id != null ? String(order.table.id) : null);
     const tableLabel = hasAssignedTable
-      ? `โต๊ะ ${order.table}`
+      ? tableIdentifier
+        ? `โต๊ะ ${tableIdentifier}`
+        : null
       : order.source === 'COUNTER'
         ? 'รับที่เคาน์เตอร์'
         : null;
 
     return {
-      id: order.id,
+      id: String(order.id),
       code: `#ord${order.id}`,
       status: order.status,
       statusLabel: metadata.label,
       statusClass: metadata.className,
-      totalAmount: order.totalAmount,
+      totalAmount: order.total,
       tableLabel,
       hasAssignedTable,
-      note: order.notes,
+      note: order.notes ?? null,
       itemsSummary: itemsSummary || 'ไม่มีรายการเมนู',
-      displayTime: new Date(order.updatedAt ?? order.createdAt)
+      displayTime: new Date(order.createdAt)
     };
   }
 }

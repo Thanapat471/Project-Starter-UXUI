@@ -8,7 +8,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzCardModule } from 'ng-zorro-antd/card';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { AuthService } from '../../core/services/auth.service';
@@ -26,7 +26,8 @@ import { NzMessageService } from 'ng-zorro-antd/message';
     NzCheckboxModule,
     NzCardModule,
     NzIconModule,
-    NzTypographyModule
+    NzTypographyModule,
+    RouterModule
   ],
   providers: [NzMessageService],
   templateUrl: './login.html',

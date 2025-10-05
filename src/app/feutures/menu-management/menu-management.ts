@@ -11,7 +11,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { CreateMenuItemPayload, MenuItemDto, MenuService } from '../../core/services/menu.service';
+import { CreateMenuItemPayload, MenuItemDto, MenuService, MenuCategory } from '../../core/services/menu.service';
 
 interface MenuCard {
   id: string;
@@ -59,6 +59,8 @@ export class MenuManagement {
   readonly error = signal<string | null>(null);
   readonly addModalOpen = signal(false);
   readonly submitting = signal(false);
+  readonly categoriesLoading = signal(false);
+  readonly categoriesError = signal<string | null>(null);
   readonly priceFormatter = (value: number | string | null): string => {
     if (value === null || value === undefined || value === '') {
       return '฿0';
@@ -78,20 +80,9 @@ export class MenuManagement {
   };
 
   private readonly menuItems = signal<MenuCard[]>([]);
+  readonly categories = signal<CategoryOption[]>([]);
   readonly searchTerm = signal('');
   readonly selectedCategory = signal('all');
-
-  readonly categories = computed<CategoryOption[]>(() => {
-    const map = new Map<string, string>();
-    this.menuItems().forEach(item => {
-      if (item.categoryId && item.category) {
-        map.set(item.categoryId, item.category);
-      }
-    });
-    return Array.from(map.entries())
-      .map(([id, name]) => ({ id, name }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-  });
 
   readonly hasCategories = computed(() => this.categories().length > 0);
 
@@ -118,6 +109,7 @@ export class MenuManagement {
 
   constructor() {
     this.fetchMenuItems();
+    this.fetchCategories();
   }
 
   onSearch(term: string): void {
@@ -209,12 +201,43 @@ export class MenuManagement {
       });
   }
 
-  private mapMenuItem(item: MenuItemDto): MenuCard {
-    const normalizedStatus = (item.status ?? (item.isAvailable ? 'AVAILABLE' : 'UNAVAILABLE'))
-      ?.toString()
-      .toUpperCase();
+  private fetchCategories(): void {
+    this.categoriesLoading.set(true);
+    this.categoriesError.set(null);
 
-    const isAvailable = normalizedStatus === 'AVAILABLE' || normalizedStatus === 'ACTIVE' || item.isAvailable === true;
+    this.menuService
+      .getMenuCategories()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response: MenuCategory[]) => {
+          const mapped = response.map(category => ({
+            id: String(category.id),
+            name: category.name || 'ไม่ระบุชื่อ'
+          }));
+          this.categories.set(mapped);
+          this.categoriesLoading.set(false);
+        },
+        error: (error: any) => {
+          const message =
+            error.status === 0
+              ? 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'
+              : 'เกิดข้อผิดพลาดในการดึงข้อมูลหมวดหมู่';
+          this.categoriesError.set(message);
+          this.categoriesLoading.set(false);
+          console.error('Failed to fetch categories:', error);
+        }
+      });
+  }
+
+  private mapMenuItem(item: MenuItemDto): MenuCard {
+    const rawStatus = (item as MenuItemDto & { status?: unknown }).status;
+    const normalizedStatus = rawStatus != null
+      ? String(rawStatus).trim().toUpperCase()
+      : null;
+
+    const isAvailable = normalizedStatus != null
+      ? normalizedStatus === 'AVAILABLE' || normalizedStatus === 'ACTIVE'
+      : item.isAvailable === true;
 
     const priceValue = typeof item.price === 'number' ? item.price : Number(item.price ?? 0);
     const price = Number.isFinite(priceValue) ? priceValue : 0;

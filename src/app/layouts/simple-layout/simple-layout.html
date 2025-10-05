@@ -1,1 +1,142 @@
-<p>simple-layout works!</p>
+<div class="bg-login-theme min-h-screen">
+  <!-- Fixed Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-brown-200 shadow-sm">
+    <div class="px-4 py-3">
+      <div class="flex items-center justify-between">
+        <!-- Restaurant Info -->
+        <div class="flex items-center space-x-3">
+          <div class="restaurant-logo w-10 h-10 rounded-lg flex items-center justify-center">
+            <i class="fas fa-coffee text-white text-lg"></i>
+          </div>
+          <div>
+            <h1 class="restaurant-name text-lg font-bold">CaféPOS</h1>
+            <p class="table-info text-xs">Table #5 • Scan & Order</p>
+          </div>
+        </div>
+
+        <!-- Cart Button -->
+        <button
+          class="cart-button relative text-white px-4 py-2 rounded-full font-medium transition-all flex items-center space-x-2"
+          (click)="openCartModal()"
+        >
+          <i class="fas fa-shopping-cart"></i>
+          <span class="hidden sm:inline">Cart</span>
+          <!-- Cart Badge -->
+          <span
+            *ngIf="cartCount > 0"
+            class="cart-badge absolute -top-2 -right-2 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold"
+          >
+            {{ cartCount }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content with top padding for fixed header -->
+  <main class="pt-20">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Cart Modal -->
+  <div
+    *ngIf="showCartModal"
+    class="cart-modal-overlay fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4"
+    (click)="closeCartModal()"
+    role="presentation"
+  >
+    <div
+      class="cart-modal bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
+      (click)="$event.stopPropagation()"
+      role="dialog"
+      aria-modal="true"
+      aria-label="หน้าต่างตะกร้าสินค้า"
+    >
+      <!-- Modal Header -->
+      <div class="modal-header bg-white text-gray-800 p-4 border-b border-gray-200">
+        <h2 class="text-xl font-bold text-gray-800">
+          Your Order
+        </h2>
+        <button
+          (click)="closeCartModal()"
+          class="text-gray-400 hover:text-gray-600 transition-colors p-1"
+        >
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Cart Items -->
+      <div class="cart-items max-h-96 overflow-y-auto">
+        <div *ngIf="cartItems.length === 0" class="empty-cart text-center py-12">
+          <i class="fas fa-shopping-basket text-6xl text-gray-300 mb-4"></i>
+          <p class="text-gray-500 text-lg">Your cart is empty</p>
+          <p class="text-gray-400 text-sm mt-2">Add some delicious items to get started!</p>
+        </div>
+
+        <div *ngFor="let item of cartItems" class="cart-item flex items-center gap-4 p-4 border-b border-gray-100 dark:border-gray-700">
+          <!-- Item Image -->
+          <div class="item-image w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+            <img [src]="item.image" [alt]="item.name" class="w-full h-full object-cover">
+          </div>
+
+          <!-- Item Details -->
+          <div class="item-details flex-1 min-w-0">
+            <h4 class="item-name font-semibold text-gray-800 dark:text-white text-base mb-1">
+              {{ item.name }}
+            </h4>
+            <p class="item-price font-bold text-lg" style="color: #5c3d2e;">
+              ฿{{ item.price }}
+            </p>
+          </div>
+
+          <!-- Quantity Controls -->
+          <div class="quantity-controls flex items-center gap-3">
+            <button
+              (click)="updateCartItemQuantity(item.id, item.quantity - 1)"
+              class="qty-btn w-10 h-10 rounded-full flex items-center justify-center transition-all"
+              style="background-color: #f7f3f0; border: 2px solid #94694c; color: #5c3d2e;"
+            >
+              <i class="fas fa-minus text-sm"></i>
+            </button>
+
+            <span class="quantity font-bold text-lg min-w-[2rem] text-center" style="color: #5c3d2e;">
+              {{ item.quantity }}
+            </span>
+
+            <button
+              (click)="updateCartItemQuantity(item.id, item.quantity + 1)"
+              class="qty-btn text-white w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-md hover:shadow-lg"
+              style="background-color: #94694c;"
+            >
+              <i class="fas fa-plus text-sm"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart Footer -->
+      <div *ngIf="cartItems.length > 0" class="cart-footer p-4 bg-gray-50 dark:bg-gray-700">
+                <!-- Total -->
+        <div class="total-section flex items-center justify-between mb-6 pb-4 border-b border-gray-200 dark:border-gray-600">
+          <span class="total-label text-xl font-semibold text-gray-800 dark:text-white">
+            Total:
+          </span>
+          <span class="total-amount text-2xl font-bold" style="color: #5c3d2e;">
+            ฿{{ cartTotal.toFixed(0) }}
+          </span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button
+            class="order-btn w-full py-4 rounded-2xl font-bold text-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-white"
+            style="background: linear-gradient(135deg, #94694c, #5c3d2e);"
+          >
+            <i class="fas fa-utensils text-lg"></i>
+            Place Order
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,60 +1,35 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { MenuItem, MenuCategory } from '../../shared/models/menu.model';
 
-import { AuthService } from './auth.service';
-
-export type MenuItemStatus = 'AVAILABLE' | 'UNAVAILABLE' | 'OUT_OF_STOCK' | string;
-
-export interface MenuCategoryDto {
-  id: string | number;
-  name?: string | null;
-}
-
-export interface MenuItemDto {
-  id: string | number;
-  name?: string | null;
-  category?: string | MenuCategoryDto | null;
-  categoryId?: string | number | null;
-  description?: string | null;
-  price?: number | string | null;
-  status?: MenuItemStatus | null;
-  isAvailable?: boolean | null;
-  createdAt?: string;
-  updatedAt?: string;
-}
+// Export types for use in components
+export type MenuItemDto = MenuItem;
+export type CreateMenuItemPayload = Partial<MenuItem>;
+export type { MenuItem, MenuCategory };
 
 @Injectable({ providedIn: 'root' })
 export class MenuService {
   private readonly http = inject(HttpClient);
-  private readonly authService = inject(AuthService);
-  private readonly baseUrl = 'http://localhost:8080/api/menu';
+  private readonly baseUrl = 'http://localhost:8080/api';
 
-  getMenuItems(): Observable<MenuItemDto[]> {
-    const token = this.authService.getToken();
-    const headers = token
-      ? new HttpHeaders({ Authorization: `Bearer ${token}` })
-      : undefined;
-
-    return this.http.get<MenuItemDto[]>(this.baseUrl, { headers });
+  getMenuItems(): Observable<MenuItem[]> {
+    return this.http.get<MenuItem[]>(`${this.baseUrl}/menu`);
   }
 
-  createMenuItem(payload: CreateMenuItemPayload): Observable<MenuItemDto> {
-    const token = this.authService.getToken();
-    const headers = token
-      ? new HttpHeaders({
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        })
-      : undefined;
-
-    return this.http.post<MenuItemDto>(this.baseUrl, payload, { headers });
+  getMenuCategories(): Observable<MenuCategory[]> {
+    return this.http.get<MenuCategory[]>(`${this.baseUrl}/menu-categories`);
   }
-}
-export interface CreateMenuItemPayload {
-  name: string;
-  categoryId: string;
-  price: number;
-  description?: string | null;
-  isAvailable?: boolean;
+
+  createMenuItem(item: Partial<MenuItem>): Observable<MenuItem> {
+    return this.http.post<MenuItem>(`${this.baseUrl}/menu`, item);
+  }
+
+  updateMenuItem(id: string, item: Partial<MenuItem>): Observable<MenuItem> {
+    return this.http.put<MenuItem>(`${this.baseUrl}/menu/${id}`, item);
+  }
+
+  deleteMenuItem(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/menu/${id}`);
+  }
 }

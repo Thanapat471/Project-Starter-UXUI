@@ -1,0 +1,218 @@
+<div class="table-management">
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1 class="title">จัดการโต๊ะ</h1>
+      <p class="subtitle">เพิ่ม แก้ไข และจัดการโต๊ะพร้อม QR Code</p>
+    </div>
+    <button nz-button nzType="primary" nzSize="large" class="add-button" (click)="showAddModal()">
+      <span nz-icon nzType="plus" nzTheme="outline"></span>
+      เพิ่มโต๊ะใหม่
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div nz-row [nzGutter]="16" class="stats-container">
+    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="12" [nzLg]="12" [nzXl]="12">
+      <nz-card class="stat-card stat-available">
+        <div class="stat-content">
+          <div>
+            <div class="stat-label">โต๊ะว่าง</div>
+            <div class="stat-value">{{ stats.available }}</div>
+          </div>
+          <span nz-icon nzType="user" nzTheme="outline" class="stat-icon"></span>
+        </div>
+      </nz-card>
+    </div>
+    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="12" [nzLg]="12" [nzXl]="12">
+      <nz-card class="stat-card stat-in-use">
+        <div class="stat-content">
+          <div>
+            <div class="stat-label">กำลังใช้งาน</div>
+            <div class="stat-value">{{ stats.inUse }}</div>
+          </div>
+          <span nz-icon nzType="user" nzTheme="outline" class="stat-icon"></span>
+        </div>
+      </nz-card>
+    </div>
+  </div>
+
+  <!-- Table Grid -->
+  <div nz-row [nzGutter]="[16, 16]" class="tables-grid">
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6" [nzXl]="6" *ngFor="let table of tables">
+      <nz-card [ngClass]="getCardClass(table.status)" class="table-card">
+        <div class="table-header">
+          <h3 class="table-name">{{ table.name }}</h3>
+          <nz-badge 
+            [nzText]="getStatusText(table.status)" 
+            [nzColor]="getStatusColor(table.status)"
+            class="status-badge">
+          </nz-badge>
+        </div>
+        
+        <div class="table-info">
+          <span nz-icon nzType="user" nzTheme="outline"></span>
+          <span>{{ table.seats }} ที่นั่ง</span>
+        </div>
+
+        <div class="table-actions">
+          <button 
+            nz-button 
+            nzType="default" 
+            class="action-btn qr-btn"
+            (click)="downloadQR(table)">
+            <span nz-icon nzType="download" nzTheme="outline"></span>
+            ดาวน์โหลด QR
+          </button>
+          <div class="action-group">
+            <button 
+              nz-button 
+              nzType="text" 
+              class="icon-btn"
+              (click)="showEditModal(table)">
+              <span nz-icon nzType="edit" nzTheme="outline"></span>
+            </button>
+            <button 
+              nz-button 
+              nzType="text" 
+              nzDanger
+              class="icon-btn"
+              (click)="deleteTable(table)">
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+            </button>
+          </div>
+        </div>
+      </nz-card>
+    </div>
+  </div>
+</div>
+
+<!-- Add Table Modal -->
+<nz-modal
+  [(nzVisible)]="isAddModalVisible"
+  nzTitle="เพิ่มโต๊ะใหม่"
+  [nzFooter]="modalFooter"
+  (nzOnCancel)="handleAddCancel()"
+  nzWidth="500px">
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="addTableForm" nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label nzRequired>รหัสโต๊ะ</nz-form-label>
+        <nz-form-control nzErrorTip="กรุณากรอกรหัสโต๊ะ">
+          <input 
+            nz-input 
+            formControlName="code" 
+            placeholder="เช่น T-001"
+            [disabled]="isSubmitting" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>ชื่อโต๊ะ</nz-form-label>
+        <nz-form-control nzErrorTip="กรุณากรอกชื่อโต๊ะ">
+          <input 
+            nz-input 
+            formControlName="name" 
+            placeholder="เช่น หน้าต่าง"
+            [disabled]="isSubmitting" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>จำนวนที่นั่ง</nz-form-label>
+        <nz-form-control nzErrorTip="กรุณากรอกจำนวนที่นั่ง">
+          <nz-input-number
+            formControlName="seats"
+            [nzMin]="1"
+            [nzMax]="20"
+            [nzStep]="1"
+            [disabled]="isSubmitting"
+            style="width: 100%">
+          </nz-input-number>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+
+  <ng-template #modalFooter>
+    <button 
+      nz-button 
+      nzType="default" 
+      (click)="handleAddCancel()"
+      [disabled]="isSubmitting">
+      ยกเลิก
+    </button>
+    <button 
+      nz-button 
+      nzType="primary" 
+      (click)="handleAddSubmit()"
+      [nzLoading]="isSubmitting">
+      เพิ่มโต๊ะ
+    </button>
+  </ng-template>
+</nz-modal>
+
+<!-- Edit Table Modal -->
+<nz-modal
+  [(nzVisible)]="isEditModalVisible"
+  nzTitle="แก้ไขข้อมูลโต๊ะ"
+  [nzFooter]="editModalFooter"
+  (nzOnCancel)="handleEditCancel()"
+  nzWidth="500px">
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="editTableForm" nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label nzRequired>รหัสโต๊ะ</nz-form-label>
+        <nz-form-control nzErrorTip="กรุณากรอกรหัสโต๊ะ">
+          <input 
+            nz-input 
+            formControlName="code" 
+            placeholder="เช่น T-001"
+            [disabled]="isSubmitting" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>ชื่อโต๊ะ</nz-form-label>
+        <nz-form-control nzErrorTip="กรุณากรอกชื่อโต๊ะ">
+          <input 
+            nz-input 
+            formControlName="name" 
+            placeholder="เช่น หน้าต่าง"
+            [disabled]="isSubmitting" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>จำนวนที่นั่ง</nz-form-label>
+        <nz-form-control nzErrorTip="กรุณากรอกจำนวนที่นั่ง">
+          <nz-input-number
+            formControlName="seats"
+            [nzMin]="1"
+            [nzMax]="20"
+            [nzStep]="1"
+            [disabled]="isSubmitting"
+            style="width: 100%">
+          </nz-input-number>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+
+  <ng-template #editModalFooter>
+    <button 
+      nz-button 
+      nzType="default" 
+      (click)="handleEditCancel()"
+      [disabled]="isSubmitting">
+      ยกเลิก
+    </button>
+    <button 
+      nz-button 
+      nzType="primary" 
+      (click)="handleEditSubmit()"
+      [nzLoading]="isSubmitting">
+      บันทึก
+    </button>
+  </ng-template>
+</nz-modal>

@@ -38,6 +38,16 @@ export class Sidebar {
       label: 'จัดการเมนู',
       icon: 'coffee',
       route: '/features/menu'
+    },
+    {
+      label: 'จัดการโต๊ะ',
+      icon: 'coffee',
+      route: '/features/table'
+    },
+    {
+      label: 'ชำระเงิน',
+      icon: 'dollar',
+      route: '/features/payment'
     }
   ];
 
