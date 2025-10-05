@@ -6,7 +6,7 @@ import {
   PromptPayPaymentResponse,
   CashPaymentRequest,
   CashPaymentResponse,
-  ConfirmPaymentRequest,
+  ConfirmPaymentResponse,
   CheckoutRequest,
   CheckoutResponse,
   Payment
@@ -27,9 +27,9 @@ export class PaymentService {
     return this.http.post<CashPaymentResponse>(`${this.baseUrl}/payments/cash`, request);
   }
 
-  // Confirm Payment
-  confirmPayment(paymentId: number, request: ConfirmPaymentRequest): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/payments/${paymentId}/confirm`, request);
+  // Confirm Payment (no body required, only payment ID in URL)
+  confirmPayment(paymentId: number): Observable<ConfirmPaymentResponse> {
+    return this.http.post<ConfirmPaymentResponse>(`${this.baseUrl}/payments/${paymentId}/confirm`, {});
   }
 
   // Get Payment Status

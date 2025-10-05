@@ -13,17 +13,34 @@
   <div *ngIf="!loading && !currentOrder && pendingTables.length > 0" class="table-selection">
     <h3>เลือกโต๊ะที่ต้องการชำระเงิน</h3>
     <div class="table-grid">
-      <button
+      <div
         *ngFor="let table of pendingTables"
-        class="table-card"
-        [class.selected]="selectedTable?.tableId === table.tableId"
-        (click)="selectTable(table)"
+        class="table-card-container"
       >
-        <h4>{{ table.tableCode }} - {{ table.tableName }}</h4>
-        <p>จำนวนออเดอร์: {{ table.orderCount }} รายการ</p>
-        <div class="total">รวม: ฿{{ table.totalAmount }}</div>
-        <small>ออเดอร์ล่าสุด: {{ table.lastOrderTime | date:'dd/MM/yyyy HH:mm' }}</small>
-      </button>
+        <button
+          class="table-card"
+          [class.selected]="selectedTable?.tableId === table.tableId"
+          (click)="selectTable(table)"
+        >
+          <h4>{{ table.tableCode }} - {{ table.tableName }}</h4>
+          <p>จำนวนออเดอร์: {{ table.orderCount }} รายการ</p>
+          <div class="total">รวม: ฿{{ table.totalAmount }}</div>
+          <small>ออเดอร์ล่าสุด: {{ table.lastOrderTime | date:'dd/MM/yyyy HH:mm' }}</small>
+        </button>
+
+        <!-- Quick Confirm Payment Button -->
+        <div class="table-actions" *ngIf="table.paymentId">
+          <button
+            (click)="confirmPaymentById(table.paymentId)"
+            [disabled]="processingPayment"
+            class="btn-confirm"
+            title="ยืนยันการชำระเงิน"
+          >
+            <span *ngIf="!processingPayment">✓ ยืนยันชำระเงิน</span>
+            <span *ngIf="processingPayment">กำลังยืนยัน...</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
