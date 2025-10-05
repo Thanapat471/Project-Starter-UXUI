@@ -4,10 +4,16 @@
       <h1>จัดการเมนู</h1>
       <p class="page-subtitle">เพิ่ม แก้ไข และจัดการรายการเมนู</p>
     </div>
-    <button type="button" class="add-menu-btn" (click)="openCreateModal()">
-      <span nz-icon nzType="plus"></span>
-      เพิ่มเมนูใหม่
-    </button>
+    <div class="header-actions">
+      <button type="button" class="category-btn" (click)="openCategoryModal()">
+        <span nz-icon nzType="appstore"></span>
+        จัดการหมวดหมู่
+      </button>
+      <button type="button" class="add-menu-btn" (click)="openCreateModal()">
+        <span nz-icon nzType="plus"></span>
+        เพิ่มเมนูใหม่
+      </button>
+    </div>
   </header>
 
   <div class="page-filters">
@@ -216,6 +222,113 @@
         </button>
       </div>
     </form>
+  </ng-container>
+</nz-modal>
+
+<!-- Category Management Modal -->
+<nz-modal
+  nzClassName="category-management-modal"
+  [nzVisible]="categoryModalOpen()"
+  [nzFooter]="null"
+  nzTitle="จัดการหมวดหมู่เมนู"
+  nzCentered
+  nzWidth="720"
+  [nzMaskClosable]="!categorySubmitting()"
+  (nzOnCancel)="closeCategoryModal()"
+>
+  <ng-container *nzModalContent>
+    <div class="category-management-content">
+      <!-- Add Category Form -->
+      <div class="add-category-section">
+        <h3>{{ isEditingCategory() ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่ใหม่' }}</h3>
+        <form [formGroup]="categoryForm" (ngSubmit)="submitCategory()" class="category-form">
+          <div class="form-row">
+            <input 
+              nz-input 
+              nzSize="large" 
+              formControlName="name" 
+              placeholder="เช่น เครื่องดื่ม, อาหารหลัก, ของหวาน" 
+              maxlength="50"
+            />
+            <button
+              nz-button
+              nzType="primary"
+              class="add-btn"
+              type="submit"
+              [disabled]="categorySubmitting() || categoryForm.invalid"
+              [nzLoading]="categorySubmitting()"
+            >
+              {{ isEditingCategory() ? 'บันทึก' : 'เพิ่ม' }}
+            </button>
+            <button
+              *ngIf="isEditingCategory()"
+              nz-button
+              type="button"
+              class="cancel-btn"
+              (click)="cancelEditCategory()"
+            >
+              ยกเลิก
+            </button>
+          </div>
+          <div class="form-error" *ngIf="categoryForm.controls.name.invalid && categoryForm.controls.name.touched">
+            กรุณากรอกชื่อหมวดหมู่ (ไม่เกิน 50 ตัวอักษร)
+          </div>
+        </form>
+      </div>
+
+      <!-- Categories List -->
+      <div class="categories-list-section">
+        <div class="list-header">
+          <h3>หมวดหมู่ที่มีอยู่ ({{ categories().length }} หมวดหมู่)</h3>
+          <div class="search-box">
+            <span nz-icon nzType="search"></span>
+            <input
+              #categorySearchBox
+              type="search"
+              placeholder="ค้นหาหมวดหมู่..."
+              [value]="categorySearchTerm()"
+              (input)="onCategorySearch(categorySearchBox.value)"
+            />
+          </div>
+        </div>
+
+        <div class="categories-list" *ngIf="filteredCategoriesForModal().length; else noCategoriesTemplate">
+          <div class="category-item" *ngFor="let category of filteredCategoriesForModal(); trackBy: trackByCategoryId">
+            <div class="category-info">
+              <h4>{{ category.name }}</h4>
+              <p class="category-count">{{ getMenuCountByCategory(category.id) }} รายการเมนู</p>
+            </div>
+            <div class="category-actions">
+              <button
+                type="button"
+                class="action-btn edit-btn"
+                (click)="editCategory(category)"
+                [disabled]="categorySubmitting()"
+              >
+                <span nz-icon nzType="edit"></span>
+                แก้ไข
+              </button>
+              <button
+                type="button"
+                class="action-btn delete-btn"
+                (click)="confirmDeleteCategory(category)"
+                [disabled]="categorySubmitting()"
+              >
+                <span nz-icon nzType="delete"></span>
+                ลบ
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noCategoriesTemplate>
+          <div class="empty-state">
+            <span nz-icon nzType="inbox"></span>
+            <p>{{ categorySearchTerm() ? 'ไม่พบหมวดหมู่ที่ค้นหา' : 'ยังไม่มีหมวดหมู่' }}</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
   </ng-container>
 </nz-modal>
 

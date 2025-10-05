@@ -13,6 +13,15 @@ export interface CreateMenuItemPayload {
   isAvailable?: boolean;
   image?: File | null;
 }
+
+export interface CreateCategoryPayload {
+  name: string;
+}
+
+export interface UpdateCategoryPayload {
+  name: string;
+}
+
 export type { MenuItem, MenuCategory };
 
 @Injectable({ providedIn: 'root' })
@@ -72,5 +81,20 @@ export class MenuService {
 
   deleteMenuItem(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/menu/${id}`);
+  }
+
+  // Category management methods
+  createCategory(category: CreateCategoryPayload): Observable<MenuCategory> {
+    const headers = { 'Content-Type': 'application/json' };
+    return this.http.post<MenuCategory>(`${this.baseUrl}/menu-categories`, category, { headers });
+  }
+
+  updateCategory(id: string, category: UpdateCategoryPayload): Observable<MenuCategory> {
+    const headers = { 'Content-Type': 'application/json' };
+    return this.http.patch<MenuCategory>(`${this.baseUrl}/menu-categories/${id}`, category, { headers });
+  }
+
+  deleteCategory(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/menu-categories/${id}`);
   }
 }

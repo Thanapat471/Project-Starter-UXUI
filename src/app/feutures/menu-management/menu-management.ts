@@ -13,7 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { firstValueFrom, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-import { CreateMenuItemPayload, MenuItemDto, MenuService, MenuCategory } from '../../core/services/menu.service';
+import { CreateMenuItemPayload, MenuItemDto, MenuService, MenuCategory, CreateCategoryPayload, UpdateCategoryPayload } from '../../core/services/menu.service';
 
 interface MenuCard {
   id: string;
@@ -65,8 +65,11 @@ export class MenuManagement {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly addModalOpen = signal(false);
+  readonly categoryModalOpen = signal(false);
   readonly submitting = signal(false);
+  readonly categorySubmitting = signal(false);
   readonly editingMenuId = signal<string | null>(null);
+  readonly editingCategoryId = signal<string | null>(null);
   readonly editingMenu = signal<MenuCard | null>(null);
   readonly editingImageUrl = signal<string | null>(null);
   readonly categoriesLoading = signal(false);
@@ -92,12 +95,14 @@ export class MenuManagement {
   private readonly menuItems = signal<MenuCard[]>([]);
   readonly categories = signal<CategoryOption[]>([]);
   readonly searchTerm = signal('');
+  readonly categorySearchTerm = signal('');
   readonly selectedCategory = signal('all');
   readonly selectedImageName = signal('');
   readonly selectedImagePreview = signal<string | null>(null);
 
   readonly hasCategories = computed(() => this.categories().length > 0);
   readonly isEditing = computed(() => this.editingMenuId() !== null);
+  readonly isEditingCategory = computed(() => this.editingCategoryId() !== null);
 
   readonly filteredMenuItems = computed(() => {
     const keyword = this.searchTerm().trim().toLowerCase();
@@ -113,12 +118,23 @@ export class MenuManagement {
     });
   });
 
+  readonly filteredCategoriesForModal = computed(() => {
+    const keyword = this.categorySearchTerm().trim().toLowerCase();
+    return this.categories().filter(category => 
+      keyword ? category.name.toLowerCase().includes(keyword) : true
+    );
+  });
+
   readonly addMenuForm = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(120)]],
     categoryId: ['', Validators.required],
     price: [0, [Validators.required, Validators.min(0)]],
     description: [''],
     image: [null as File | null]
+  });
+
+  readonly categoryForm = this.fb.group({
+    name: ['', [Validators.required, Validators.maxLength(50)]]
   });
 
   constructor() {
@@ -128,6 +144,10 @@ export class MenuManagement {
 
   onSearch(term: string): void {
     this.searchTerm.set(term);
+  }
+
+  onCategorySearch(term: string): void {
+    this.categorySearchTerm.set(term);
   }
 
   onSelectCategory(category: string): void {
@@ -141,6 +161,14 @@ export class MenuManagement {
 
   trackByMenuId(_index: number, item: MenuCard): string {
     return item.id;
+  }
+
+  trackByCategoryId(_index: number, item: CategoryOption): string {
+    return item.id;
+  }
+
+  getMenuCountByCategory(categoryId: string): number {
+    return this.menuItems().filter(item => item.categoryId === categoryId).length;
   }
 
   openCreateModal(): void {
@@ -296,6 +324,116 @@ export class MenuManagement {
     });
   }
 
+  // Category management methods
+  openCategoryModal(): void {
+    this.prepareCategoryForm();
+    this.categoryModalOpen.set(true);
+  }
+
+  closeCategoryModal(): void {
+    this.categoryModalOpen.set(false);
+    this.categoryForm.reset({ name: '' });
+    this.categoryForm.markAsPristine();
+    this.categoryForm.markAsUntouched();
+    this.categorySubmitting.set(false);
+    this.editingCategoryId.set(null);
+    this.categorySearchTerm.set('');
+  }
+
+  cancelEditCategory(): void {
+    this.editingCategoryId.set(null);
+    this.categoryForm.reset({ name: '' });
+    this.categoryForm.markAsPristine();
+    this.categoryForm.markAsUntouched();
+  }
+
+  submitCategory(): void {
+    if (this.categoryForm.invalid) {
+      this.categoryForm.markAllAsTouched();
+      return;
+    }
+
+    const { name } = this.categoryForm.value;
+    const editingId = this.editingCategoryId();
+    
+    // Try different payload formats in case the API expects different field names
+    const payload: CreateCategoryPayload = {
+      name: name!.trim()
+    };
+    
+    console.log('Sending category payload:', payload);
+    console.log('API endpoint:', editingId ? `UPDATE /menu-categories/${editingId}` : 'POST /menu-categories');
+
+    this.categorySubmitting.set(true);
+
+    const request$ = editingId
+      ? this.menuService.updateCategory(editingId, payload)
+      : this.menuService.createCategory(payload);
+
+    request$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.message.success(editingId ? 'แก้ไขหมวดหมู่เรียบร้อยแล้ว' : 'เพิ่มหมวดหมู่ใหม่เรียบร้อยแล้ว');
+          this.closeCategoryModal();
+          this.fetchCategories();
+        },
+        error: error => {
+          this.categorySubmitting.set(false);
+          console.error('Category API Error:', error);
+          console.error('Error response:', error.error);
+          console.error('Error status:', error.status);
+          
+          const message =
+            error.status === 0
+              ? 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'
+              : error.status === 400
+                ? `ข้อมูลไม่ถูกต้อง: ${error.error?.message || 'กรุณาตรวจสอบข้อมูลที่กรอก'}`
+                : editingId
+                  ? 'แก้ไขหมวดหมู่ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง'
+                  : 'เพิ่มหมวดหมู่ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
+          this.message.error(message);
+        }
+      });
+  }
+
+  editCategory(category: CategoryOption): void {
+    this.editingCategoryId.set(category.id);
+    this.categoryForm.reset({
+      name: category.name
+    });
+    this.categoryForm.markAsPristine();
+    this.categoryForm.markAsUntouched();
+    this.categoryModalOpen.set(true);
+  }
+
+  confirmDeleteCategory(category: CategoryOption): void {
+    this.modal.confirm({
+      nzTitle: 'ยืนยันการลบหมวดหมู่',
+      nzContent: `คุณต้องการลบหมวดหมู่ "${category.name}" หรือไม่? เมนูที่อยู่ในหมวดหมู่นี้จะไม่มีหมวดหมู่`,
+      nzOkText: 'ลบ',
+      nzCancelText: 'ยกเลิก',
+      nzOkDanger: true,
+      nzOnOk: () =>
+        firstValueFrom(
+          this.menuService.deleteCategory(category.id).pipe(
+            catchError(error => {
+              const message =
+                error.status === 0
+                  ? 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'
+                  : 'ลบหมวดหมู่ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
+              this.message.error(message);
+              return throwError(() => error);
+            })
+          )
+        ).then(() => {
+          this.message.success(`ลบหมวดหมู่ "${category.name}" แล้ว`);
+          this.fetchCategories();
+          this.fetchMenuItems(); // Refresh menus as their categories might have changed
+        })
+    });
+  }
+
   private prepareCreateForm(): void {
     this.editingMenuId.set(null);
     this.editingMenu.set(null);
@@ -305,6 +443,14 @@ export class MenuManagement {
     this.addMenuForm.markAsPristine();
     this.addMenuForm.markAsUntouched();
     this.submitting.set(false);
+  }
+
+  private prepareCategoryForm(): void {
+    this.editingCategoryId.set(null);
+    this.categoryForm.reset({ name: '' });
+    this.categoryForm.markAsPristine();
+    this.categoryForm.markAsUntouched();
+    this.categorySubmitting.set(false);
   }
 
   private readPreviewFromFile(file: File): void {

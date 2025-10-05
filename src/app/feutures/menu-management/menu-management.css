@@ -72,6 +72,40 @@
   font-size: 0.95rem;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.category-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, rgba(148, 105, 76, 0.1), rgba(92, 61, 46, 0.05));
+  border: 2px solid rgba(148, 105, 76, 0.3);
+  color: #5c3d2e;
+  font-weight: 600;
+  padding: 0.875rem 1.75rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.category-btn:hover {
+  background: linear-gradient(135deg, rgba(148, 105, 76, 0.15), rgba(92, 61, 46, 0.08));
+  border-color: rgba(148, 105, 76, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(92, 61, 46, 0.2);
+}
+
+.category-btn:active {
+  transform: translateY(0) scale(0.98);
+  transition: all 0.1s ease;
+}
+
 .add-menu-btn {
   display: inline-flex;
   align-items: center;
@@ -207,6 +241,328 @@
 
 .menu-content {
   min-height: 200px;
+}
+
+/* Category Management Modal */
+.category-management-modal .ant-modal-content {
+  border-radius: 24px !important;
+  padding: 28px 32px 32px;
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.98), rgba(255, 245, 232, 0.95)) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(10px);
+  overflow: hidden !important;
+}
+
+.category-management-modal .ant-modal-header {
+  border-bottom: none;
+  background: transparent;
+  padding: 0 0 16px 0;
+  margin-bottom: 20px;
+}
+
+.category-management-modal .ant-modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #3b1c0d;
+  text-align: center;
+}
+
+.category-management-modal .ant-modal-close {
+  color: rgba(59, 28, 13, 0.6);
+  top: 20px;
+  right: 24px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.category-management-modal .ant-modal-close:hover {
+  background: rgba(148, 105, 76, 0.1);
+  color: #5c3d2e;
+}
+
+.category-management-modal .ant-modal-body {
+  padding: 0;
+}
+
+.category-management-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.add-category-section {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  border: 1px solid rgba(148, 105, 76, 0.1);
+}
+
+.add-category-section h3 {
+  margin: 0 0 16px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #3b1c0d;
+}
+
+.category-form .form-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.category-form input[nz-input] {
+  flex: 1;
+  min-width: 200px;
+  border-radius: 12px !important;
+  border: 2px solid rgba(148, 105, 76, 0.2) !important;
+  padding: 12px 16px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 235, 216, 0.6), 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.category-form input[nz-input]:focus {
+  border-color: #94694c !important;
+  box-shadow: 0 0 0 2px rgba(148, 105, 76, 0.2) !important;
+}
+
+.add-btn {
+  background: linear-gradient(135deg, #94694c 0%, #5c3d2e 100%) !important;
+  border: none !important;
+  color: white !important;
+  padding: 12px 24px !important;
+  height: auto !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(92, 61, 46, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.add-btn:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px rgba(92, 61, 46, 0.4) !important;
+}
+
+.cancel-btn {
+  background: rgba(148, 105, 76, 0.1) !important;
+  border: 2px solid rgba(148, 105, 76, 0.3) !important;
+  color: #5c3d2e !important;
+  padding: 10px 20px !important;
+  height: auto !important;
+  border-radius: 12px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+}
+
+.cancel-btn:hover {
+  background: rgba(148, 105, 76, 0.15) !important;
+  border-color: rgba(148, 105, 76, 0.4) !important;
+}
+
+.categories-list-section {
+  max-height: 400px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.list-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #3b1c0d;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(148, 105, 76, 0.15);
+  border-radius: 999px;
+  padding: 8px 16px;
+  min-width: 200px;
+  transition: all 0.3s ease;
+}
+
+.search-box:focus-within {
+  border-color: #94694c;
+  box-shadow: 0 0 0 2px rgba(148, 105, 76, 0.15);
+}
+
+.search-box span[nz-icon] {
+  color: #94694c;
+  font-size: 16px;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.9rem;
+  color: #3b1c0d;
+  flex: 1;
+}
+
+.search-box input::placeholder {
+  color: rgba(59, 28, 13, 0.5);
+}
+
+.categories-list {
+  overflow-y: auto;
+  max-height: 320px;
+  padding-right: 8px;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 248, 240, 0.85) 100%);
+  border: 1px solid rgba(148, 105, 76, 0.1);
+  box-shadow: 0 2px 8px rgba(59, 28, 13, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.category-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 28, 13, 0.1);
+  border-color: rgba(148, 105, 76, 0.15);
+}
+
+.category-item .category-info h4 {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2d1509;
+}
+
+.category-item .category-count {
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgba(59, 28, 13, 0.6);
+  font-weight: 500;
+}
+
+.category-item .category-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-btn {
+  background: linear-gradient(135deg, rgba(148, 105, 76, 0.1), rgba(92, 61, 46, 0.05));
+  color: #5c3d2e;
+  border: 1px solid rgba(148, 105, 76, 0.2);
+}
+
+.edit-btn:hover {
+  background: linear-gradient(135deg, rgba(148, 105, 76, 0.15), rgba(92, 61, 46, 0.08));
+  border-color: rgba(148, 105, 76, 0.3);
+  transform: translateY(-1px);
+}
+
+.delete-btn {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.delete-btn:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.08));
+  border-color: rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: rgba(59, 28, 13, 0.6);
+  text-align: center;
+}
+
+.empty-state span[nz-icon] {
+  font-size: 48px;
+  margin-bottom: 12px;
+  color: rgba(148, 105, 76, 0.4);
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Responsive Design for Category Modal */
+@media (max-width: 768px) {
+  .category-management-modal .ant-modal-content {
+    padding: 20px 16px 24px;
+  }
+
+  .category-form .form-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .category-form input[nz-input] {
+    min-width: unset;
+  }
+
+  .list-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    min-width: unset;
+  }
+
+  .category-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .category-item .category-actions {
+    justify-content: center;
+  }
+
+  .action-btn {
+    flex: 1;
+    justify-content: center;
+  }
 }
 
 .add-menu-form {
