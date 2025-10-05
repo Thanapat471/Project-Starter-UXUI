@@ -1,16 +1,55 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CartService, CartItem } from '../../core/services/cart.service';
-import { Subject, takeUntil } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CartService } from '../../core/services/cart.service';
+import { Subject, firstValueFrom } from 'rxjs';
+
+interface Category {
+  id: string;
+  name: string;
+  menuItems: MenuItem[];
+}
 
 interface MenuItem {
-  id: number;
+  id: string;
   name: string;
   description: string;
   price: number;
-  image: string;
-  category: string;
+  categoryId: string;
+  category: Category;
+  categoryName?: string; // For processed items
+  image: string | null;
+  imageUrl: string | null;
+  isAvailable: boolean;
+  options: any[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface OrderItem {
+  menuItemId: string;
+  quantity: number;
+  options: {
+    menuOptionId: number;
+    selectedValue: string;
+    additionalPrice: number;
+  }[];
+}
+
+interface OrderRequest {
+  items: OrderItem[];
+  sessionId: string;
+  notes?: string;
+}
+
+interface OrderResponse {
+  orderId: string;
+  sessionId: string;
+  status: string;
+  totalAmount: number;
+  createdAt: string;
 }
 
 @Component({
@@ -21,77 +60,42 @@ interface MenuItem {
   styleUrl: './customer-menu.component.css'
 })
 export class CustomerMenuComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
 
-  categories = ['All', 'Coffee', 'Pastries', 'Food', 'Desserts'];
+  categories = ['All'];
   selectedCategory = 'All';
   searchTerm = '';
 
-  // Cart properties
-  cartItems: CartItem[] = [];
-  cartCount = 0;
-  cartTotal = 0;
-  showCartModal = false;
+  // Session properties
+  sessionId = '';
+  tableId = '';
+  tableName = '';
 
-  constructor(private cartService: CartService) {}
+  // Order properties
+  isPlacingOrder = false;
+  orderNotes = '';
 
-  menuItems: MenuItem[] = [
-    {
-      id: 1,
-      name: 'Artisanal Latte',
-      description: 'Rich espresso with steamed milk and beautiful latte art',
-      price: 120,
-      image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=400&h=300&fit=crop',
-      category: 'Coffee'
-    },
-    {
-      id: 2,
-      name: 'Chocolate Croissant',
-      description: 'Fresh baked croissant filled with premium dark chocolate',
-      price: 80,
-      image: 'https://images.unsplash.com/photo-1555507036-ab794f575c56?w=400&h=300&fit=crop',
-      category: 'Pastries'
-    },
-    {
-      id: 3,
-      name: 'Gourmet Club Sandwich',
-      description: 'Triple-layer sandwich with premium meats and fresh vegetables',
-      price: 180,
-      image: 'https://images.unsplash.com/photo-1553909489-cd47e0ef937f?w=400&h=300&fit=crop',
-      category: 'Food'
-    },
-    {
-      id: 4,
-      name: 'Chocolate Brownie',
-      description: 'Rich chocolate brownie served with vanilla ice cream',
-      price: 95,
-      image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&h=300&fit=crop',
-      category: 'Desserts'
-    },
-    {
-      id: 5,
-      name: 'Cappuccino',
-      description: 'Classic Italian coffee with perfectly frothed milk',
-      price: 100,
-      image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&h=300&fit=crop',
-      category: 'Coffee'
-    },
-    {
-      id: 6,
-      name: 'Blueberry Muffin',
-      description: 'Freshly baked muffin loaded with juicy blueberries',
-      price: 65,
-      image: 'https://images.unsplash.com/photo-1586985289688-ca3cf47d3e6e?w=400&h=300&fit=crop',
-      category: 'Pastries'
-    }
-  ];
+  // Menu properties
+  menuItems: MenuItem[] = [];
+  isLoadingMenu = false;
+  menuError = '';
+
+  constructor(
+    private readonly cartService: CartService,
+    private readonly http: HttpClient,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router
+  ) {}
 
   get filteredItems(): MenuItem[] {
-    let items = this.menuItems;
+    let items = this.menuItems.filter(item => item.isAvailable !== false);
 
     // Filter by category
     if (this.selectedCategory !== 'All') {
-      items = items.filter(item => item.category === this.selectedCategory);
+      items = items.filter(item => {
+        const categoryName = item.categoryName || item.category?.name || 'อื่นๆ';
+        return categoryName === this.selectedCategory;
+      });
     }
 
     // Filter by search term
@@ -106,27 +110,134 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     return items;
   }
 
+  private updateFilteredItems(): void {
+    // This method is kept for compatibility but does nothing
+    // since we're using getter approach
+  }
+
   selectCategory(category: string): void {
     this.selectedCategory = category;
+    // Don't call updateFilteredItems here to prevent loops
+    // Let the getter handle filtering
   }
 
   clearSearch(): void {
     this.searchTerm = '';
+    this.updateFilteredItems();
+  }
+
+  onSearchChange(): void {
+    this.updateFilteredItems();
   }
 
   ngOnInit(): void {
-    // Subscribe to cart updates
-    this.cartService.cartItems$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(items => this.cartItems = items);
+    this.loadSessionData();
+    this.loadMenu();
+  }
 
-    this.cartService.cartCount$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(count => this.cartCount = count);
+  private loadSessionData(): void {
+    // Try to get sessionId from query params first
+    this.route.queryParams.subscribe(params => {
+      if (params['sessionId']) {
+        this.sessionId = params['sessionId'];
+        localStorage.setItem('customerSessionId', this.sessionId);
+      }
+    });
 
-    this.cartService.cartTotal$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(total => this.cartTotal = total);
+    // If not in query params, try localStorage
+    if (!this.sessionId) {
+      this.sessionId = localStorage.getItem('customerSessionId') || '';
+    }
+
+    this.tableId = localStorage.getItem('customerTableId') || '';
+    this.tableName = localStorage.getItem('customerTableName') || '';
+
+    // If no session, redirect to debug page
+    if (!this.sessionId) {
+      console.warn('No session ID found, redirecting to debug page');
+      this.router.navigate(['/qr-debug']);
+    } else {
+      console.log('Session loaded:', {
+        sessionId: this.sessionId,
+        tableId: this.tableId,
+        tableName: this.tableName
+      });
+    }
+  }
+
+  async loadMenu(): Promise<void> {
+    try {
+      this.isLoadingMenu = true;
+      this.menuError = '';
+
+      const response = await firstValueFrom(
+        this.http.get<any>('http://localhost:8080/api/menu')
+      );
+
+      if (Array.isArray(response)) {
+        // If response is array of menu items directly
+        this.menuItems = response.map(item => ({
+          ...item,
+          categoryName: item.category?.name || item.categoryName || 'อื่นๆ',
+          imageUrl: item.imageUrl || item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y5ZjlmOSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0cHgiIGZpbGw9IiM5OTkiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='
+        }));
+
+        // Extract unique categories from menu items
+        const uniqueCategories = [...new Set(this.menuItems.map(item => item.categoryName).filter(Boolean))];
+        this.categories = ['All', ...uniqueCategories as string[]];
+
+      } else if (response && typeof response === 'object') {
+        if ('categories' in response && Array.isArray(response.categories)) {
+          // If response has categories structure
+          this.categories = ['All', ...response.categories.map((cat: any) => cat.name)];
+          this.menuItems = response.categories.flatMap((category: any) =>
+            (category.menuItems || []).map((item: MenuItem) => ({
+              ...item,
+              categoryName: category.name,
+              imageUrl: item.imageUrl || item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y5ZjlmOSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0cHgiIGZpbGw9IiM5OTkiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='
+            }))
+          );
+        } else if (response.data && Array.isArray(response.data)) {
+          // If response has data wrapper
+          this.menuItems = response.data.map((item: any) => ({
+            ...item,
+            categoryName: item.category?.name || item.categoryName || 'อื่นๆ',
+            imageUrl: item.imageUrl || item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y5ZjlmOSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0cHgiIGZpbGw9IiM5OTkiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='
+          }));
+
+          const uniqueCategories = [...new Set(this.menuItems.map(item => item.categoryName).filter(Boolean))];
+          this.categories = ['All', ...uniqueCategories as string[]];
+        } else {
+          // Try to treat the whole response as menu items container
+          const menuItems = Object.values(response).find(val => Array.isArray(val)) as any[];
+
+          if (menuItems) {
+            this.menuItems = menuItems.map(item => ({
+              ...item,
+              categoryName: item.category?.name || item.categoryName || 'อื่นๆ',
+              imageUrl: item.imageUrl || item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y5ZjlmOSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0cHgiIGZpbGw9IiM5OTkiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='
+            }));
+
+            const uniqueCategories = [...new Set(this.menuItems.map(item => item.categoryName).filter(Boolean))];
+            this.categories = ['All', ...uniqueCategories as string[]];
+          } else {
+            throw new Error('No valid menu items found in response');
+          }
+        }
+      } else {
+        throw new Error('Invalid API response format: ' + typeof response);
+      }
+
+    } catch (error) {
+      console.error('Error loading menu:', error);
+      this.menuError = 'ไม่สามารถโหลดเมนูได้ กรุณาลองใหม่อีกครั้ง';
+
+      // Fallback to empty data
+      this.categories = ['All'];
+      this.menuItems = [];
+    } finally {
+      this.isLoadingMenu = false;
+    }
   }
 
   ngOnDestroy(): void {
@@ -136,16 +247,16 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
 
   addToCart(item: MenuItem): void {
     this.cartService.addToCart({
-      id: item.id,
+      id: parseInt(item.id), // Convert string to number for cart
       name: item.name,
       price: item.price,
-      image: item.image
+      image: item.imageUrl || '/assets/images/placeholder.jpg' // Fallback image
     });
   }
 
-  getItemQuantityInCart(itemId: number): number {
-    const cartItem = this.cartItems.find(item => item.id === itemId);
-    return cartItem ? cartItem.quantity : 0;
+  getItemQuantityInCart(itemId: string): number {
+    // Get quantity from cart service directly
+    return this.cartService.getItemQuantity(parseInt(itemId));
   }
 
   updateItemQuantity(itemId: number, newQuantity: number): void {
@@ -154,6 +265,10 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     } else {
       this.cartService.updateQuantity(itemId, newQuantity);
     }
+  }
+
+  updateItemQuantityById(itemId: string, newQuantity: number): void {
+    this.updateItemQuantity(parseInt(itemId), newQuantity);
   }
 
   getCategoryIcon(category: string): string {
@@ -165,26 +280,5 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
       'Desserts': 'fas fa-ice-cream'
     };
     return icons[category] || 'fas fa-circle';
-  }
-
-  // Cart modal methods
-  openCartModal(): void {
-    this.showCartModal = true;
-  }
-
-  closeCartModal(): void {
-    this.showCartModal = false;
-  }
-
-  updateCartItemQuantity(itemId: number, quantity: number): void {
-    this.cartService.updateQuantity(itemId, quantity);
-  }
-
-  removeCartItem(itemId: number): void {
-    this.cartService.removeFromCart(itemId);
-  }
-
-  clearCart(): void {
-    this.cartService.clearCart();
   }
 }

@@ -1,0 +1,104 @@
+<div class="debug-container">
+  <div class="page-header">
+    <h1>QR Debug Tool</h1>
+    <p class="page-subtitle">เครื่องมือทดสอบ QR Code และ Session สำหรับการสั่งอาหาร</p>
+  </div>
+
+  <div class="debug-content">
+    <!-- Error Message -->
+    <div *ngIf="error" class="error">
+      {{ error }}
+    </div>
+
+    <!-- Tables Section -->
+    <div class="section">
+      <div class="section-title">
+        <i class="fa fa-table"></i> โต๊ะที่มีอยู่
+        <button class="btn btn-secondary" (click)="loadTables()" [disabled]="loading" style="float: right;">
+          <span *ngIf="loading" class="loading-spinner"></span>
+          <i *ngIf="!loading" class="fa fa-refresh"></i>
+          รีเฟรช
+        </button>
+      </div>
+
+      <div *ngIf="loading && tables.length === 0" class="text-center">
+        <div class="loading-spinner"></div>
+        กำลังโหลดข้อมูลโต๊ะ...
+      </div>
+
+      <div class="tables-grid" *ngIf="tables.length > 0">
+        <button
+          *ngFor="let table of tables"
+          class="table-card"
+          [class.selected]="selectedTable?.id === table.id"
+          (click)="createSession(table)"
+          [disabled]="loading"
+        >
+          <div class="table-status"
+               [class.status-available]="table.status === 'available'"
+               [class.status-occupied]="table.status === 'occupied'">
+            {{ table.status }}
+          </div>
+
+          <div class="table-name">{{ table.name }}</div>
+          <div class="table-token">{{ table.qrToken }}</div>
+        </button>
+      </div>
+
+      <div *ngIf="!loading && tables.length === 0" class="text-center">
+        ไม่พบข้อมูลโต๊ะ
+      </div>
+    </div>
+
+    <!-- Session Info Section -->
+    <div class="section" *ngIf="sessionData">
+      <div class="section-title">
+        <i class="fa fa-id-card"></i> ข้อมูล Session
+      </div>
+
+      <div class="session-info">
+        <div class="session-item">
+          <span class="session-label">Session ID:</span>
+          <span class="session-value">{{ sessionData.sessionId }}</span>
+        </div>
+        <div class="session-item">
+          <span class="session-label">Table ID:</span>
+          <span class="session-value">{{ sessionData.tableId }}</span>
+        </div>
+        <div class="session-item">
+          <span class="session-label">Status:</span>
+          <span class="session-value">{{ sessionData.status }}</span>
+        </div>
+        <div class="session-item">
+          <span class="session-label">Created At:</span>
+          <span class="session-value">{{ sessionData.createdAt | date:'short' }}</span>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn btn-success" (click)="goToMenu()">
+          <i class="fa fa-utensils"></i>
+          ไปที่หน้าสั่งอาหาร
+        </button>
+        <button class="btn btn-secondary" (click)="clearSession()">
+          <i class="fa fa-trash"></i>
+          ล้าง Session
+        </button>
+      </div>
+    </div>
+
+    <!-- Instructions Section -->
+    <div class="section">
+      <div class="section-title">
+        <i class="fa fa-info-circle"></i> วิธีการใช้งาน
+      </div>
+
+      <ol style="line-height: 1.6; color: rgba(59, 28, 13, 0.8);">
+        <li>คลิกที่โต๊ะที่ต้องการเพื่อสร้าง Session</li>
+        <li>รอให้ระบบสร้าง Session ID</li>
+        <li>คลิก "ไปที่หน้าสั่งอาหาร" เพื่อไปยังหน้า Customer Menu</li>
+        <li>ระบบจะเก็บ Session ID ไว้ใช้สำหรับการสั่งอาหาร</li>
+      </ol>
+    </div>
+  </div>
+</div>
