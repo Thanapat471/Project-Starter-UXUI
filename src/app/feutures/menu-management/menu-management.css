@@ -243,52 +243,6 @@
   min-height: 200px;
 }
 
-/* Category Management Modal */
-.category-management-modal .ant-modal-content {
-  border-radius: 24px !important;
-  padding: 28px 32px 32px;
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.98), rgba(255, 245, 232, 0.95)) !important;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(10px);
-  overflow: hidden !important;
-}
-
-.category-management-modal .ant-modal-header {
-  border-bottom: none;
-  background: transparent;
-  padding: 0 0 16px 0;
-  margin-bottom: 20px;
-}
-
-.category-management-modal .ant-modal-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #3b1c0d;
-  text-align: center;
-}
-
-.category-management-modal .ant-modal-close {
-  color: rgba(59, 28, 13, 0.6);
-  top: 20px;
-  right: 24px;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-
-.category-management-modal .ant-modal-close:hover {
-  background: rgba(148, 105, 76, 0.1);
-  color: #5c3d2e;
-}
-
-.category-management-modal .ant-modal-body {
-  padding: 0;
-}
-
 .category-management-content {
   display: flex;
   flex-direction: column;

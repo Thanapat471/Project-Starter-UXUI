@@ -154,3 +154,29 @@ body {
 .text-theme { color: var(--color-text); }
 .btn-theme { background-color: var(--color-primary); color: #fff; }
 .btn-theme-secondary { background-color: var(--color-secondary); color: #fff; }
+
+/* Global Modal Rounded Corners */
+.ant-modal .ant-modal-content {
+  border-radius: 24px !important;
+  overflow: hidden;
+}
+
+.ant-modal .ant-modal-header {
+  border-radius: 24px 24px 0 0 !important;
+}
+
+.ant-modal .ant-modal-footer {
+  border-radius: 0 0 24px 24px !important;
+}
+
+/* Category Modal Brown Theme */
+.category-management-modal .ant-btn-primary {
+  background: linear-gradient(135deg, #8b5a3c, #a0673f) !important;
+  border-color: #8b5a3c !important;
+}
+
+@media (max-width: 768px) {
+  .ant-modal .ant-modal-content {
+    border-radius: 20px !important;
+  }
+}
