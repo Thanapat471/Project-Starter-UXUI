@@ -94,6 +94,7 @@ export class MenuManagement {
   readonly searchTerm = signal('');
   readonly selectedCategory = signal('all');
   readonly selectedImageName = signal('');
+  readonly selectedImagePreview = signal<string | null>(null);
 
   readonly hasCategories = computed(() => this.categories().length > 0);
   readonly isEditing = computed(() => this.editingMenuId() !== null);
@@ -229,6 +230,7 @@ export class MenuManagement {
 
     this.addMenuForm.patchValue({ image: file });
     this.selectedImageName.set(file.name);
+    this.readPreviewFromFile(file);
     if (this.isEditing()) {
       this.editingImageUrl.set(null);
     }
@@ -242,6 +244,7 @@ export class MenuManagement {
 
     this.addMenuForm.patchValue({ image: null }, { emitEvent: false });
     this.selectedImageName.set('');
+    this.selectedImagePreview.set(null);
     if (this.isEditing()) {
       this.editingImageUrl.set(this.editingMenu()?.imageUrl ?? null);
     }
@@ -302,6 +305,19 @@ export class MenuManagement {
     this.addMenuForm.markAsPristine();
     this.addMenuForm.markAsUntouched();
     this.submitting.set(false);
+  }
+
+  private readPreviewFromFile(file: File): void {
+    this.selectedImagePreview.set(null);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      this.selectedImagePreview.set(typeof result === 'string' ? result : null);
+    };
+    reader.onerror = () => {
+      this.selectedImagePreview.set(null);
+    };
+    reader.readAsDataURL(file);
   }
 
   private fetchMenuItems(): void {

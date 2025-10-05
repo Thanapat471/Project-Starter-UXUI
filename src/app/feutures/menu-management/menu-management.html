@@ -39,7 +39,7 @@
       <ng-container *ngIf="!error(); else errorState">
         <ng-container *ngIf="filteredMenuItems().length; else emptyState">
           <div class="menu-grid">
-            <article class="menu-card" *ngFor="let item of filteredMenuItems(); trackBy: trackByMenuId">
+            <article class="menu-card" *ngFor="let item of filteredMenuItems(); let i = index; trackBy: trackByMenuId">
               <div class="menu-card__header">
                 <h3>{{ item.name }}</h3>
                 <span class="status-badge" [ngClass]="item.statusClass">{{ item.statusLabel }}</span>
@@ -47,7 +47,7 @@
 
               <ng-container *ngIf="item.imageUrl; else menuImagePlaceholder">
                 <div class="menu-card__media">
-                  <img [src]="item.imageUrl" [alt]="item.name" loading="lazy" />
+                  <img [src]="item.imageUrl" [alt]="item.name" [attr.loading]="i === 0 ? 'eager' : 'lazy'" />
                 </div>
               </ng-container>
               <ng-template #menuImagePlaceholder>
@@ -191,9 +191,16 @@
           </button>
         </div>
         <span class="form-hint">รองรับไฟล์ภาพ .jpg, .png, .webp ขนาดไม่เกิน 5 MB</span>
-        <div class="image-preview" *ngIf="isEditing() && editingImageUrl() && !selectedImageName()">
-          <img [src]="editingImageUrl()" alt="ภาพเมนูปัจจุบัน" />
-        </div>
+        <ng-container *ngIf="selectedImagePreview(); else existingImagePreview">
+          <div class="image-preview">
+            <img [src]="selectedImagePreview()" alt="พรีวิวรูปใหม่" />
+          </div>
+        </ng-container>
+        <ng-template #existingImagePreview>
+          <div class="image-preview" *ngIf="isEditing() && editingImageUrl()">
+            <img [src]="editingImageUrl()" alt="ภาพเมนูปัจจุบัน" />
+          </div>
+        </ng-template>
       </div>
 
       <div class="form-submit-wrapper">
