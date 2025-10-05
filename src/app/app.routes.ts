@@ -7,12 +7,15 @@ import { Login } from './feutures/login/login';
 import { authGuard } from './core/guards/auth.guard';
 import { Table } from './feutures/table/table';
 import { CustomerMenuComponent } from './feutures/customer-menu/customer-menu.component';
+import { QrDebugComponent } from './feutures/qr-debug/qr-debug.component';
 import { SimpleLayout } from './layouts/simple-layout/simple-layout';
 import { NotFound } from './feutures/not-found/not-found';
 import { PaymentManagementComponent } from './feutures/payment-management/payment-management.component';
+
 export const routes: Routes = [
 	{ path: '', redirectTo: 'login', pathMatch: 'full' },
 	{ path: 'login', component: Login },
+	{ path: 'qr-debug', component: QrDebugComponent },
 	{
 		path: 'features',
 		component: MainLayout,
@@ -25,10 +28,13 @@ export const routes: Routes = [
 			{ path: 'payment', component: PaymentManagementComponent }
 		]
 	},
-  { path: 'simplelayout', component: SimpleLayout,
+  {
+    path: 'customer',
+    component: SimpleLayout,
     children: [
-      			{ path: 'customer-menu', component: CustomerMenuComponent }
+      { path: 'menu', component: CustomerMenuComponent }
     ]
   },
+  { path: 'customer-menu', redirectTo: 'customer/menu', pathMatch: 'full' },
   { path: '**', component: NotFound }
 ];
