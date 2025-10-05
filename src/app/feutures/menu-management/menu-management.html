@@ -45,11 +45,25 @@
                 <span class="status-badge" [ngClass]="item.statusClass">{{ item.statusLabel }}</span>
               </div>
 
-          <div class="menu-card__meta" *ngIf="item.category">
-            <span class="menu-category">{{ item.category }}</span>
-          </div>
+              <ng-container *ngIf="item.imageUrl; else menuImagePlaceholder">
+                <div class="menu-card__media">
+                  <img [src]="item.imageUrl" [alt]="item.name" loading="lazy" />
+                </div>
+              </ng-container>
+              <ng-template #menuImagePlaceholder>
+                <div class="menu-card__media menu-card__media--placeholder">
+                  <span nz-icon nzType="coffee"></span>
+                </div>
+              </ng-template>
 
-          <p class="menu-desc" *ngIf="item.description">{{ item.description }}</p>
+              <div class="menu-card__meta" *ngIf="item.category">
+                <div class="menu-category">
+                  <span nz-icon nzType="tag"></span>
+                  <span>{{ item.category }}</span>
+                </div>
+              </div>
+
+              <p class="menu-desc" *ngIf="item.description">{{ item.description }}</p>
 
               <div class="menu-card__footer">
                 <span class="menu-price">{{ item.priceLabel }}</span>
@@ -137,6 +151,34 @@
           placeholder="อธิบายเมนู..."
         ></textarea>
       </label>
+
+      <div class="form-field form-field--full" nz-form-item>
+        <span class="form-label">รูปภาพเมนู</span>
+        <div class="file-upload">
+          <input
+            #imageInput
+            type="file"
+            accept="image/*"
+            (change)="onSelectImage($event)"
+          />
+          <button type="button" class="file-upload__button" (click)="imageInput.click()">
+            <span nz-icon nzType="plus"></span>
+            เลือกไฟล์
+          </button>
+          <span class="file-upload__name">
+            {{ selectedImageName() || 'ยังไม่ได้เลือกไฟล์' }}
+          </span>
+          <button
+            type="button"
+            class="file-upload__clear"
+            *ngIf="selectedImageName()"
+            (click)="clearSelectedImage(imageInput)"
+          >
+            <span nz-icon nzType="delete"></span>
+          </button>
+        </div>
+        <span class="form-hint">รองรับไฟล์ภาพ .jpg, .png, .webp ขนาดไม่เกิน 5 MB</span>
+      </div>
 
       <div class="form-submit-wrapper">
         <button

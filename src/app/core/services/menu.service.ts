@@ -5,7 +5,14 @@ import { MenuItem, MenuCategory } from '../../shared/models/menu.model';
 
 // Export types for use in components
 export type MenuItemDto = MenuItem;
-export type CreateMenuItemPayload = Partial<MenuItem>;
+export interface CreateMenuItemPayload {
+  name: string;
+  price: number;
+  categoryId: string | number;
+  description?: string;
+  isAvailable?: boolean;
+  image?: File | null;
+}
 export type { MenuItem, MenuCategory };
 
 @Injectable({ providedIn: 'root' })
@@ -21,8 +28,25 @@ export class MenuService {
     return this.http.get<MenuCategory[]>(`${this.baseUrl}/menu-categories`);
   }
 
-  createMenuItem(item: Partial<MenuItem>): Observable<MenuItem> {
-    return this.http.post<MenuItem>(`${this.baseUrl}/menu`, item);
+  createMenuItem(item: CreateMenuItemPayload): Observable<MenuItem> {
+    const formData = new FormData();
+    formData.append('name', item.name);
+    formData.append('price', String(item.price));
+    formData.append('category_id', String(item.categoryId));
+
+    if (item.description) {
+      formData.append('description', item.description);
+    }
+
+    if (typeof item.isAvailable === 'boolean') {
+      formData.append('is_available', String(item.isAvailable));
+    }
+
+    if (item.image instanceof File) {
+      formData.append('image', item.image);
+    }
+
+    return this.http.post<MenuItem>(`${this.baseUrl}/menu`, formData);
   }
 
   updateMenuItem(id: string, item: Partial<MenuItem>): Observable<MenuItem> {

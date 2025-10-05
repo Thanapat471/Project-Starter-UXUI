@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzModalModule } from 'ng-zorro-antd/modal';
@@ -24,6 +24,7 @@ interface MenuCard {
   statusLabel: string;
   statusClass: string;
   isAvailable: boolean;
+  imageUrl: string | null;
 }
 
 interface CategoryOption {
@@ -54,6 +55,9 @@ export class MenuManagement {
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
   private readonly message = inject(NzMessageService);
+  private readonly maxImageSizeBytes = 5 * 1024 * 1024;
+
+  @ViewChild('imageInput') private imageInputRef?: ElementRef<HTMLInputElement>;
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -83,6 +87,7 @@ export class MenuManagement {
   readonly categories = signal<CategoryOption[]>([]);
   readonly searchTerm = signal('');
   readonly selectedCategory = signal('all');
+  readonly selectedImageName = signal('');
 
   readonly hasCategories = computed(() => this.categories().length > 0);
 
@@ -104,7 +109,8 @@ export class MenuManagement {
     name: ['', [Validators.required, Validators.maxLength(120)]],
     categoryId: ['', Validators.required],
     price: [0, [Validators.required, Validators.min(0)]],
-    description: ['']
+    description: [''],
+    image: [null as File | null]
   });
 
   constructor() {
@@ -122,6 +128,7 @@ export class MenuManagement {
 
   reload(): void {
     this.fetchMenuItems();
+    this.fetchCategories();
   }
 
   trackByMenuId(_index: number, item: MenuCard): string {
@@ -134,7 +141,8 @@ export class MenuManagement {
 
   closeCreateModal(): void {
     this.addModalOpen.set(false);
-    this.addMenuForm.reset({ name: '', categoryId: '', price: 0, description: '' });
+    this.clearSelectedImage();
+    this.addMenuForm.reset({ name: '', categoryId: '', price: 0, description: '', image: null });
     this.addMenuForm.markAsPristine();
     this.addMenuForm.markAsUntouched();
     this.submitting.set(false);
@@ -146,13 +154,14 @@ export class MenuManagement {
       return;
     }
 
-    const { name, categoryId, price, description } = this.addMenuForm.value;
+    const { name, categoryId, price, description, image } = this.addMenuForm.value;
     const payload: CreateMenuItemPayload = {
       name: name!.trim(),
       categoryId: categoryId!,
       price: Number(price ?? 0),
       description: description?.trim() ? description.trim() : undefined,
-      isAvailable: true
+      isAvailable: true,
+      image: image ?? undefined
     };
 
     this.submitting.set(true);
@@ -175,6 +184,41 @@ export class MenuManagement {
           this.message.error(message);
         }
       });
+  }
+
+  onSelectImage(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files.length > 0 ? input.files[0] : null;
+
+    if (!file) {
+      this.clearSelectedImage(input);
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      this.message.warning('กรุณาเลือกไฟล์รูปภาพเท่านั้น');
+      this.clearSelectedImage(input);
+      return;
+    }
+
+    if (file.size > this.maxImageSizeBytes) {
+      this.message.warning('ไฟล์รูปภาพต้องมีขนาดไม่เกิน 5 MB');
+      this.clearSelectedImage(input);
+      return;
+    }
+
+    this.addMenuForm.patchValue({ image: file });
+    this.selectedImageName.set(file.name);
+  }
+
+  clearSelectedImage(input?: HTMLInputElement | null): void {
+    const target = input ?? this.imageInputRef?.nativeElement ?? null;
+    if (target) {
+      target.value = '';
+    }
+
+    this.addMenuForm.patchValue({ image: null });
+    this.selectedImageName.set('');
   }
 
   private fetchMenuItems(): void {
@@ -253,6 +297,11 @@ export class MenuManagement {
     const rawDescription = this.cleanPlaceholder(item.description);
     const name = this.cleanPlaceholder(item.name) || 'เมนู';
 
+    const rawImage = this.cleanPlaceholder((item as MenuItemDto & { image?: string; imageUrl?: string }).imageUrl
+      ?? (item as MenuItemDto & { image?: string }).image)
+      || null;
+    const imageUrl = rawImage ? this.normalizeImageUrl(rawImage) : null;
+
     return {
       id: String(item.id),
       categoryId,
@@ -263,8 +312,31 @@ export class MenuManagement {
       priceLabel: this.formatCurrency(price),
       statusLabel: isAvailable ? 'เปิดขาย' : 'ปิดขาย',
       statusClass: isAvailable ? 'status--available' : 'status--unavailable',
-      isAvailable
+      isAvailable,
+      imageUrl
     };
+  }
+
+  private normalizeImageUrl(path: string): string {
+    const trimmed = path.trim();
+    if (!trimmed) {
+      return '';
+    }
+
+    if (/^https?:\/\//i.test(trimmed)) {
+      return trimmed;
+    }
+
+    if (trimmed.startsWith('//')) {
+      return `${window.location.protocol}${trimmed}`;
+    }
+
+    if (trimmed.startsWith('/')) {
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      return origin ? `${origin}${trimmed}` : trimmed;
+    }
+
+    return trimmed;
   }
 
   private formatCurrency(amount: number): string {
