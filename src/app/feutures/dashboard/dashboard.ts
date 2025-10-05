@@ -41,10 +41,19 @@ export class Dashboard {
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly statusMeta: Record<OrderStatus, { label: string; className: string }> = {
-    PENDING: { label: 'กำลังเตรียม', className: 'status--warning' },
+    PENDING: { label: 'รอดำเนินการ', className: 'status--warning' },
     IN_PROGRESS: { label: 'กำลังดำเนินการ', className: 'status--warning' },
     READY: { label: 'พร้อมเสิร์ฟ', className: 'status--success' },
     SERVED: { label: 'เสิร์ฟแล้ว', className: 'status--neutral' }
+  };
+
+  private readonly newStatusMapping: Record<string, OrderStatus> = {
+    'PENDING': 'PENDING',
+    'CONFIRMED': 'IN_PROGRESS',
+    'PREPARING': 'IN_PROGRESS', 
+    'READY': 'READY',
+    'DELIVERED': 'SERVED',
+    'CANCELLED': 'SERVED'
   };
 
   private readonly tablesTotal = 8;
@@ -130,11 +139,17 @@ export class Dashboard {
       });
   }
 
-  private mapOrder(order: OrderDto): DashboardOrder {
-    const metadata = this.statusMeta[order.status] ?? this.statusMeta['PENDING'];
-    const itemsSummary = order.items
-      .map((item: Order['items'][0]) => `${item.menuItem?.name ?? 'เมนู'} x${item.quantity}`)
-      .join(', ');
+  private mapOrder(order: any): DashboardOrder {
+    // Map new API status to existing dashboard status
+    const mappedStatus = this.newStatusMapping[order.status] || 'PENDING';
+    const metadata = this.statusMeta[mappedStatus];
+    
+    // Map orderItems to items summary
+    const itemsSummary = order.orderItems
+      ? order.orderItems
+          .map((item: any) => `${item.menuItem?.name ?? 'เมนู'} x${item.quantity}`)
+          .join(', ')
+      : 'ไม่มีรายการเมนู';
 
     const hasAssignedTable = Boolean(order.table);
     const tableIdentifier = order.table?.name ?? order.table?.code ?? (order.table?.id != null ? String(order.table.id) : null);
@@ -149,10 +164,10 @@ export class Dashboard {
     return {
       id: String(order.id),
       code: `#ord${order.id}`,
-      status: order.status,
+      status: mappedStatus,
       statusLabel: metadata.label,
       statusClass: metadata.className,
-      totalAmount: order.total,
+      totalAmount: order.totalAmount,
       tableLabel,
       hasAssignedTable,
       note: order.notes ?? null,
