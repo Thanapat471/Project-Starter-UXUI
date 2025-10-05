@@ -68,10 +68,20 @@
               <div class="menu-card__footer">
                 <span class="menu-price">{{ item.priceLabel }}</span>
                 <div class="menu-actions">
-                  <button type="button" class="menu-action menu-action--edit" aria-label="แก้ไขเมนู">
+                  <button
+                    type="button"
+                    class="menu-action menu-action--edit"
+                    aria-label="แก้ไขเมนู"
+                    (click)="editMenu(item)"
+                  >
                     <span nz-icon nzType="edit"></span>
                   </button>
-                  <button type="button" class="menu-action menu-action--delete" aria-label="ลบเมนู">
+                  <button
+                    type="button"
+                    class="menu-action menu-action--delete"
+                    aria-label="ลบเมนู"
+                    (click)="confirmDeleteMenu(item)"
+                  >
                     <span nz-icon nzType="delete"></span>
                   </button>
                 </div>
@@ -88,7 +98,7 @@
   nzClassName="menu-create-modal"
   [nzVisible]="addModalOpen()"
   [nzFooter]="null"
-  nzTitle="เพิ่มเมนูใหม่"
+  [nzTitle]="isEditing() ? 'แก้ไขเมนู' : 'เพิ่มเมนูใหม่'"
   nzCentered
   nzWidth="640"
   [nzMaskClosable]="!submitting()"
@@ -166,7 +176,10 @@
             เลือกไฟล์
           </button>
           <span class="file-upload__name">
-            {{ selectedImageName() || 'ยังไม่ได้เลือกไฟล์' }}
+            {{
+              selectedImageName()
+                || (isEditing() && editingImageUrl() ? 'ใช้รูปเดิม' : 'ยังไม่ได้เลือกไฟล์')
+            }}
           </span>
           <button
             type="button"
@@ -178,6 +191,9 @@
           </button>
         </div>
         <span class="form-hint">รองรับไฟล์ภาพ .jpg, .png, .webp ขนาดไม่เกิน 5 MB</span>
+        <div class="image-preview" *ngIf="isEditing() && editingImageUrl() && !selectedImageName()">
+          <img [src]="editingImageUrl()" alt="ภาพเมนูปัจจุบัน" />
+        </div>
       </div>
 
       <div class="form-submit-wrapper">
@@ -189,7 +205,7 @@
           [disabled]="submitting() || addMenuForm.invalid || !hasCategories()"
           [nzLoading]="submitting()"
         >
-          เพิ่มเมนู
+          {{ isEditing() ? 'บันทึกการเปลี่ยนแปลง' : 'เพิ่มเมนู' }}
         </button>
       </div>
     </form>

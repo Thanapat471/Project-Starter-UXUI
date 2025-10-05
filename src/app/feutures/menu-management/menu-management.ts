@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, ElementRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
@@ -10,6 +10,8 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { firstValueFrom, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 import { CreateMenuItemPayload, MenuItemDto, MenuService, MenuCategory } from '../../core/services/menu.service';
 
@@ -46,7 +48,7 @@ interface CategoryOption {
     NzInputNumberModule,
     NzButtonModule
   ],
-  providers: [NzMessageService],
+  providers: [NzMessageService, NzModalService],
   templateUrl: './menu-management.html',
   styleUrl: './menu-management.css'
 })
@@ -55,6 +57,7 @@ export class MenuManagement {
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
   private readonly message = inject(NzMessageService);
+  private readonly modal = inject(NzModalService);
   private readonly maxImageSizeBytes = 5 * 1024 * 1024;
 
   @ViewChild('imageInput') private imageInputRef?: ElementRef<HTMLInputElement>;
@@ -63,6 +66,9 @@ export class MenuManagement {
   readonly error = signal<string | null>(null);
   readonly addModalOpen = signal(false);
   readonly submitting = signal(false);
+  readonly editingMenuId = signal<string | null>(null);
+  readonly editingMenu = signal<MenuCard | null>(null);
+  readonly editingImageUrl = signal<string | null>(null);
   readonly categoriesLoading = signal(false);
   readonly categoriesError = signal<string | null>(null);
   readonly priceFormatter = (value: number | string | null): string => {
@@ -90,6 +96,7 @@ export class MenuManagement {
   readonly selectedImageName = signal('');
 
   readonly hasCategories = computed(() => this.categories().length > 0);
+  readonly isEditing = computed(() => this.editingMenuId() !== null);
 
   readonly filteredMenuItems = computed(() => {
     const keyword = this.searchTerm().trim().toLowerCase();
@@ -136,6 +143,7 @@ export class MenuManagement {
   }
 
   openCreateModal(): void {
+    this.prepareCreateForm();
     this.addModalOpen.set(true);
   }
 
@@ -146,6 +154,9 @@ export class MenuManagement {
     this.addMenuForm.markAsPristine();
     this.addMenuForm.markAsUntouched();
     this.submitting.set(false);
+    this.editingMenuId.set(null);
+    this.editingMenu.set(null);
+    this.editingImageUrl.set(null);
   }
 
   submitCreateMenu(): void {
@@ -155,23 +166,30 @@ export class MenuManagement {
     }
 
     const { name, categoryId, price, description, image } = this.addMenuForm.value;
+    const editingId = this.editingMenuId();
     const payload: CreateMenuItemPayload = {
       name: name!.trim(),
       categoryId: categoryId!,
       price: Number(price ?? 0),
       description: description?.trim() ? description.trim() : undefined,
-      isAvailable: true,
-      image: image ?? undefined
+      isAvailable: editingId ? this.editingMenu()?.isAvailable ?? true : true
     };
+
+    if (image instanceof File) {
+      payload.image = image;
+    }
 
     this.submitting.set(true);
 
-    this.menuService
-      .createMenuItem(payload)
+    const request$ = editingId
+      ? this.menuService.updateMenuItem(editingId, payload)
+      : this.menuService.createMenuItem(payload);
+
+    request$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.message.success('เพิ่มเมนูใหม่เรียบร้อยแล้ว');
+          this.message.success(editingId ? 'บันทึกการเปลี่ยนแปลงเรียบร้อยแล้ว' : 'เพิ่มเมนูใหม่เรียบร้อยแล้ว');
           this.closeCreateModal();
           this.fetchMenuItems();
         },
@@ -180,7 +198,9 @@ export class MenuManagement {
           const message =
             error.status === 0
               ? 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'
-              : 'เพิ่มเมนูไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
+              : editingId
+                ? 'แก้ไขเมนูไม่สำเร็จ กรุณาลองใหม่อีกครั้ง'
+                : 'เพิ่มเมนูไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
           this.message.error(message);
         }
       });
@@ -209,6 +229,9 @@ export class MenuManagement {
 
     this.addMenuForm.patchValue({ image: file });
     this.selectedImageName.set(file.name);
+    if (this.isEditing()) {
+      this.editingImageUrl.set(null);
+    }
   }
 
   clearSelectedImage(input?: HTMLInputElement | null): void {
@@ -217,8 +240,68 @@ export class MenuManagement {
       target.value = '';
     }
 
-    this.addMenuForm.patchValue({ image: null });
+    this.addMenuForm.patchValue({ image: null }, { emitEvent: false });
     this.selectedImageName.set('');
+    if (this.isEditing()) {
+      this.editingImageUrl.set(this.editingMenu()?.imageUrl ?? null);
+    }
+  }
+
+  editMenu(menu: MenuCard): void {
+    this.editingMenuId.set(menu.id);
+    this.editingMenu.set(menu);
+    this.editingImageUrl.set(menu.imageUrl);
+    this.clearSelectedImage();
+    this.addMenuForm.reset({
+      name: menu.name,
+      categoryId: menu.categoryId ?? '',
+      price: menu.price,
+      description: menu.description,
+      image: null
+    });
+    this.addMenuForm.markAsPristine();
+    this.addMenuForm.markAsUntouched();
+    this.addModalOpen.set(true);
+  }
+
+  confirmDeleteMenu(menu: MenuCard): void {
+    this.modal.confirm({
+      nzTitle: 'ยืนยันการลบเมนู',
+      nzContent: `คุณต้องการลบเมนู "${menu.name}" หรือไม่?`,
+      nzOkText: 'ลบ',
+      nzCancelText: 'ยกเลิก',
+      nzOkDanger: true,
+      nzOnOk: () =>
+        firstValueFrom(
+          this.menuService.deleteMenuItem(menu.id).pipe(
+            catchError(error => {
+              const message =
+                error.status === 0
+                  ? 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'
+                  : 'ลบเมนูไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
+              this.message.error(message);
+              return throwError(() => error);
+            })
+          )
+        ).then(() => {
+          this.message.success(`ลบเมนู "${menu.name}" แล้ว`);
+          if (this.editingMenuId() === menu.id) {
+            this.closeCreateModal();
+          }
+          this.fetchMenuItems();
+        })
+    });
+  }
+
+  private prepareCreateForm(): void {
+    this.editingMenuId.set(null);
+    this.editingMenu.set(null);
+    this.editingImageUrl.set(null);
+    this.clearSelectedImage();
+    this.addMenuForm.reset({ name: '', categoryId: '', price: 0, description: '', image: null });
+    this.addMenuForm.markAsPristine();
+    this.addMenuForm.markAsUntouched();
+    this.submitting.set(false);
   }
 
   private fetchMenuItems(): void {
