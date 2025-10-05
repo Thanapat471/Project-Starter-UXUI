@@ -41,7 +41,7 @@ export class Sidebar {
     },
     {
       label: 'จัดการโต๊ะ',
-      icon: 'coffee',
+      icon: 'table',
       route: '/features/table'
     },
     {

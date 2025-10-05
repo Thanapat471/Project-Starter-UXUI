@@ -38,7 +38,8 @@ import {
   TableOutline,
   ShoppingCartOutline,
   CreditCardOutline,
-  LogoutOutline
+  LogoutOutline,
+  DollarOutline
 } from '@ant-design/icons-angular/icons';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
@@ -80,7 +81,13 @@ export const appConfig: ApplicationConfig = {
       HomeOutline,
       DashboardOutline,
       MenuFoldOutline,
-      MenuUnfoldOutline
+      MenuUnfoldOutline,
+      AppstoreOutline,
+      TableOutline,
+      ShoppingCartOutline,
+      CreditCardOutline,
+      LogoutOutline,
+      DollarOutline
     ]),
     provideNzConfig({
       theme: {
