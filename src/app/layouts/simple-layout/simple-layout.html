@@ -22,7 +22,7 @@
           class="cart-button relative text-white px-4 py-2 rounded-full font-medium transition-all flex items-center space-x-2"
           (click)="openCartModal()"
         >
-          <i class="fas fa-shopping-cart"></i>
+          <i nz-icon nzType="shopping-cart" nzTheme="outline"></i>
           <span class="hidden sm:inline">Cart</span>
           <!-- Cart Badge -->
           <span
@@ -64,7 +64,7 @@
           (click)="closeCartModal()"
           class="text-gray-400 hover:text-gray-600 transition-colors p-1"
         >
-          <i class="fas fa-times text-lg"></i>
+          <i nz-icon nzType="close" nzTheme="outline" class="text-lg"></i>
         </button>
       </div>
 
@@ -99,7 +99,7 @@
               class="qty-btn w-10 h-10 rounded-full flex items-center justify-center transition-all"
               style="background-color: #f7f3f0; border: 2px solid #94694c; color: #5c3d2e;"
             >
-              <i class="fas fa-minus text-sm"></i>
+              <i nz-icon nzType="minus" nzTheme="outline"></i>
             </button>
 
             <span class="quantity font-bold text-lg min-w-[2rem] text-center" style="color: #5c3d2e;">
@@ -111,7 +111,7 @@
               class="qty-btn text-white w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-md hover:shadow-lg"
               style="background-color: #94694c;"
             >
-              <i class="fas fa-plus text-sm"></i>
+              <i nz-icon nzType="plus" nzTheme="outline"></i>
             </button>
           </div>
         </div>
