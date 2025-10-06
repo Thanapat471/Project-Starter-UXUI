@@ -1124,3 +1124,319 @@
     padding: 12px 24px 0;
   }
 }
+
+/* Options Management Styles */
+.options-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(244, 230, 214, 0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(148, 105, 76, 0.2);
+}
+
+.options-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.options-header h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #5c3d2e;
+}
+
+.add-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #946b4c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-option-btn:hover {
+  background: #7a5a3f;
+  transform: translateY(-1px);
+}
+
+.option-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.option-group {
+  background: white;
+  border-radius: 10px;
+  padding: 1.25rem;
+  border: 1px solid rgba(148, 105, 76, 0.15);
+  box-shadow: 0 2px 8px rgba(75, 42, 24, 0.08);
+}
+
+.option-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.group-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.group-name-input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(148, 105, 76, 0.3);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  min-width: 200px;
+  background: #fefcfa;
+}
+
+.group-name-input:focus {
+  outline: none;
+  border-color: #946b4c;
+  box-shadow: 0 0 0 2px rgba(148, 105, 76, 0.1);
+}
+
+.group-type-select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(148, 105, 76, 0.3);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: #fefcfa;
+  min-width: 120px;
+}
+
+.group-type-select:focus {
+  outline: none;
+  border-color: #946b4c;
+}
+
+.group-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.required-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #5c3d2e;
+  cursor: pointer;
+}
+
+.required-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #946b4c;
+}
+
+.max-selections-input {
+  width: 80px;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid rgba(148, 105, 76, 0.3);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  text-align: center;
+  background: #fefcfa;
+}
+
+.max-selections-input:focus {
+  outline: none;
+  border-color: #946b4c;
+}
+
+.remove-group-btn {
+  padding: 0.5rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-group-btn:hover {
+  background: #c82333;
+  transform: scale(1.05);
+}
+
+.option-values {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.option-value {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(244, 230, 214, 0.2);
+  border-radius: 8px;
+}
+
+.value-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(148, 105, 76, 0.3);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: white;
+}
+
+.value-input:focus {
+  outline: none;
+  border-color: #946b4c;
+  box-shadow: 0 0 0 2px rgba(148, 105, 76, 0.1);
+}
+
+.price-input {
+  width: 100px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(148, 105, 76, 0.3);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  text-align: right;
+  background: white;
+}
+
+.price-input:focus {
+  outline: none;
+  border-color: #946b4c;
+  box-shadow: 0 0 0 2px rgba(148, 105, 76, 0.1);
+}
+
+.remove-value-btn {
+  padding: 0.375rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+.remove-value-btn:hover {
+  background: #c82333;
+  transform: scale(1.05);
+}
+
+.add-value-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: #946b4c;
+  border: 1px dashed #946b4c;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  justify-content: center;
+}
+
+.add-value-btn:hover {
+  background: rgba(148, 105, 76, 0.1);
+  border-style: solid;
+}
+
+.options-empty {
+  text-align: center;
+  padding: 2rem;
+  color: #7a5a3f;
+  font-size: 0.875rem;
+}
+
+.options-empty p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Menu Card Options Display */
+.menu-options {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(148, 105, 76, 0.15);
+}
+
+.menu-options .options-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  color: #7a5a3f;
+  font-weight: 500;
+}
+
+.options-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.option-tag {
+  background: rgba(148, 105, 76, 0.1);
+  color: #5c3d2e;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid rgba(148, 105, 76, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .option-group-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .group-info {
+    flex-direction: column;
+  }
+
+  .group-name-input {
+    min-width: unset;
+  }
+
+  .group-controls {
+    justify-content: space-between;
+  }
+
+  .option-value {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .price-input {
+    width: 100%;
+    text-align: left;
+  }
+}
