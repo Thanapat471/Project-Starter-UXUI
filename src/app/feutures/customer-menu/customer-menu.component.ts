@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CartService } from '../../core/services/cart.service';
+import { CartService, CartItemOption } from '../../core/services/cart.service';
 import { Subject, firstValueFrom } from 'rxjs';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 interface Category {
@@ -271,7 +271,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
       name: item.name,
       price: item.price,
       image: item.imageUrl || '/assets/images/placeholder.jpg' // Fallback image
-    });
+    }, []); // Empty options for simple add to cart
   }
 
   getItemQuantityInCart(itemId: string): number {
@@ -365,42 +365,36 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     if (!this.selectedItem) return;
 
     let finalPrice = this.selectedItem.price;
-    let optionText = '';
+    const cartOptions: CartItemOption[] = [];
     
-    // Calculate final price and build option text
+    // Process selected options
     if (this.selectedItem.options) {
-      const selectedOptionTexts: string[] = [];
-      
       this.selectedItem.options.forEach(option => {
         const selectedValue = this.selectedOptions[option.id.toString()];
         if (selectedValue) {
           const selectedOption = option.options.find(opt => opt.value === selectedValue);
           if (selectedOption) {
             finalPrice += selectedOption.price;
-            selectedOptionTexts.push(selectedValue.toString());
+            // Add option in new format {type, value}
+            cartOptions.push({
+              type: option.type,
+              value: selectedValue.toString()
+            });
           }
         }
       });
-      
-      if (selectedOptionTexts.length > 0) {
-        optionText = ` (${selectedOptionTexts.join(', ')})`;
-      }
     }
 
-    // Create a unique ID for this customized item
-    const optionHash = JSON.stringify(this.selectedOptions);
-    const customizedItemId = parseInt(this.selectedItem.id) + optionHash.length;
-
-    const customizedItem = {
-      id: customizedItemId,
-      name: `${this.selectedItem.name}${optionText}`,
+    const itemToAdd = {
+      id: parseInt(this.selectedItem.id),
+      name: this.selectedItem.name,
       price: finalPrice,
       image: this.selectedItem.imageUrl || this.selectedItem.image || '/assets/images/placeholder.jpg'
     };
 
-    // Add each quantity as separate calls to handle quantity properly
+    // Add to cart with options - the CartService will handle duplicate checking
     for (let i = 0; i < this.modalQuantity; i++) {
-      this.cartService.addToCart(customizedItem);
+      this.cartService.addToCart(itemToAdd, cartOptions);
     }
 
     this.closeItemModal();
