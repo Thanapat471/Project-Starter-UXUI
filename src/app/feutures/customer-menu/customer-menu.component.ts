@@ -275,7 +275,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
   }
 
   getItemQuantityInCart(itemId: string): number {
-    // Get quantity from cart service directly
+    // Get total quantity of all variants of this item
     return this.cartService.getItemQuantity(parseInt(itemId));
   }
 
@@ -307,7 +307,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     this.selectedItem = item;
     this.showItemModal = true;
     this.modalQuantity = 1;
-    
+
     // Initialize selectedOptions with default values for each option
     this.selectedOptions = {};
     if (item.options && item.options.length > 0) {
@@ -344,7 +344,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     if (!this.selectedItem) return 0;
 
     let totalPrice = this.selectedItem.price;
-    
+
     // Add price from selected options
     if (this.selectedItem.options) {
       this.selectedItem.options.forEach(option => {
@@ -357,7 +357,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
         }
       });
     }
-    
+
     return totalPrice * this.modalQuantity;
   }
 
@@ -366,7 +366,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
 
     let finalPrice = this.selectedItem.price;
     const cartOptions: CartItemOption[] = [];
-    
+
     // Process selected options
     if (this.selectedItem.options) {
       this.selectedItem.options.forEach(option => {

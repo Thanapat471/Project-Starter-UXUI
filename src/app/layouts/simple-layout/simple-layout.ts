@@ -88,12 +88,16 @@ export class SimpleLayout implements OnInit, OnDestroy {
     document.body.style.overflow = 'auto'; // Restore scrolling
   }
 
-  updateCartItemQuantity(itemId: number, newQuantity: number) {
+  updateCartItemQuantity(item: CartItem, newQuantity: number) {
     if (newQuantity <= 0) {
-      this.cartService.removeFromCart(itemId);
+      this.cartService.removeFromCart(item.id, item.options);
     } else {
-      this.cartService.updateQuantity(itemId, newQuantity);
+      this.cartService.updateQuantity(item.id, newQuantity, item.options);
     }
+  }
+
+  removeCartItem(item: CartItem) {
+    this.cartService.removeFromCart(item.id, item.options);
   }
 
   clearCart() {
