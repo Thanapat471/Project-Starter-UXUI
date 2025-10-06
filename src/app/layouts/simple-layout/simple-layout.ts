@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CartService, CartItem } from '../../core/services/cart.service';
 import { Subject, takeUntil, firstValueFrom } from 'rxjs';
-
+import { NzIconModule } from 'ng-zorro-antd/icon';
 interface OrderItem {
   menuItemId: number;
   quantity: number;
@@ -32,7 +32,7 @@ interface OrderResponse {
 
 @Component({
   selector: 'app-simple-layout',
-  imports: [RouterOutlet, CommonModule, FormsModule],
+  imports: [RouterOutlet, CommonModule, FormsModule, NzIconModule],
   templateUrl: './simple-layout.html',
   styleUrls: ['./simple-layout.css']
 })

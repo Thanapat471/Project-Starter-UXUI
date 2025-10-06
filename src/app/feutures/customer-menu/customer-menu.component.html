@@ -107,11 +107,11 @@
 
           <!-- Show quantity controls if item is in cart, otherwise show add button -->
           <div *ngIf="getItemQuantityInCart(item.id) > 0; else addButton" class="quantity-controls flex items-center gap-3">
-                        <button
+            <button
               (click)="updateItemQuantityById(item.id, getItemQuantityInCart(item.id) - 1)"
               class="quantity-btn minus w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
             >
-              <i class="fas fa-minus text-xs text-gray-600"></i>
+              <i nz-icon nzType="minus" nzTheme="outline" class="text-gray-600"></i>
             </button>
 
             <span class="quantity-display min-w-[2rem] text-center font-bold text-login-primary">
@@ -122,7 +122,7 @@
               (click)="updateItemQuantityById(item.id, getItemQuantityInCart(item.id) + 1)"
               class="quantity-btn plus w-8 h-8 rounded-full bg-[#94694c] hover:bg-[#7a5a3f] text-white flex items-center justify-center transition-colors"
             >
-              <i class="fas fa-plus text-xs"></i>
+              <i nz-icon nzType="plus" nzTheme="outline" class="text-white"></i>
             </button>
           </div>
 
@@ -132,7 +132,7 @@
               class="add-btn px-6 py-2 rounded-full font-medium transition-all duration-300 flex items-center gap-2 hover:scale-105 active:scale-95 text-white"
               style="background-color: #94694c;"
             >
-              <i class="fas fa-shopping-cart"></i>
+              <i nz-icon nzType="shopping-cart" nzTheme="outline"></i>
               Add
             </button>
           </ng-template>
