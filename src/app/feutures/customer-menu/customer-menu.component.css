@@ -933,50 +933,6 @@
 .modal-header {
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
   border-bottom: 1px solid #e9ecef;
-  position: relative;
-}
-
-.menu-image-container {
-  position: relative;
-  overflow: hidden;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.menu-image-container img {
-  transition: transform 0.3s ease;
-}
-
-.menu-image-container:hover img {
-  transform: scale(1.02);
-}
-
-.menu-info {
-  position: relative;
-}
-
-.close-modal-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.3);
-  color: white;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  z-index: 10;
-}
-
-.close-modal-btn:hover {
-  background: rgba(0, 0, 0, 0.5);
-  transform: scale(1.1);
 }
 
 .modal-content {
