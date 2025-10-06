@@ -80,6 +80,35 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
   isLoadingMenu = false;
   menuError = '';
 
+  // Item Modal properties
+  showItemModal = false;
+  selectedItem: MenuItem | null = null;
+  modalQuantity = 1;
+  selectedOptions = {
+    temperature: 'hot',
+    size: 'M',
+    sweetness: 50
+  };
+
+  // Options for the modal
+  temperatureOptions = [
+    { value: 'hot', label: 'ร้อน', icon: '🔥' },
+    { value: 'cold', label: 'เย็น', icon: '❄️' }
+  ];
+
+  sizeOptions = [
+    { value: 'S', label: 'Small (S)', priceModifier: -10 },
+    { value: 'M', label: 'Medium (M)', priceModifier: 0 },
+    { value: 'L', label: 'Large (L)', priceModifier: 20 }
+  ];
+
+  sweetnessOptions = [
+    { value: 0, label: '0%' },
+    { value: 25, label: '25%' },
+    { value: 75, label: '75%' },
+    { value: 100, label: '100%' }
+  ];
+
   constructor(
     private readonly cartService: CartService,
     private readonly http: HttpClient,
@@ -280,5 +309,82 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
       'Desserts': 'fas fa-ice-cream'
     };
     return icons[category] || 'fas fa-circle';
+  }
+
+  // Item Modal Methods
+  openItemModal(item: MenuItem): void {
+    this.selectedItem = item;
+    this.showItemModal = true;
+    this.modalQuantity = 1;
+    // Reset options to default
+    this.selectedOptions = {
+      temperature: 'hot',
+      size: 'M',
+      sweetness: 50
+    };
+  }
+
+  closeItemModal(): void {
+    this.showItemModal = false;
+    this.selectedItem = null;
+  }
+
+  selectTemperature(temperature: string): void {
+    this.selectedOptions.temperature = temperature;
+  }
+
+  selectSize(size: string): void {
+    this.selectedOptions.size = size;
+  }
+
+  selectSweetness(sweetness: number): void {
+    this.selectedOptions.sweetness = sweetness;
+  }
+
+  increaseQuantity(): void {
+    this.modalQuantity++;
+  }
+
+  decreaseQuantity(): void {
+    if (this.modalQuantity > 1) {
+      this.modalQuantity--;
+    }
+  }
+
+  calculateTotalPrice(): number {
+    if (!this.selectedItem) return 0;
+
+    const basePrice = this.selectedItem.price;
+    const sizeModifier = this.sizeOptions.find(s => s.value === this.selectedOptions.size)?.priceModifier || 0;
+    const itemPrice = basePrice + sizeModifier;
+    
+    return itemPrice * this.modalQuantity;
+  }
+
+  addToCartWithOptions(): void {
+    if (!this.selectedItem) return;
+
+    const sizeModifier = this.sizeOptions.find(s => s.value === this.selectedOptions.size)?.priceModifier || 0;
+    const finalPrice = this.selectedItem.price + sizeModifier;
+
+    // Create a unique ID for this customized item
+    const customizedItemId = parseInt(this.selectedItem.id) + 
+                           (this.selectedOptions.temperature === 'cold' ? 10000 : 0) +
+                           (this.selectedOptions.size === 'S' ? 100 : this.selectedOptions.size === 'L' ? 200 : 0) +
+                           this.selectedOptions.sweetness;
+
+    const customizedItem = {
+      id: customizedItemId,
+      name: `${this.selectedItem.name} (${this.selectedOptions.temperature === 'hot' ? '🔥' : '❄️'} ${this.selectedOptions.size} ${this.selectedOptions.sweetness}%)`,
+      price: finalPrice,
+      image: this.selectedItem.imageUrl || this.selectedItem.image || '/assets/images/placeholder.jpg'
+    };
+
+    // Add each quantity as separate calls to handle quantity properly
+    for (let i = 0; i < this.modalQuantity; i++) {
+      this.cartService.addToCart(customizedItem);
+    }
+
+    this.closeItemModal();
   }
 }
