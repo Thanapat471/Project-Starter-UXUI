@@ -128,12 +128,12 @@
 
           <ng-template #addButton>
             <button
-              (click)="addToCart(item)"
+              (click)="openItemModal(item)"
               class="add-btn px-6 py-2 rounded-full font-medium transition-all duration-300 flex items-center gap-2 hover:scale-105 active:scale-95 text-white"
               style="background-color: #94694c;"
             >
-              <i nz-icon nzType="shopping-cart" nzTheme="outline"></i>
-              Add
+              <i nz-icon nzType="plus" nzTheme="outline"></i>
+              ตระกร้าสินค้า
             </button>
           </ng-template>
         </div>
@@ -162,5 +162,141 @@
       </button>
       <span *ngIf="!searchTerm">ลองเลือกหมวดหมู่อื่น</span>
     </p>
+  </div>
+
+  <!-- Item Options Modal -->
+  <div 
+    *ngIf="showItemModal" 
+    class="item-modal-overlay fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+    (click)="closeItemModal()"
+  >
+    <div 
+      class="item-modal bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Modal Header -->
+      <div class="modal-header p-6 border-b border-gray-200 relative">
+        <div class="flex flex-col">
+          <h2 class="text-2xl font-bold text-gray-800">{{ selectedItem?.name }}</h2>
+          <p class="text-gray-600 text-sm leading-relaxed mt-2">{{ selectedItem?.description }}</p>
+        </div>
+        
+        <!-- Close Button -->
+        <button 
+          (click)="closeItemModal()"
+          class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-300 hover:bg-gray-400 text-gray-600 hover:text-gray-800 flex items-center justify-center transition-all duration-300"
+        >
+          <i nz-icon nzType="close" nzTheme="outline" class="text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Modal Content -->
+      <div class="modal-content p-6 max-h-[60vh] overflow-y-auto">
+        
+        <!-- Dynamic Options from API -->
+        <div *ngFor="let option of selectedItem?.options" class="option-group mb-6">
+          <h3 class="option-title text-lg font-semibold text-gray-800 mb-3">
+            <i class="mr-2">{{ getOptionIcon(option.type) }}</i>{{ option.name }}
+            <span *ngIf="option.isRequired" class="text-red-500 text-sm ml-1">*</span>
+          </h3>
+          
+          <!-- Grid layout for most option types -->
+          <div 
+            *ngIf="option.type !== 'SIZE'" 
+            class="option-buttons grid grid-cols-2 gap-3"
+          >
+            <button
+              *ngFor="let opt of option.options"
+              (click)="selectOption(option.id, opt.value)"
+              [class]="'option-btn p-4 rounded-xl border-2 transition-all duration-300 text-center relative ' +
+                       (selectedOptions[option.id.toString()] === opt.value ? 'border-[#94694c] bg-[#f7f3f0] text-[#5c3d2e]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
+            >
+              <div class="font-medium">{{ opt.value }}</div>
+              <div *ngIf="opt.price > 0" class="text-sm text-gray-600 mt-1">
+                +{{ opt.price }}฿
+              </div>
+              
+              <!-- Selected indicator -->
+              <div 
+                *ngIf="selectedOptions[option.id.toString()] === opt.value"
+                class="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#94694c] flex items-center justify-center"
+              >
+                <i nz-icon nzType="check" nzTheme="outline" class="text-white text-xs"></i>
+              </div>
+            </button>
+          </div>
+
+          <!-- Special layout for SIZE options -->
+          <div 
+            *ngIf="option.type === 'SIZE'" 
+            class="option-buttons space-y-2"
+          >
+            <div
+              *ngFor="let opt of option.options"
+              (click)="selectOption(option.id, opt.value)"
+              [class]="'option-btn p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 flex items-center justify-between ' +
+                       (selectedOptions[option.id.toString()] === opt.value ? 'border-[#94694c] bg-[#f7f3f0]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
+            >
+              <div class="flex items-center">
+                <span class="font-medium text-gray-800">{{ opt.value }}</span>
+                <span *ngIf="opt.price !== 0" class="ml-2 text-sm text-gray-600">
+                  ({{ opt.price > 0 ? '+' : '' }}{{ opt.price }}฿)
+                </span>
+              </div>
+              <div 
+                [class]="'w-5 h-5 rounded-full border-2 flex items-center justify-center ' +
+                         (selectedOptions[option.id.toString()] === opt.value ? 'border-[#94694c] bg-[#94694c]' : 'border-gray-300')"
+              >
+                <div *ngIf="selectedOptions[option.id.toString()] === opt.value" class="w-2 h-2 bg-white rounded-full"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quantity -->
+        <div class="option-group mb-6">
+          <h3 class="option-title text-lg font-semibold text-gray-800 mb-3">
+            <i class="mr-2"></i>จำนวน
+          </h3>
+          <div class="quantity-selector flex items-center justify-center gap-4">
+            <button
+              (click)="decreaseQuantity()"
+              [disabled]="modalQuantity <= 1"
+              class="qty-btn w-12 h-12 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+            >
+              <i nz-icon nzType="minus" nzTheme="outline" class="text-gray-600"></i>
+            </button>
+
+            <span class="quantity-display text-2xl font-bold text-[#5c3d2e] min-w-[3rem] text-center">
+              {{ modalQuantity }}
+            </span>
+
+            <button
+              (click)="increaseQuantity()"
+              class="qty-btn w-12 h-12 rounded-full bg-[#94694c] hover:bg-[#7a5a3f] text-white flex items-center justify-center transition-colors"
+            >
+              <i nz-icon nzType="plus" nzTheme="outline"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer p-6 border-t border-gray-200 bg-gray-50">
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-lg font-semibold text-gray-800">ราคารวม:</span>
+          <span class="text-2xl font-bold text-[#5c3d2e]">฿{{ calculateTotalPrice() }}</span>
+        </div>
+        
+        <button
+          (click)="addToCartWithOptions()"
+          class="add-to-cart-btn w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-white"
+          style="background: linear-gradient(135deg, #94694c, #5c3d2e);"
+        >
+          <i nz-icon nzType="shopping-cart" nzTheme="outline"></i>
+          เพิ่มลงตะกร้า {{ modalQuantity }} รายการ
+        </button>
+      </div>
+    </div>
   </div>
 </div>
