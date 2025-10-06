@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PaymentService } from '../../core/services/payment.service';
 import { OrdersService } from '../../core/services/orders.service';
 import { ReceiptService } from '../../core/services/receipt.service';
+import { TableService } from '../../core/services/table.service';
 import {
   PromptPayPaymentResponse,
   CashPaymentResponse,
@@ -27,6 +28,7 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
   private readonly paymentService = inject(PaymentService);
   private readonly orderService = inject(OrdersService);
   private readonly receiptService = inject(ReceiptService);
+  private readonly tableService = inject(TableService);
 
   // Current order/table data
   orderId: number | null = null;
@@ -199,6 +201,10 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
         }
 
         alert(message);
+
+        // Auto-close table session after successful payment
+        this.autoCloseTableSession();
+
         this.router.navigate(['/features/dashboard']);
       },
       error: (error) => {
@@ -239,6 +245,11 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
 
         alert(message);
 
+        // Auto-close table session if we have sessionId
+        if (this.sessionId) {
+          this.autoCloseTableSession();
+        }
+
         // Refresh pending tables list
         this.loadPendingTables();
       },
@@ -274,7 +285,37 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
     }
 
     alert(message);
+
+    // Auto-close table session after successful payment
+    this.autoCloseTableSession();
+
     this.router.navigate(['/features/dashboard']);
+  }
+
+  /**
+   * Automatically close table session after payment completion
+   * This makes the table available for new customers
+   */
+  private autoCloseTableSession() {
+    if (!this.sessionId) {
+      console.log('No session ID available for auto-close');
+      return;
+    }
+
+    console.log(`Auto-closing table session: ${this.sessionId}`);
+
+    this.tableService.closeSession(this.sessionId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          console.log('Table session closed successfully:', response);
+        },
+        error: (error) => {
+          console.error('Failed to close table session:', error);
+          // Don't show error to user as payment was successful
+          // This is background cleanup
+        }
+      });
   }
 
   // Counter Checkout (one-step order + payment)
@@ -301,6 +342,11 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
             alert(`Checkout successful!\nChange: ฿${response.payment.changeAmount}`);
           } else {
             alert('Checkout successful!');
+          }
+
+          // Auto-close table session if this was a table-based checkout
+          if (this.sessionId) {
+            this.autoCloseTableSession();
           }
 
           this.router.navigate(['/features/dashboard']);
