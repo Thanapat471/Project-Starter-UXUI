@@ -196,42 +196,42 @@
 }
 
 .stat-available {
-  background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
-  border: 1px solid #9ae6b4;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(244, 230, 214, 0.3) 100%);
+  border: 1px solid rgba(148, 105, 76, 0.2);
 }
 
 .stat-available .stat-value {
-  color: #22543d;
+  color: #5c3d2e;
 }
 
 .stat-available .stat-icon {
-  color: #48bb78;
+  color: #94694c;
 }
 
 .stat-in-use {
-  background: linear-gradient(135deg, #fffaf0 0%, #feebc8 100%);
-  border: 1px solid #f6ad55;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 223, 204, 0.4) 100%);
+  border: 1px solid rgba(148, 105, 76, 0.25);
 }
 
 .stat-in-use .stat-value {
-  color: #7c2d12;
+  color: #5c3d2e;
 }
 
 .stat-in-use .stat-icon {
-  color: #ed8936;
+  color: #94694c;
 }
 
 .stat-total {
-  background: linear-gradient(135deg, #f7fafc 0%, #e2e8f0 100%);
-  border: 1px solid #cbd5e0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 249, 244, 0.5) 100%);
+  border: 1px solid rgba(148, 105, 76, 0.15);
 }
 
 .stat-total .stat-value {
-  color: #2d3748;
+  color: #5c3d2e;
 }
 
 .stat-total .stat-icon {
-  color: #4a5568;
+  color: #94694c;
 }
 
 /* Main content sections */
@@ -255,31 +255,62 @@
 }
 
 .table-card {
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(92, 61, 46, 0.12);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   height: 100%;
   border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.table-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #94694c, #5c3d2e);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
 
 .table-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 16px 50px rgba(92, 61, 46, 0.25);
+}
+
+.table-card:hover::before {
+  transform: scaleX(1);
 }
 
 .card-available {
-  border-color: #9ae6b4;
-  background: linear-gradient(to bottom, #ffffff 0%, #f0fff4 100%);
+  border-color: rgba(148, 105, 76, 0.3);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.card-available::before {
+  background: linear-gradient(135deg, #94694c, #5c3d2e);
 }
 
 .card-in-use {
-  border-color: #f6ad55;
-  background: linear-gradient(to bottom, #ffffff 0%, #fffaf0 100%);
+  border-color: rgba(160, 130, 109, 0.4);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(244, 230, 214, 0.15) 100%);
+}
+
+.card-in-use::before {
+  background: linear-gradient(135deg, #a0826d, #8a6b55);
 }
 
 .card-reserved {
-  border-color: #fc8181;
-  background: linear-gradient(to bottom, #ffffff 0%, #fff5f5 100%);
+  border-color: rgba(138, 107, 85, 0.35);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.card-reserved::before {
+  background: linear-gradient(135deg, #8a6b55, #6d5444);
 }
 
 .table-header {
@@ -288,14 +319,23 @@
   align-items: center;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 2px solid rgba(148, 105, 76, 0.15);
 }
 
 .table-name {
   font-size: 18px;
   font-weight: 700;
   margin: 0;
-  color: #333;
+  color: #5c3d2e;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.table-name::before {
+  content: '🍽️';
+  font-size: 1rem;
+  opacity: 0.8;
 }
 
 @media (min-width: 768px) {
@@ -305,10 +345,13 @@
 }
 
 .status-badge {
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 12px;
-  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .table-info {
@@ -317,11 +360,13 @@
   gap: 8px;
   margin-bottom: 16px;
   font-size: 14px;
-  color: #666;
+  color: #8a6b55;
+  font-weight: 500;
 }
 
 .table-info span[nz-icon] {
   font-size: 16px;
+  color: #94694c;
 }
 
 .table-actions {
@@ -340,13 +385,29 @@
 
 .action-btn {
   width: 100%;
-  height: 36px;
-  border-radius: 8px;
+  height: 40px;
+  border-radius: 12px;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.action-btn:hover::before {
+  opacity: 1;
 }
 
 @media (min-width: 480px) {
@@ -357,15 +418,15 @@
 }
 
 .qr-btn {
-  background: #f0f9ff;
-  border-color: #38bdf8;
-  color: #0369a1;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  border: none;
+  color: white;
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
 }
 
 .qr-btn:hover {
-  background: #e0f2fe;
-  border-color: #0ea5e9;
-  color: #0c4a6e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
 }
 
 .action-group {
@@ -383,23 +444,34 @@
 }
 
 .icon-btn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  transition: all 0.2s;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(148, 105, 76, 0.08);
+  border: 1px solid rgba(148, 105, 76, 0.15);
 }
 
 .icon-btn:hover {
-  background: #f3f4f6;
+  background: rgba(148, 105, 76, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(92, 61, 46, 0.2);
+}
+
+.icon-btn[nzDanger] {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.15);
 }
 
 .icon-btn[nzDanger]:hover {
-  background: #fee2e2;
+  background: rgba(239, 68, 68, 0.15);
   color: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
 }
 
 /* Dark Mode Support */
@@ -549,4 +621,48 @@
 /* Loading Spinner Customization */
 :host ::ng-deep .ant-spin-dot-item {
   background-color: #94694c;
+}
+
+/* Card entrance animations */
+.table-card {
+  animation: fadeInUp 0.4s ease-out both;
+}
+
+.table-card:nth-child(1) { animation-delay: 0.1s; }
+.table-card:nth-child(2) { animation-delay: 0.15s; }
+.table-card:nth-child(3) { animation-delay: 0.2s; }
+.table-card:nth-child(4) { animation-delay: 0.25s; }
+.table-card:nth-child(5) { animation-delay: 0.3s; }
+.table-card:nth-child(6) { animation-delay: 0.35s; }
+.table-card:nth-child(7) { animation-delay: 0.4s; }
+.table-card:nth-child(8) { animation-delay: 0.45s; }
+.table-card:nth-child(n+9) { animation-delay: 0.5s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth transitions for all interactive elements */
+.table-card, .action-btn, .icon-btn {
+  will-change: transform;
+}
+
+/* Active state for better feedback */
+.table-card:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+.action-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.icon-btn:active {
+  transform: translateY(0) scale(0.9);
 }
