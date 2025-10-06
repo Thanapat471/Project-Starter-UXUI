@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CartService } from '../../core/services/cart.service';
 import { Subject, firstValueFrom } from 'rxjs';
-
+import { NzIconModule } from 'ng-zorro-antd/icon';
 interface Category {
   id: string;
   name: string;
@@ -55,7 +55,7 @@ interface OrderResponse {
 @Component({
   selector: 'app-customer-menu',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NzIconModule],
   templateUrl: './customer-menu.component.html',
   styleUrl: './customer-menu.component.css'
 })
