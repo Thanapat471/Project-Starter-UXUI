@@ -12,6 +12,20 @@ interface Category {
   menuItems: MenuItem[];
 }
 
+interface MenuOption {
+  value: string;
+  price: number;
+}
+
+interface MenuItemOption {
+  id: number;
+  name: string;
+  type: 'SWEETNESS' | 'TEMPERATURE' | 'SIZE';
+  options: MenuOption[];
+  isRequired: boolean;
+  maxSelections: number;
+}
+
 interface MenuItem {
   id: string;
   name: string;
@@ -23,7 +37,7 @@ interface MenuItem {
   image: string | null;
   imageUrl: string | null;
   isAvailable: boolean;
-  options: any[];
+  options: MenuItemOption[];
   createdAt: string;
   updatedAt: string;
 }
@@ -84,30 +98,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
   showItemModal = false;
   selectedItem: MenuItem | null = null;
   modalQuantity = 1;
-  selectedOptions = {
-    temperature: 'hot',
-    size: 'M',
-    sweetness: 50
-  };
-
-  // Options for the modal
-  temperatureOptions = [
-    { value: 'hot', label: 'ร้อน', icon: '🔥' },
-    { value: 'cold', label: 'เย็น', icon: '❄️' }
-  ];
-
-  sizeOptions = [
-    { value: 'S', label: 'Small (S)', priceModifier: -10 },
-    { value: 'M', label: 'Medium (M)', priceModifier: 0 },
-    { value: 'L', label: 'Large (L)', priceModifier: 20 }
-  ];
-
-  sweetnessOptions = [
-    { value: 0, label: '0%' },
-    { value: 25, label: '25%' },
-    { value: 75, label: '75%' },
-    { value: 100, label: '100%' }
-  ];
+  selectedOptions: { [key: string]: string | number } = {};
 
   constructor(
     private readonly cartService: CartService,
@@ -316,29 +307,27 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     this.selectedItem = item;
     this.showItemModal = true;
     this.modalQuantity = 1;
-    // Reset options to default
-    this.selectedOptions = {
-      temperature: 'hot',
-      size: 'M',
-      sweetness: 50
-    };
+    
+    // Initialize selectedOptions with default values for each option
+    this.selectedOptions = {};
+    if (item.options && item.options.length > 0) {
+      item.options.forEach(option => {
+        if (option.options && option.options.length > 0) {
+          // Select first option as default
+          this.selectedOptions[option.id.toString()] = option.options[0].value;
+        }
+      });
+    }
   }
 
   closeItemModal(): void {
     this.showItemModal = false;
     this.selectedItem = null;
+    this.selectedOptions = {};
   }
 
-  selectTemperature(temperature: string): void {
-    this.selectedOptions.temperature = temperature;
-  }
-
-  selectSize(size: string): void {
-    this.selectedOptions.size = size;
-  }
-
-  selectSweetness(sweetness: number): void {
-    this.selectedOptions.sweetness = sweetness;
+  selectOption(optionId: number, value: string): void {
+    this.selectedOptions[optionId.toString()] = value;
   }
 
   increaseQuantity(): void {
@@ -354,28 +343,57 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
   calculateTotalPrice(): number {
     if (!this.selectedItem) return 0;
 
-    const basePrice = this.selectedItem.price;
-    const sizeModifier = this.sizeOptions.find(s => s.value === this.selectedOptions.size)?.priceModifier || 0;
-    const itemPrice = basePrice + sizeModifier;
+    let totalPrice = this.selectedItem.price;
     
-    return itemPrice * this.modalQuantity;
+    // Add price from selected options
+    if (this.selectedItem.options) {
+      this.selectedItem.options.forEach(option => {
+        const selectedValue = this.selectedOptions[option.id.toString()];
+        if (selectedValue) {
+          const selectedOption = option.options.find(opt => opt.value === selectedValue);
+          if (selectedOption) {
+            totalPrice += selectedOption.price;
+          }
+        }
+      });
+    }
+    
+    return totalPrice * this.modalQuantity;
   }
 
   addToCartWithOptions(): void {
     if (!this.selectedItem) return;
 
-    const sizeModifier = this.sizeOptions.find(s => s.value === this.selectedOptions.size)?.priceModifier || 0;
-    const finalPrice = this.selectedItem.price + sizeModifier;
+    let finalPrice = this.selectedItem.price;
+    let optionText = '';
+    
+    // Calculate final price and build option text
+    if (this.selectedItem.options) {
+      const selectedOptionTexts: string[] = [];
+      
+      this.selectedItem.options.forEach(option => {
+        const selectedValue = this.selectedOptions[option.id.toString()];
+        if (selectedValue) {
+          const selectedOption = option.options.find(opt => opt.value === selectedValue);
+          if (selectedOption) {
+            finalPrice += selectedOption.price;
+            selectedOptionTexts.push(selectedValue.toString());
+          }
+        }
+      });
+      
+      if (selectedOptionTexts.length > 0) {
+        optionText = ` (${selectedOptionTexts.join(', ')})`;
+      }
+    }
 
     // Create a unique ID for this customized item
-    const customizedItemId = parseInt(this.selectedItem.id) + 
-                           (this.selectedOptions.temperature === 'cold' ? 10000 : 0) +
-                           (this.selectedOptions.size === 'S' ? 100 : this.selectedOptions.size === 'L' ? 200 : 0) +
-                           this.selectedOptions.sweetness;
+    const optionHash = JSON.stringify(this.selectedOptions);
+    const customizedItemId = parseInt(this.selectedItem.id) + optionHash.length;
 
     const customizedItem = {
       id: customizedItemId,
-      name: `${this.selectedItem.name} (${this.selectedOptions.temperature === 'hot' ? '🔥' : '❄️'} ${this.selectedOptions.size} ${this.selectedOptions.sweetness}%)`,
+      name: `${this.selectedItem.name}${optionText}`,
       price: finalPrice,
       image: this.selectedItem.imageUrl || this.selectedItem.image || '/assets/images/placeholder.jpg'
     };
@@ -386,5 +404,14 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     }
 
     this.closeItemModal();
+  }
+
+  getOptionIcon(optionType: string): string {
+    const icons: { [key: string]: string } = {
+      'SWEETNESS': '🍯',
+      'TEMPERATURE': '🌡️',
+      'SIZE': '📏'
+    };
+    return icons[optionType] || '⚙️';
   }
 }

@@ -186,71 +186,61 @@
           </button>
         </div>
         <p class="text-gray-600 text-sm mt-2">{{ selectedItem?.description }}</p>
+        
       </div>
 
       <!-- Modal Content -->
       <div class="modal-content p-6 max-h-[60vh] overflow-y-auto">
         
-        <!-- Temperature Selection -->
-        <div class="option-group mb-6">
+        <!-- Dynamic Options from API -->
+        <div *ngFor="let option of selectedItem?.options" class="option-group mb-6">
           <h3 class="option-title text-lg font-semibold text-gray-800 mb-3">
-            <i class="mr-2"></i>รูปแบบ
+            <i class="mr-2">{{ getOptionIcon(option.type) }}</i>{{ option.name }}
+            <span *ngIf="option.isRequired" class="text-red-500 text-sm ml-1">*</span>
           </h3>
-          <div class="option-buttons grid grid-cols-2 gap-3">
+          
+          <!-- Grid layout for most option types -->
+          <div 
+            *ngIf="option.type !== 'SIZE'" 
+            class="option-buttons grid grid-cols-2 gap-3"
+          >
             <button
-              *ngFor="let temp of temperatureOptions"
-              (click)="selectTemperature(temp.value)"
+              *ngFor="let opt of option.options"
+              (click)="selectOption(option.id, opt.value)"
               [class]="'option-btn p-4 rounded-xl border-2 transition-all duration-300 text-center ' +
-                       (selectedOptions.temperature === temp.value ? 'border-[#94694c] bg-[#f7f3f0] text-[#5c3d2e]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
+                       (selectedOptions[option.id.toString()] === opt.value ? 'border-[#94694c] bg-[#f7f3f0] text-[#5c3d2e]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
             >
-              <div class="text-2xl mb-1">{{ temp.icon }}</div>
-              <div class="font-medium">{{ temp.label }}</div>
+              <div class="font-medium">{{ opt.value }}</div>
+              <div *ngIf="opt.price > 0" class="text-sm text-gray-600 mt-1">
+                +{{ opt.price }}฿
+              </div>
             </button>
           </div>
-        </div>
 
-        <!-- Size Selection -->
-        <div class="option-group mb-6">
-          <h3 class="option-title text-lg font-semibold text-gray-800 mb-3">
-            <i class="mr-2"></i>ขนาด
-          </h3>
-          <div class="option-buttons space-y-2">
+          <!-- Special layout for SIZE options -->
+          <div 
+            *ngIf="option.type === 'SIZE'" 
+            class="option-buttons space-y-2"
+          >
             <div
-              *ngFor="let size of sizeOptions"
-              (click)="selectSize(size.value)"
+              *ngFor="let opt of option.options"
+              (click)="selectOption(option.id, opt.value)"
               [class]="'option-btn p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 flex items-center justify-between ' +
-                       (selectedOptions.size === size.value ? 'border-[#94694c] bg-[#f7f3f0]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
+                       (selectedOptions[option.id.toString()] === opt.value ? 'border-[#94694c] bg-[#f7f3f0]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
             >
               <div class="flex items-center">
-                <span class="font-medium text-gray-800">{{ size.label }}</span>
-                <span *ngIf="size.priceModifier !== 0" class="ml-2 text-sm text-gray-600">
-                  ({{ size.priceModifier > 0 ? '+' : '' }}{{ size.priceModifier }}฿)
+                <span class="font-medium text-gray-800">{{ opt.value }}</span>
+                <span *ngIf="opt.price !== 0" class="ml-2 text-sm text-gray-600">
+                  ({{ opt.price > 0 ? '+' : '' }}{{ opt.price }}฿)
                 </span>
               </div>
               <div 
                 [class]="'w-5 h-5 rounded-full border-2 flex items-center justify-center ' +
-                         (selectedOptions.size === size.value ? 'border-[#94694c] bg-[#94694c]' : 'border-gray-300')"
+                         (selectedOptions[option.id.toString()] === opt.value ? 'border-[#94694c] bg-[#94694c]' : 'border-gray-300')"
               >
-                <div *ngIf="selectedOptions.size === size.value" class="w-2 h-2 bg-white rounded-full"></div>
+                <div *ngIf="selectedOptions[option.id.toString()] === opt.value" class="w-2 h-2 bg-white rounded-full"></div>
               </div>
             </div>
-          </div>
-        </div>
-
-        <!-- Sweetness Level -->
-        <div class="option-group mb-6">
-          <h3 class="option-title text-lg font-semibold text-gray-800 mb-3">
-            <i class="mr-2"></i>ความหวาน
-          </h3>
-          <div class="option-buttons grid grid-cols-2 gap-3">
-            <button
-              *ngFor="let sweet of sweetnessOptions"
-              (click)="selectSweetness(sweet.value)"
-              [class]="'option-btn p-4 rounded-xl border-2 transition-all duration-300 text-center ' +
-                       (selectedOptions.sweetness === sweet.value ? 'border-[#94694c] bg-[#f7f3f0] text-[#5c3d2e]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
-            >
-              <div class="font-medium">{{ sweet.label }}</div>
-            </button>
           </div>
         </div>
 
