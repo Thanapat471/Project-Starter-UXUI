@@ -38,7 +38,29 @@ export interface CashPaymentRequest {
 export interface CashPaymentResponse {
   success: boolean;
   message: string;
-  payment: Payment;
+  table?: {
+    id: number;
+    code: string;
+    name: string;
+  };
+  payment: {
+    totalAmount: number;
+    paidAmount: number;
+    changeAmount: number;
+    orderCount: number;
+    method: string;
+  };
+  orders: {
+    id: number;
+    total: number;
+    status: string;
+  }[];
+  receipt?: {
+    id: number;
+    receiptNumber: string;
+    downloadUrl: string;
+  };
+  transactionRefs: string[];
 }
 
 export interface ConfirmPaymentRequest {
@@ -57,6 +79,11 @@ export interface ConfirmPaymentResponse {
     id: number;
     status: string;
   }[];
+  receipt?: {
+    id: number;
+    receiptNumber: string;
+    downloadUrl: string;
+  };
 }
 
 export interface CheckoutRequest {
