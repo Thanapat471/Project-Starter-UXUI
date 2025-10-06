@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,15 +8,10 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
-
-interface MenuItem {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  imageUrl?: string;
-}
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { MenuService, MenuItem, MenuCategory } from '../../core/services/menu.service';
+import { HttpClientModule } from '@angular/common/http';
 
 interface CartItem {
   id: string;
@@ -32,50 +27,96 @@ interface CartItem {
   imports: [
     CommonModule,
     FormsModule,
+    HttpClientModule,
     NzCardModule,
     NzButtonModule,
     NzIconModule,
     NzInputModule,
     NzTagModule,
-    NzBadgeModule
+    NzBadgeModule,
+    NzSpinModule
   ],
   templateUrl: './counter-order.component.html',
   styleUrls: ['./counter-order.component.css']
 })
-export class CounterOrderComponent {
+export class CounterOrderComponent implements OnInit, OnDestroy {
   searchTerm = signal<string>('');
   selectedCategory = signal<string>('ทั้งหมด');
-  cart = signal<CartItem[]>([
-    { id: '1', name: 'ชาเย็นใส่นม่า', price: 120, quantity: 1, total: 120 },
-    { id: '2', name: 'แอสเพรสโซ่', price: 95, quantity: 1, total: 95 }
-  ]);
+  showFloatingCart = signal<boolean>(false);
+  cartVisible = signal<boolean>(false);
+  menuItems = signal<MenuItem[]>([]);
+  categories = signal<MenuCategory[]>([]);
+  loading = signal<boolean>(false);
+  cart = signal<CartItem[]>([]);
 
-  categories = ['ทั้งหมด', 'กาแฟ', 'ชา', 'เครื่องดื่มเย็น', 'ขนม', 'อาหาร'];
+  constructor(
+    private router: Router,
+    private menuService: MenuService,
+    private message: NzMessageService
+  ) {
+    this.checkScreenSize();
+  }
 
-  menuItems: MenuItem[] = [
-    { id: '1', name: 'เอสเพรสโซ่', description: 'กาแฟเข้มข้น คั่วคะแมนสเอียน', price: 45, category: 'กาแฟ', imageUrl: 'https://images.unsplash.com/photo-1510707577770-8b980a9c5dd2?w=300&h=200&fit=crop' },
-    { id: '2', name: 'ลาเต้', description: 'กาแฟผสมนมสดมสเอียน', price: 65, category: 'กาแฟ', imageUrl: 'https://images.unsplash.com/photo-1561882468-9110e03e0f78?w=300&h=200&fit=crop' },
-    { id: '3', name: 'คาปูชิโน่', description: 'กาแฟใส่นมข้นหวาน', price: 65, category: 'กาแฟ', imageUrl: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=300&h=200&fit=crop' },
-    { id: '4', name: 'อมริกาโน่', description: 'กาแฟดำใส่น้ำสุเมิร์ก', price: 50, category: 'กาแฟ', imageUrl: 'https://images.unsplash.com/photo-1497636577773-f1231844b336?w=300&h=200&fit=crop' },
-    { id: '5', name: 'มอคค่า', description: 'กาแฟผสมช็อกโกแลต', price: 75, category: 'กาแฟ', imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop' },
-    { id: '6', name: 'ชาเขียว', description: 'ชาเขียวปัญญาชน', price: 45, category: 'ชา', imageUrl: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300&h=200&fit=crop' },
-    { id: '7', name: 'ชานมไข่มุก', description: 'ชานมหวานา ใส่ไข่มุก', price: 60, category: 'ชา', imageUrl: 'https://images.unsplash.com/photo-1525385133512-2f3bdd039054?w=300&h=200&fit=crop' },
-    { id: '8', name: 'ชานสลี', description: 'ชานตรอมกรม', price: 40, category: 'ชา', imageUrl: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300&h=200&fit=crop' },
-    { id: '9', name: 'น้ำลื่นเค้ก', description: 'น้ำล้มมโครขนม', price: 75, category: 'เครื่องดื่มเย็น', imageUrl: 'https://images.unsplash.com/photo-1546173159-315724a31696?w=300&h=200&fit=crop' },
-    { id: '10', name: 'สมูทตี่ผลไม้รวม', description: 'ผลไม่ระบอมป่า คลับย', price: 85, category: 'เครื่องดื่มเย็น', imageUrl: 'https://images.unsplash.com/photo-1515823064-d6e0c04616a7?w=300&h=200&fit=crop' }
-  ];
+  ngOnInit() {
+    this.loadMenuData();
+    window.addEventListener('resize', () => this.checkScreenSize());
+  }
 
-  constructor(private router: Router) {}
+  ngOnDestroy() {
+    window.removeEventListener('resize', () => this.checkScreenSize());
+  }
+
+  private checkScreenSize() {
+    this.showFloatingCart.set(window.innerWidth <= 480);
+  }
+
+  toggleCart() {
+    this.cartVisible.set(!this.cartVisible());
+  }
+
+  private loadMenuData() {
+    this.loading.set(true);
+    
+    // Load categories first
+    this.menuService.getMenuCategories().subscribe({
+      next: (categories) => {
+        // Add "ทั้งหมด" to the beginning
+        const allCategories = [{ id: 'all', name: 'ทั้งหมด' }, ...categories];
+        this.categories.set(allCategories);
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
+        this.message.error('ไม่สามารถโหลดหมวดหมู่เมนูได้');
+        // Set default categories as fallback
+        this.categories.set([{ id: 'all', name: 'ทั้งหมด' }]);
+      }
+    });
+
+    // Load menu items
+    this.menuService.getMenuItems().subscribe({
+      next: (items) => {
+        this.menuItems.set(items.filter(item => item.isAvailable));
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Error loading menu items:', error);
+        this.message.error('ไม่สามารถโหลดเมนูได้');
+        this.loading.set(false);
+        // Set empty array as fallback
+        this.menuItems.set([]);
+      }
+    });
+  }
 
   get filteredMenuItems() {
-    const items = this.menuItems;
+    const items = this.menuItems();
     const search = this.searchTerm().toLowerCase();
-    const category = this.selectedCategory();
+    const selectedCat = this.selectedCategory();
 
     return items.filter(item => {
       const matchesSearch = item.name.toLowerCase().includes(search) || 
-                           item.description.toLowerCase().includes(search);
-      const matchesCategory = category === 'ทั้งหมด' || item.category === category;
+                           (item.description && item.description.toLowerCase().includes(search));
+      const matchesCategory = selectedCat === 'ทั้งหมด' || item.category.name === selectedCat;
       return matchesSearch && matchesCategory;
     });
   }

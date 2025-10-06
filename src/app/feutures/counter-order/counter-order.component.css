@@ -137,6 +137,40 @@
   margin-top: 24px;
 }
 
+/* Loading State */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  margin-top: 40px;
+}
+
+.loading-text {
+  color: #8a6b55;
+  font-size: 1rem;
+  margin-top: 16px;
+}
+
+/* Empty State */
+.empty-menu {
+  text-align: center;
+  padding: 60px 20px;
+  color: #8a6b55;
+  margin-top: 40px;
+}
+
+.empty-menu-icon {
+  font-size: 48px;
+  color: #d4b896;
+  margin-bottom: 16px;
+}
+
+.empty-menu p {
+  font-size: 1rem;
+  margin: 0;
+}
+
 .menu-item-card {
   background: white;
   border-radius: 16px;

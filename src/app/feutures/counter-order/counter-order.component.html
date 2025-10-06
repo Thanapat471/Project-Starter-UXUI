@@ -36,16 +36,23 @@
       <!-- Category Filters -->
       <div class="category-filters">
         <nz-tag 
-          *ngFor="let category of categories"
-          [nzColor]="selectedCategory() === category ? '#8b5a3c' : 'default'"
-          (click)="selectCategory(category)"
+          *ngFor="let category of categories()"
+          [nzColor]="selectedCategory() === category.name ? '#8b5a3c' : 'default'"
+          (click)="selectCategory(category.name)"
           class="category-tag">
-          {{ category }}
+          {{ category.name }}
         </nz-tag>
       </div>
 
+      <!-- Loading State -->
+      <div *ngIf="loading()" class="loading-container">
+        <nz-spin nzSize="large">
+          <div class="loading-text">กำลังโหลดเมนู...</div>
+        </nz-spin>
+      </div>
+
       <!-- Menu Items Grid -->
-      <div class="menu-grid">
+      <div class="menu-grid" *ngIf="!loading()">
         <div 
           *ngFor="let item of filteredMenuItems" 
           class="menu-item-card">
@@ -84,6 +91,14 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loading() && filteredMenuItems.length === 0" class="empty-menu">
+        <div class="empty-menu-icon">
+          <nz-icon nzType="inbox" nzTheme="outline"></nz-icon>
+        </div>
+        <p>ไม่พบเมนูที่ค้นหา</p>
       </div>
     </div>
 
