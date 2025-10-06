@@ -120,13 +120,13 @@ export class Table implements OnInit {
   calculateStats(): void {
     this.stats.total = this.tables.length;
     this.stats.available = this.tables.filter(t => t.status === 'AVAILABLE').length;
-    this.stats.inUse = this.tables.filter(t => t.status === 'IN_USE').length;
+    this.stats.inUse = this.tables.filter(t => t.status === 'OCCUPIED').length;
   }
 
   getStatusText(status: string): string {
     switch (status) {
       case 'AVAILABLE': return 'ว่าง';
-      case 'IN_USE': return 'ใช้งาน';
+      case 'OCCUPIED': return 'ใช้งาน';
       case 'RESERVED': return 'จองแล้ว';
       default: return status;
     }
@@ -135,7 +135,7 @@ export class Table implements OnInit {
   getStatusColor(status: string): string {
     switch (status) {
       case 'AVAILABLE': return 'green';
-      case 'IN_USE': return 'orange';
+      case 'OCCUPIED': return 'orange';
       case 'RESERVED': return 'red';
       default: return 'default';
     }
@@ -144,7 +144,7 @@ export class Table implements OnInit {
   getCardClass(status: string): string {
     switch (status) {
       case 'AVAILABLE': return 'card-available';
-      case 'IN_USE': return 'card-in-use';
+      case 'OCCUPIED': return 'card-in-use';
       case 'RESERVED': return 'card-reserved';
       default: return '';
     }
