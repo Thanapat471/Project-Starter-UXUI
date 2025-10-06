@@ -8,12 +8,34 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { firstValueFrom, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import { CreateMenuItemPayload, MenuItemDto, MenuService, MenuCategory, CreateCategoryPayload, UpdateCategoryPayload } from '../../core/services/menu.service';
+
+interface MenuOptionValue {
+  value: string;
+  price: number;
+}
+
+interface MenuOptionGroup {
+  name: string;
+  type: 'SWEETNESS' | 'SIZE' | 'TEMPERATURE' | 'TOPPING' | 'OTHER';
+  options: MenuOptionValue[];
+  isRequired: boolean;
+  maxSelections: number;
+}
+
+interface MenuItemWithOptions {
+  name: string;
+  description?: string;
+  price: number;
+  category_id: string | number;
+  options?: MenuOptionGroup[];
+}
 
 interface MenuCard {
   id: string;
@@ -27,11 +49,33 @@ interface MenuCard {
   statusClass: string;
   isAvailable: boolean;
   imageUrl: string | null;
+  options?: MenuOptionGroup[];
 }
 
 interface CategoryOption {
   id: string;
   name: string;
+}
+
+interface MenuOptionValue {
+  value: string;
+  price: number;
+}
+
+interface MenuOptionGroup {
+  name: string;
+  type: 'SWEETNESS' | 'SIZE' | 'TEMPERATURE' | 'TOPPING' | 'OTHER';
+  options: MenuOptionValue[];
+  isRequired: boolean;
+  maxSelections: number;
+}
+
+interface MenuItemWithOptions {
+  name: string;
+  description?: string;
+  price: number;
+  category_id: string | number;
+  options?: MenuOptionGroup[];
 }
 
 @Component({
@@ -46,7 +90,8 @@ interface CategoryOption {
     NzInputModule,
     NzSelectModule,
     NzInputNumberModule,
-    NzButtonModule
+    NzButtonModule,
+    NzCheckboxModule
   ],
   providers: [NzMessageService, NzModalService],
   templateUrl: './menu-management.html',
@@ -100,6 +145,17 @@ export class MenuManagement {
   readonly selectedImageName = signal('');
   readonly selectedImagePreview = signal<string | null>(null);
 
+  // Options management signals
+  readonly hasOptions = signal(false);
+  readonly currentOptions = signal<MenuOptionGroup[]>([]);
+  readonly optionTypes = [
+    { value: 'SWEETNESS', label: 'ระดับความหวาน' },
+    { value: 'SIZE', label: 'ขนาด' },
+    { value: 'TEMPERATURE', label: 'รูปแบบ/อุณหภูมิ' },
+    { value: 'TOPPING', label: 'ท็อปปิ้ง' },
+    { value: 'OTHER', label: 'อื่นๆ' }
+  ];
+
   readonly hasCategories = computed(() => this.categories().length > 0);
   readonly isEditing = computed(() => this.editingMenuId() !== null);
   readonly isEditingCategory = computed(() => this.editingCategoryId() !== null);
@@ -120,7 +176,7 @@ export class MenuManagement {
 
   readonly filteredCategoriesForModal = computed(() => {
     const keyword = this.categorySearchTerm().trim().toLowerCase();
-    return this.categories().filter(category => 
+    return this.categories().filter(category =>
       keyword ? category.name.toLowerCase().includes(keyword) : true
     );
   });
@@ -130,7 +186,8 @@ export class MenuManagement {
     categoryId: ['', Validators.required],
     price: [0, [Validators.required, Validators.min(0)]],
     description: [''],
-    image: [null as File | null]
+    image: [null as File | null],
+    hasOptions: [false]
   });
 
   readonly categoryForm = this.fb.group({
@@ -140,6 +197,16 @@ export class MenuManagement {
   constructor() {
     this.fetchMenuItems();
     this.fetchCategories();
+
+    // ซิงค์ hasOptions form control กับ signal
+    this.addMenuForm.get('hasOptions')?.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(value => {
+        this.hasOptions.set(!!value);
+        if (!value) {
+          this.currentOptions.set([]);
+        }
+      });
   }
 
   onSearch(term: string): void {
@@ -179,9 +246,78 @@ export class MenuManagement {
   closeCreateModal(): void {
     this.addModalOpen.set(false);
     this.clearSelectedImage();
-    this.addMenuForm.reset({ name: '', categoryId: '', price: 0, description: '', image: null });
+    this.resetMenuForm();
+  }
+
+  // Options management methods
+  onHasOptionsChange(hasOptions: boolean): void {
+    this.hasOptions.set(hasOptions);
+    if (!hasOptions) {
+      this.currentOptions.set([]);
+    }
+  }
+
+  addOptionGroup(): void {
+    const newGroup: MenuOptionGroup = {
+      name: '',
+      type: 'OTHER',
+      options: [{ value: '', price: 0 }],
+      isRequired: true,
+      maxSelections: 1
+    };
+    this.currentOptions.set([...this.currentOptions(), newGroup]);
+  }
+
+  removeOptionGroup(index: number): void {
+    const options = this.currentOptions();
+    options.splice(index, 1);
+    this.currentOptions.set([...options]);
+  }
+
+  addOptionValue(groupIndex: number): void {
+    const options = [...this.currentOptions()];
+    options[groupIndex].options.push({ value: '', price: 0 });
+    this.currentOptions.set(options);
+  }
+
+  removeOptionValue(groupIndex: number, valueIndex: number): void {
+    const options = [...this.currentOptions()];
+    options[groupIndex].options.splice(valueIndex, 1);
+    this.currentOptions.set(options);
+  }
+
+  updateOptionGroup(groupIndex: number, field: string, event: any): void {
+    const options = [...this.currentOptions()];
+    const value = event.target ? event.target.value : event;
+
+    if (field === 'isRequired') {
+      (options[groupIndex] as any)[field] = event.target?.checked || false;
+    } else if (field === 'maxSelections') {
+      (options[groupIndex] as any)[field] = Number(value) || 1;
+    } else {
+      (options[groupIndex] as any)[field] = value;
+    }
+
+    this.currentOptions.set(options);
+  }
+
+  updateOptionValue(groupIndex: number, valueIndex: number, field: string, event: any): void {
+    const options = [...this.currentOptions()];
+    const value = event.target ? event.target.value : event;
+    if (field === 'price') {
+      (options[groupIndex].options[valueIndex] as any)[field] = Number(value) || 0;
+    } else {
+      (options[groupIndex].options[valueIndex] as any)[field] = value;
+    }
+    this.currentOptions.set(options);
+  }
+
+  resetMenuForm(): void {
+    this.addMenuForm.reset({ name: '', categoryId: '', price: 0, description: '', image: null, hasOptions: false });
     this.addMenuForm.markAsPristine();
     this.addMenuForm.markAsUntouched();
+    this.hasOptions.set(false);
+    this.currentOptions.set([]);
     this.submitting.set(false);
     this.editingMenuId.set(null);
     this.editingMenu.set(null);
@@ -194,7 +330,7 @@ export class MenuManagement {
       return;
     }
 
-    const { name, categoryId, price, description, image } = this.addMenuForm.value;
+    const { name, categoryId, price, description, image, hasOptions } = this.addMenuForm.value;
     const editingId = this.editingMenuId();
     const payload: CreateMenuItemPayload = {
       name: name!.trim(),
@@ -203,6 +339,17 @@ export class MenuManagement {
       description: description?.trim() ? description.trim() : undefined,
       isAvailable: editingId ? this.editingMenu()?.isAvailable ?? true : true
     };
+
+    // เพิ่ม options ถ้ามี
+    if (hasOptions && this.currentOptions().length > 0) {
+      payload.options = this.currentOptions().map(group => ({
+        name: group.name,
+        type: group.type,
+        options: group.options,
+        isRequired: group.isRequired,
+        maxSelections: group.maxSelections
+      }));
+    }
 
     if (image instanceof File) {
       payload.image = image;
@@ -355,12 +502,12 @@ export class MenuManagement {
 
     const { name } = this.categoryForm.value;
     const editingId = this.editingCategoryId();
-    
+
     // Try different payload formats in case the API expects different field names
     const payload: CreateCategoryPayload = {
       name: name!.trim()
     };
-    
+
     console.log('Sending category payload:', payload);
     console.log('API endpoint:', editingId ? `UPDATE /menu-categories/${editingId}` : 'POST /menu-categories');
 
@@ -383,7 +530,7 @@ export class MenuManagement {
           console.error('Category API Error:', error);
           console.error('Error response:', error.error);
           console.error('Error status:', error.status);
-          
+
           const message =
             error.status === 0
               ? 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'
