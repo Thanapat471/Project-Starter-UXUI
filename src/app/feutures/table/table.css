@@ -100,7 +100,7 @@
   padding: 0 1.5rem;
   font-size: 0.875rem;
   font-weight: 600;
-  border-radius: 12px;
+  border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -112,6 +112,20 @@
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 15px rgba(92, 61, 46, 0.3);
+  overflow: hidden;
+}
+
+.add-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.add-button:hover::before {
+  opacity: 1;
 }
 
 .add-button:hover {
@@ -149,76 +163,93 @@
 }
 
 .stat-card {
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(92, 61, 46, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  overflow: hidden;
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 50px rgba(92, 61, 46, 0.25);
 }
 
 .stat-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding: 1.5rem;
+  gap: 1.125rem;
 }
 
 .stat-label {
-  font-size: 14px;
-  color: #666;
+  font-size: 16px;
+  color: rgba(59, 28, 13, 0.85);
   margin-bottom: 8px;
+  font-weight: 600;
 }
 
 .stat-value {
-  font-size: 28px;
+  font-size: 1.9rem;
   font-weight: 700;
-  color: #333;
+  color: #291107;
+  line-height: 1.1;
+  margin: 0;
 }
 
 @media (min-width: 768px) {
   .stat-value {
-    font-size: 32px;
+    font-size: 2.2rem;
   }
 }
 
 .stat-icon {
-  font-size: 40px;
-  opacity: 0.15;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  opacity: 1;
 }
 
 @media (min-width: 768px) {
   .stat-icon {
-    font-size: 48px;
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
   }
 }
 
 .stat-available {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(244, 230, 214, 0.3) 100%);
-  border: 1px solid rgba(148, 105, 76, 0.2);
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 4px solid rgba(47, 143, 60, 0.65);
 }
 
 .stat-available .stat-value {
-  color: #5c3d2e;
+  color: #2f8f3c;
 }
 
 .stat-available .stat-icon {
-  color: #94694c;
+  background: rgba(95, 201, 120, 0.18);
+  color: #2f8f3c;
 }
 
 .stat-in-use {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 223, 204, 0.4) 100%);
-  border: 1px solid rgba(148, 105, 76, 0.25);
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 4px solid rgba(220, 38, 38, 0.65);
 }
 
 .stat-in-use .stat-value {
-  color: #5c3d2e;
+  color: #dc2626;
 }
 
 .stat-in-use .stat-icon {
-  color: #94694c;
+  background: rgba(239, 68, 68, 0.18);
+  color: #dc2626;
 }
 
 .stat-total {
@@ -386,7 +417,7 @@
 .action-btn {
   width: 100%;
   height: 40px;
-  border-radius: 12px;
+  border-radius: 20px;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -418,15 +449,84 @@
 }
 
 .qr-btn {
-  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  position: relative;
+  background: linear-gradient(135deg, #94694c, #5c3d2e);
+  color: #ffffff !important;
   border: none;
-  color: white;
-  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(92, 61, 46, 0.3);
+  overflow: hidden;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 20px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.qr-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.qr-btn:hover::before {
+  opacity: 1;
 }
 
 .qr-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+  box-shadow: 0 8px 25px rgba(92, 61, 46, 0.4);
+  background: linear-gradient(135deg, #a0755c, #6d4934) !important;
+  color: #ffffff !important;
+}
+
+.qr-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(92, 61, 46, 0.3);
+  background: linear-gradient(135deg, #94694c, #5c3d2e);
+  color: #ffffff !important;
+}
+
+/* Icon inside QR button */
+.qr-btn span[nz-icon] {
+  font-size: 1rem;
+  color: #ffffff !important;
+}
+
+/* Force white text but keep brown background at all times */
+.qr-btn, 
+.qr-btn *,
+.qr-btn:hover,
+.qr-btn:hover *,
+.qr-btn:active,
+.qr-btn:active *,
+.qr-btn:focus,
+.qr-btn:focus * {
+  color: #ffffff !important;
+}
+
+/* Prevent button from turning white on hover */
+.qr-btn:hover,
+.qr-btn:focus,
+.qr-btn:active {
+  background: linear-gradient(135deg, #a0755c, #6d4934) !important;
+  background-color: #a0755c !important;
+}
+
+/* Override any external CSS that might change background */
+.action-btn.qr-btn:hover,
+.action-btn.qr-btn:focus,
+.action-btn.qr-btn:active {
+  background: linear-gradient(135deg, #a0755c, #6d4934) !important;
+  background-color: #a0755c !important;
+  color: #ffffff !important;
 }
 
 .action-group {
@@ -450,7 +550,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: 20px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background: rgba(148, 105, 76, 0.08);
   border: 1px solid rgba(148, 105, 76, 0.15);
@@ -621,6 +721,307 @@
 /* Loading Spinner Customization */
 :host ::ng-deep .ant-spin-dot-item {
   background-color: #94694c;
+}
+
+/* Modal Customization */
+:host ::ng-deep .ant-modal .ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+:host ::ng-deep .ant-modal .ant-modal-header {
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(135deg, #fdf9f4 0%, #f4e6d6 100%);
+  border-bottom: 1px solid rgba(148, 105, 76, 0.1);
+}
+
+:host ::ng-deep .ant-modal .ant-modal-body {
+  background: #fefdfb;
+}
+
+:host ::ng-deep .ant-modal .ant-modal-footer {
+  background: #fefdfb;
+  border-top: 1px solid rgba(148, 105, 76, 0.1);
+  border-radius: 0 0 16px 16px;
+}
+
+/* Primary Button Customization */
+:host ::ng-deep .ant-btn-primary {
+  background: linear-gradient(135deg, #94694c, #5c3d2e);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(92, 61, 46, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:host ::ng-deep .ant-btn-primary:hover,
+:host ::ng-deep .ant-btn-primary:focus {
+  background: linear-gradient(135deg, #a5765a, #6d4934);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(92, 61, 46, 0.4);
+}
+
+:host ::ng-deep .ant-btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(92, 61, 46, 0.3);
+}
+
+/* Default Button Customization */
+:host ::ng-deep .ant-btn-default {
+  border-radius: 12px;
+  border-color: rgba(148, 105, 76, 0.3);
+  color: #5c3d2e;
+  transition: all 0.3s ease;
+}
+
+:host ::ng-deep .ant-btn-default:hover,
+:host ::ng-deep .ant-btn-default:focus {
+  border-color: #94694c;
+  color: #94694c;
+  background: rgba(148, 105, 76, 0.05);
+}
+
+/* All Modal Buttons Rounded Corners */
+:host ::ng-deep .ant-modal .ant-btn,
+:host ::ng-deep .ant-modal button[nz-button],
+:host ::ng-deep .ant-modal-footer .ant-btn,
+:host ::ng-deep .ant-modal-footer button[nz-button] {
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Cancel/Default buttons in modal */
+:host ::ng-deep .ant-modal .ant-btn-default,
+:host ::ng-deep .ant-modal button[nz-button][nzType="default"],
+:host ::ng-deep .ant-modal-footer .ant-btn-default,
+:host ::ng-deep .ant-modal-footer button[nz-button][nzType="default"] {
+  border-radius: 12px !important;
+  border-color: rgba(148, 105, 76, 0.3) !important;
+  color: #5c3d2e !important;
+  background: #ffffff !important;
+}
+
+:host ::ng-deep .ant-modal .ant-btn-default:hover,
+:host ::ng-deep .ant-modal button[nz-button][nzType="default"]:hover,
+:host ::ng-deep .ant-modal-footer .ant-btn-default:hover,
+:host ::ng-deep .ant-modal-footer button[nz-button][nzType="default"]:hover {
+  border-color: #94694c !important;
+  color: #94694c !important;
+  background: rgba(148, 105, 76, 0.05) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(92, 61, 46, 0.15) !important;
+}
+
+/* Input Field Customization */
+:host ::ng-deep .ant-input {
+  border-radius: 8px;
+  border-color: rgba(148, 105, 76, 0.2);
+  transition: all 0.3s ease;
+}
+
+:host ::ng-deep .ant-input:focus,
+:host ::ng-deep .ant-input-focused {
+  border-color: #94694c;
+  box-shadow: 0 0 0 2px rgba(148, 105, 76, 0.1);
+}
+
+:host ::ng-deep .ant-input-number {
+  border-radius: 8px;
+  border-color: rgba(148, 105, 76, 0.2);
+}
+
+:host ::ng-deep .ant-input-number:focus,
+:host ::ng-deep .ant-input-number-focused {
+  border-color: #94694c;
+  box-shadow: 0 0 0 2px rgba(148, 105, 76, 0.1);
+}
+
+/* Force override all primary buttons */
+:host ::ng-deep .ant-btn-primary,
+:host ::ng-deep button[nz-button][nzType="primary"],
+:host ::ng-deep .ant-btn[nz-button="primary"] {
+  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
+  border-color: #94694c !important;
+  color: white !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 15px rgba(92, 61, 46, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+:host ::ng-deep .ant-btn-primary:hover,
+:host ::ng-deep .ant-btn-primary:focus,
+:host ::ng-deep button[nz-button][nzType="primary"]:hover,
+:host ::ng-deep button[nz-button][nzType="primary"]:focus,
+:host ::ng-deep .ant-btn[nz-button="primary"]:hover,
+:host ::ng-deep .ant-btn[nz-button="primary"]:focus {
+  background: linear-gradient(135deg, #a5765a, #6d4934) !important;
+  border-color: #a5765a !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(92, 61, 46, 0.4) !important;
+  color: white !important;
+}
+
+:host ::ng-deep .ant-btn-primary:active,
+:host ::ng-deep button[nz-button][nzType="primary"]:active,
+:host ::ng-deep .ant-btn[nz-button="primary"]:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 10px rgba(92, 61, 46, 0.3) !important;
+}
+
+/* Loading state for primary buttons */
+:host ::ng-deep .ant-btn-primary.ant-btn-loading,
+:host ::ng-deep button[nz-button][nzType="primary"].ant-btn-loading {
+  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
+  border-color: #94694c !important;
+}
+
+/* Modal footer buttons specific override */
+:host ::ng-deep .ant-modal-footer .ant-btn-primary,
+:host ::ng-deep .ant-modal-footer button[nz-button][nzType="primary"] {
+  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
+  border-color: #94694c !important;
+  color: white !important;
+}
+
+/* Global Modal Styles with highest specificity */
+:host ::ng-deep .ant-modal-wrap .ant-modal .ant-modal-content {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 32px rgba(92, 61, 46, 0.15) !important;
+}
+
+:host ::ng-deep .ant-modal-wrap .ant-modal .ant-modal-header {
+  border-radius: 16px 16px 0 0 !important;
+  background: linear-gradient(135deg, #fdf9f4 0%, #f4e6d6 100%) !important;
+  border-bottom: 1px solid rgba(148, 105, 76, 0.1) !important;
+}
+
+:host ::ng-deep .ant-modal-wrap .ant-modal .ant-modal-body {
+  background: #fefdfb !important;
+  padding: 24px !important;
+}
+
+:host ::ng-deep .ant-modal-wrap .ant-modal .ant-modal-footer {
+  background: #fefdfb !important;
+  border-top: 1px solid rgba(148, 105, 76, 0.1) !important;
+  border-radius: 0 0 16px 16px !important;
+  padding: 16px 24px !important;
+}
+
+/* Super specific button overrides */
+:host ::ng-deep .ant-modal-wrap .ant-modal .ant-modal-footer .ant-btn-primary,
+:host ::ng-deep .ant-modal-wrap .ant-btn-primary,
+:host ::ng-deep .ant-modal .ant-btn-primary,
+:host ::ng-deep button.ant-btn-primary,
+:host ::ng-deep .ant-btn.ant-btn-primary {
+  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
+  background-color: #94694c !important;
+  border-color: #94694c !important;
+  color: white !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 15px rgba(92, 61, 46, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+:host ::ng-deep .ant-modal-wrap .ant-modal .ant-modal-footer .ant-btn-primary:hover,
+:host ::ng-deep .ant-modal-wrap .ant-btn-primary:hover,
+:host ::ng-deep .ant-modal .ant-btn-primary:hover,
+:host ::ng-deep button.ant-btn-primary:hover,
+:host ::ng-deep .ant-btn.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #a5765a, #6d4934) !important;
+  background-color: #a5765a !important;
+  border-color: #a5765a !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(92, 61, 46, 0.4) !important;
+  color: white !important;
+}
+
+/* Form controls styling */
+:host ::ng-deep .ant-modal .ant-input,
+:host ::ng-deep .ant-modal .ant-input-number {
+  border-radius: 8px !important;
+  border-color: rgba(148, 105, 76, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+:host ::ng-deep .ant-modal .ant-input:focus,
+:host ::ng-deep .ant-modal .ant-input-focused,
+:host ::ng-deep .ant-modal .ant-input-number:focus,
+:host ::ng-deep .ant-modal .ant-input-number-focused {
+  border-color: #94694c !important;
+  box-shadow: 0 0 0 2px rgba(148, 105, 76, 0.1) !important;
+}
+
+/* Modal title styling */
+:host ::ng-deep .ant-modal .ant-modal-header .ant-modal-title {
+  color: #5c3d2e !important;
+  font-weight: 700 !important;
+}
+
+/* Close button styling */
+:host ::ng-deep .ant-modal .ant-modal-close {
+  color: #8a6b55 !important;
+}
+
+:host ::ng-deep .ant-modal .ant-modal-close:hover {
+  color: #5c3d2e !important;
+}
+
+/* Ultra specific overrides - Use HTML tag selectors for maximum specificity */
+:host ::ng-deep nz-modal .ant-modal .ant-modal-content {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 32px rgba(92, 61, 46, 0.15) !important;
+}
+
+:host ::ng-deep nz-modal .ant-modal .ant-modal-header {
+  border-radius: 16px 16px 0 0 !important;
+  background: linear-gradient(135deg, #fdf9f4 0%, #f4e6d6 100%) !important;
+  border-bottom: 1px solid rgba(148, 105, 76, 0.1) !important;
+}
+
+:host ::ng-deep nz-modal .ant-modal .ant-modal-body {
+  background: #fefdfb !important;
+}
+
+:host ::ng-deep nz-modal .ant-modal .ant-modal-footer {
+  background: #fefdfb !important;
+  border-top: 1px solid rgba(148, 105, 76, 0.1) !important;
+  border-radius: 0 0 16px 16px !important;
+}
+
+/* Direct HTML element targeting for buttons */
+:host ::ng-deep nz-modal button[nz-button][nztype="primary"],
+:host ::ng-deep nz-modal button.ant-btn-primary,
+:host ::ng-deep nz-modal .ant-btn-primary {
+  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
+  background-color: #94694c !important;
+  border-color: #94694c !important;
+  color: white !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 15px rgba(92, 61, 46, 0.3) !important;
+}
+
+:host ::ng-deep nz-modal button[nz-button][nztype="primary"]:hover,
+:host ::ng-deep nz-modal button.ant-btn-primary:hover,
+:host ::ng-deep nz-modal .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #a5765a, #6d4934) !important;
+  background-color: #a5765a !important;
+  border-color: #a5765a !important;
+  color: white !important;
+}
+
+/* Backup CSS using inline style simulation */
+:host ::ng-deep nz-modal [style*="background"],
+:host ::ng-deep nz-modal [class*="primary"] {
+  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
+  border-color: #94694c !important;
 }
 
 /* Card entrance animations */
