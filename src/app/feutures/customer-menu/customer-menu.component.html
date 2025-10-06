@@ -175,18 +175,19 @@
       (click)="$event.stopPropagation()"
     >
       <!-- Modal Header -->
-      <div class="modal-header p-6 border-b border-gray-200">
-        <div class="flex items-center justify-between">
+      <div class="modal-header p-6 border-b border-gray-200 relative">
+        <div class="flex flex-col">
           <h2 class="text-2xl font-bold text-gray-800">{{ selectedItem?.name }}</h2>
-          <button 
-            (click)="closeItemModal()"
-            class="text-gray-400 hover:text-gray-600 transition-colors p-2"
-          >
-            <i nz-icon nzType="close" nzTheme="outline" class="text-xl"></i>
-          </button>
+          <p class="text-gray-600 text-sm leading-relaxed mt-2">{{ selectedItem?.description }}</p>
         </div>
-        <p class="text-gray-600 text-sm mt-2">{{ selectedItem?.description }}</p>
         
+        <!-- Close Button -->
+        <button 
+          (click)="closeItemModal()"
+          class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-300 hover:bg-gray-400 text-gray-600 hover:text-gray-800 flex items-center justify-center transition-all duration-300"
+        >
+          <i nz-icon nzType="close" nzTheme="outline" class="text-sm"></i>
+        </button>
       </div>
 
       <!-- Modal Content -->
@@ -207,12 +208,20 @@
             <button
               *ngFor="let opt of option.options"
               (click)="selectOption(option.id, opt.value)"
-              [class]="'option-btn p-4 rounded-xl border-2 transition-all duration-300 text-center ' +
+              [class]="'option-btn p-4 rounded-xl border-2 transition-all duration-300 text-center relative ' +
                        (selectedOptions[option.id.toString()] === opt.value ? 'border-[#94694c] bg-[#f7f3f0] text-[#5c3d2e]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
             >
               <div class="font-medium">{{ opt.value }}</div>
               <div *ngIf="opt.price > 0" class="text-sm text-gray-600 mt-1">
                 +{{ opt.price }}฿
+              </div>
+              
+              <!-- Selected indicator -->
+              <div 
+                *ngIf="selectedOptions[option.id.toString()] === opt.value"
+                class="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#94694c] flex items-center justify-center"
+              >
+                <i nz-icon nzType="check" nzTheme="outline" class="text-white text-xs"></i>
               </div>
             </button>
           </div>
