@@ -15,30 +15,45 @@
   <div nz-row [nzGutter]="16" class="stats-container">
     <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="12" [nzLg]="12" [nzXl]="12">
       <nz-card class="stat-card stat-available">
-        <div class="stat-content">
-          <div>
-            <div class="stat-label">โต๊ะว่าง</div>
-            <div class="stat-value">{{ stats.available }}</div>
+        <nz-skeleton [nzActive]="true" [nzLoading]="isLoading" [nzParagraph]="{ rows: 1 }">
+          <div class="stat-content">
+            <div>
+              <div class="stat-label">โต๊ะว่าง</div>
+              <div class="stat-value">{{ stats.available }}</div>
+            </div>
+            <span nz-icon nzType="user" nzTheme="outline" class="stat-icon"></span>
           </div>
-          <span nz-icon nzType="user" nzTheme="outline" class="stat-icon"></span>
-        </div>
+        </nz-skeleton>
       </nz-card>
     </div>
     <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="12" [nzLg]="12" [nzXl]="12">
       <nz-card class="stat-card stat-in-use">
-        <div class="stat-content">
-          <div>
-            <div class="stat-label">กำลังใช้งาน</div>
-            <div class="stat-value">{{ stats.inUse }}</div>
+        <nz-skeleton [nzActive]="true" [nzLoading]="isLoading" [nzParagraph]="{ rows: 1 }">
+          <div class="stat-content">
+            <div>
+              <div class="stat-label">กำลังใช้งาน</div>
+              <div class="stat-value">{{ stats.inUse }}</div>
+            </div>
+            <span nz-icon nzType="user" nzTheme="outline" class="stat-icon"></span>
           </div>
-          <span nz-icon nzType="user" nzTheme="outline" class="stat-icon"></span>
-        </div>
+        </nz-skeleton>
       </nz-card>
     </div>
   </div>
 
   <!-- Table Grid -->
   <div nz-row [nzGutter]="[16, 16]" class="tables-grid">
+    <!-- Skeleton Loading -->
+    <ng-container *ngIf="isInitialLoad">
+      <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6" [nzXl]="6" *ngFor="let item of [1,2,3,4,5,6,7,8]">
+        <nz-card class="table-card skeleton-card">
+          <nz-skeleton [nzActive]="true" [nzLoading]="true" [nzAvatar]="true" [nzParagraph]="{ rows: 3 }">
+          </nz-skeleton>
+        </nz-card>
+      </div>
+    </ng-container>
+
+    <!-- Table Cards -->
     <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6" [nzXl]="6" *ngFor="let table of tables">
       <nz-card [ngClass]="getCardClass(table.status)" class="table-card">
         <div class="table-header">
@@ -84,6 +99,24 @@
         </div>
       </nz-card>
     </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isInitialLoad && !isLoading && tables.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <span nz-icon nzType="coffee" nzTheme="outline"></span>
+      </div>
+      <h3>ยังไม่มีโต๊ะ</h3>
+      <p>เริ่มต้นเพิ่มโต๊ะแรกของคุณ</p>
+      <button nz-button nzType="primary" (click)="showAddModal()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        เพิ่มโต๊ะใหม่
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading Overlay for Refresh -->
+  <div *ngIf="isLoading && !isInitialLoad" class="loading-overlay">
+    <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
   </div>
 </div>
 

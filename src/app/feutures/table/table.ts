@@ -12,6 +12,8 @@ import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 
 interface TableData {
   id: number;
@@ -46,7 +48,9 @@ interface TableStats {
     NzModalModule,
     NzFormModule,
     NzInputModule,
-    NzInputNumberModule
+    NzInputNumberModule,
+    NzSkeletonModule,
+    NzSpinModule
   ],
   providers: [NzMessageService],
   templateUrl: './table.html',
@@ -65,6 +69,10 @@ export class Table implements OnInit {
     inUse: 0,
     total: 0
   };
+
+  // Loading states
+  isLoading = true;
+  isInitialLoad = true;
 
   // Modal state
   isAddModalVisible = false;
@@ -91,14 +99,20 @@ export class Table implements OnInit {
   }
 
   loadTables(): void {
+    this.isLoading = true;
+    
     this.http.get<TableData[]>(this.apiUrl).subscribe({
       next: (data) => {
         this.tables = data;
         this.calculateStats();
+        this.isLoading = false;
+        this.isInitialLoad = false;
       },
       error: (error) => {
         console.error('Error loading tables:', error);
         this.message.error('เกิดข้อผิดพลาดในการโหลดข้อมูลโต๊ะ');
+        this.isLoading = false;
+        this.isInitialLoad = false;
       }
     });
   }
