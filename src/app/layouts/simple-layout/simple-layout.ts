@@ -6,12 +6,13 @@ import { HttpClient } from '@angular/common/http';
 import { CartService, CartItem } from '../../core/services/cart.service';
 import { Subject, takeUntil, firstValueFrom } from 'rxjs';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+
 interface OrderItem {
   menuItemId: number;
   quantity: number;
   options: {
-    menuOptionId: number;
-    selectedValue: string;
+    type: string;
+    value: string;
   }[];
 }
 
@@ -87,12 +88,16 @@ export class SimpleLayout implements OnInit, OnDestroy {
     document.body.style.overflow = 'auto'; // Restore scrolling
   }
 
-  updateCartItemQuantity(itemId: number, newQuantity: number) {
+  updateCartItemQuantity(item: CartItem, newQuantity: number) {
     if (newQuantity <= 0) {
-      this.cartService.removeFromCart(itemId);
+      this.cartService.removeFromCart(item.id, item.options);
     } else {
-      this.cartService.updateQuantity(itemId, newQuantity);
+      this.cartService.updateQuantity(item.id, newQuantity, item.options);
     }
+  }
+
+  removeCartItem(item: CartItem) {
+    this.cartService.removeFromCart(item.id, item.options);
   }
 
   clearCart() {
@@ -121,12 +126,19 @@ export class SimpleLayout implements OnInit, OnDestroy {
     try {
       this.isPlacingOrder = true;
 
+      console.log('Cart items before conversion:', this.cartItems);
+
       // Convert cart items to order format
       const orderItems: OrderItem[] = this.cartItems.map(item => ({
-        menuItemId: item.id, // Keep as number, don't convert to string
+        menuItemId: item.id, // Now properly as number
         quantity: item.quantity,
-        options: [] // No options for now, can be extended later
+        options: item.options.map(option => ({
+          type: option.type,
+          value: option.value
+        }))
       }));
+
+      console.log('Order items after conversion:', orderItems);
 
       const orderRequest: OrderRequest = {
         items: orderItems,
@@ -151,9 +163,21 @@ export class SimpleLayout implements OnInit, OnDestroy {
       // Show success message
       alert(`สั่งอาหารสำเร็จ! หมายเลขออร์เดอร์: ${response.orderId}`);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error placing order:', error);
-      alert('เกิดข้อผิดพลาดในการสั่งอาหาร กรุณาลองใหม่อีกครั้ง');
+
+      // More specific error handling
+      if (error.status === 400) {
+        const errorMessage = error.error?.error || 'Bad Request';
+        const missingItems = error.error?.missing || [];
+        if (missingItems.length > 0) {
+          alert(`ไม่พบรายการอาหารเหล่านี้ในระบบ: ${missingItems.join(', ')}\nกรุณาลองรีเฟรชหน้าและเลือกรายการใหม่`);
+        } else {
+          alert(`เกิดข้อผิดพลาด: ${errorMessage}`);
+        }
+      } else {
+        alert('เกิดข้อผิดพลาดในการสั่งอาหาร กรุณาลองใหม่อีกครั้ง');
+      }
     } finally {
       this.isPlacingOrder = false;
     }
