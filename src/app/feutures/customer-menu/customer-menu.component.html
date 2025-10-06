@@ -128,7 +128,7 @@
 
           <ng-template #addButton>
             <button
-              (click)="addToCart(item)"
+              (click)="openItemModal(item)"
               class="add-btn px-6 py-2 rounded-full font-medium transition-all duration-300 flex items-center gap-2 hover:scale-105 active:scale-95 text-white"
               style="background-color: #94694c;"
             >
@@ -162,5 +162,142 @@
       </button>
       <span *ngIf="!searchTerm">ลองเลือกหมวดหมู่อื่น</span>
     </p>
+  </div>
+
+  <!-- Item Options Modal -->
+  <div 
+    *ngIf="showItemModal" 
+    class="item-modal-overlay fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+    (click)="closeItemModal()"
+  >
+    <div 
+      class="item-modal bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Modal Header -->
+      <div class="modal-header p-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold text-gray-800">{{ selectedItem?.name }}</h2>
+          <button 
+            (click)="closeItemModal()"
+            class="text-gray-400 hover:text-gray-600 transition-colors p-2"
+          >
+            <i nz-icon nzType="close" nzTheme="outline" class="text-xl"></i>
+          </button>
+        </div>
+        <p class="text-gray-600 text-sm mt-2">{{ selectedItem?.description }}</p>
+      </div>
+
+      <!-- Modal Content -->
+      <div class="modal-content p-6 max-h-[60vh] overflow-y-auto">
+        
+        <!-- Temperature Selection -->
+        <div class="option-group mb-6">
+          <h3 class="option-title text-lg font-semibold text-gray-800 mb-3">
+            <i class="mr-2">🌡️</i>รูปแบบ
+          </h3>
+          <div class="option-buttons grid grid-cols-2 gap-3">
+            <button
+              *ngFor="let temp of temperatureOptions"
+              (click)="selectTemperature(temp.value)"
+              [class]="'option-btn p-4 rounded-xl border-2 transition-all duration-300 text-center ' +
+                       (selectedOptions.temperature === temp.value ? 'border-[#94694c] bg-[#f7f3f0] text-[#5c3d2e]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
+            >
+              <div class="text-2xl mb-1">{{ temp.icon }}</div>
+              <div class="font-medium">{{ temp.label }}</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Size Selection -->
+        <div class="option-group mb-6">
+          <h3 class="option-title text-lg font-semibold text-gray-800 mb-3">
+            <i class="mr-2">📏</i>ขนาด
+          </h3>
+          <div class="option-buttons space-y-2">
+            <div
+              *ngFor="let size of sizeOptions"
+              (click)="selectSize(size.value)"
+              [class]="'option-btn p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 flex items-center justify-between ' +
+                       (selectedOptions.size === size.value ? 'border-[#94694c] bg-[#f7f3f0]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
+            >
+              <div class="flex items-center">
+                <span class="font-medium text-gray-800">{{ size.label }}</span>
+                <span *ngIf="size.priceModifier !== 0" class="ml-2 text-sm text-gray-600">
+                  ({{ size.priceModifier > 0 ? '+' : '' }}{{ size.priceModifier }}฿)
+                </span>
+              </div>
+              <div 
+                [class]="'w-5 h-5 rounded-full border-2 flex items-center justify-center ' +
+                         (selectedOptions.size === size.value ? 'border-[#94694c] bg-[#94694c]' : 'border-gray-300')"
+              >
+                <div *ngIf="selectedOptions.size === size.value" class="w-2 h-2 bg-white rounded-full"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sweetness Level -->
+        <div class="option-group mb-6">
+          <h3 class="option-title text-lg font-semibold text-gray-800 mb-3">
+            <i class="mr-2">🍯</i>ความหวาน
+          </h3>
+          <div class="option-buttons grid grid-cols-2 gap-3">
+            <button
+              *ngFor="let sweet of sweetnessOptions"
+              (click)="selectSweetness(sweet.value)"
+              [class]="'option-btn p-4 rounded-xl border-2 transition-all duration-300 text-center ' +
+                       (selectedOptions.sweetness === sweet.value ? 'border-[#94694c] bg-[#f7f3f0] text-[#5c3d2e]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
+            >
+              <div class="font-medium">{{ sweet.label }}</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quantity -->
+        <div class="option-group mb-6">
+          <h3 class="option-title text-lg font-semibold text-gray-800 mb-3">
+            <i class="mr-2">🔢</i>จำนวน
+          </h3>
+          <div class="quantity-selector flex items-center justify-center gap-4">
+            <button
+              (click)="decreaseQuantity()"
+              [disabled]="modalQuantity <= 1"
+              class="qty-btn w-12 h-12 rounded-full bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+            >
+              <i nz-icon nzType="minus" nzTheme="outline" class="text-gray-600"></i>
+            </button>
+
+            <span class="quantity-display text-2xl font-bold text-[#5c3d2e] min-w-[3rem] text-center">
+              {{ modalQuantity }}
+            </span>
+
+            <button
+              (click)="increaseQuantity()"
+              class="qty-btn w-12 h-12 rounded-full bg-[#94694c] hover:bg-[#7a5a3f] text-white flex items-center justify-center transition-colors"
+            >
+              <i nz-icon nzType="plus" nzTheme="outline"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer p-6 border-t border-gray-200 bg-gray-50">
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-lg font-semibold text-gray-800">ราคารวม:</span>
+          <span class="text-2xl font-bold text-[#5c3d2e]">฿{{ calculateTotalPrice() }}</span>
+        </div>
+        
+        <button
+          (click)="addToCartWithOptions()"
+          class="add-to-cart-btn w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-white"
+          style="background: linear-gradient(135deg, #94694c, #5c3d2e);"
+        >
+          <i nz-icon nzType="shopping-cart" nzTheme="outline"></i>
+          เพิ่มลงตะกร้า {{ modalQuantity }} รายการ
+        </button>
+      </div>
+    </div>
   </div>
 </div>
