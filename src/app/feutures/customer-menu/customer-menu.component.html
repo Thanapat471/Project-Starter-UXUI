@@ -1,6 +1,7 @@
 <div class="menu-container bg-login-theme min-h-screen px-4 py-6 pb-8">
+
   <!-- Search Bar -->
-  <div class="search-container mb-6">
+  <div class="search-container">
     <div class="search-wrapper relative max-w-md mx-auto">
       <div class="search-input-container relative">
         <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-login-secondary text-lg"></i>
@@ -39,7 +40,36 @@
   </div>
 
   <!-- Menu Items Grid -->
-  <div class="menu-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <!-- Loading State -->
+  <div *ngIf="isLoadingMenu" class="flex justify-center items-center py-12">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#94694c] mx-auto mb-4"></div>
+      <p class="text-[#8a6b55] font-medium">กำลังโหลดเมนู...</p>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="menuError && !isLoadingMenu" class="bg-red-50 border border-red-200 rounded-2xl p-6 mx-4 mb-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
+        <div>
+          <h3 class="font-semibold text-red-800">เกิดข้อผิดพลาด</h3>
+          <p class="text-red-600 text-sm">{{ menuError }}</p>
+        </div>
+      </div>
+      <button
+        (click)="loadMenu()"
+        class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+      >
+        <i class="fas fa-redo mr-2"></i>
+        ลองใหม่
+      </button>
+    </div>
+  </div>
+
+  <!-- Menu Items Grid (only show when not loading and no error) -->
+  <div *ngIf="!isLoadingMenu && !menuError" class="menu-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <div
       *ngFor="let item of filteredItems"
       class="menu-card card-login-theme rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
@@ -47,9 +77,10 @@
       <!-- Food Image -->
       <div class="image-container relative overflow-hidden">
         <img
-          [src]="item.image"
+          [src]="item.imageUrl || item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y5ZjlmOSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0cHgiIGZpbGw9IiM5OTkiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='"
           [alt]="item.name"
           class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
+          (error)="$event.target.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y5ZjlmOSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0cHgiIGZpbGw9IiM5OTkiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='"
         />
         <div class="image-overlay absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300"></div>
       </div>
@@ -76,24 +107,22 @@
 
           <!-- Show quantity controls if item is in cart, otherwise show add button -->
           <div *ngIf="getItemQuantityInCart(item.id) > 0; else addButton" class="quantity-controls flex items-center gap-3">
-            <button
-              (click)="updateItemQuantity(item.id, getItemQuantityInCart(item.id) - 1)"
-              class="qty-btn-menu bg-brown-100 border-2 text-brown-600 w-10 h-10 rounded-full flex items-center justify-center hover:bg-brown-200 transition-all"
-              style="background-color: #f7f3f0; border-color: #94694c; color: #5c3d2e;"
+                        <button
+              (click)="updateItemQuantityById(item.id, getItemQuantityInCart(item.id) - 1)"
+              class="quantity-btn minus w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
             >
-              <i class="fas fa-minus text-sm"></i>
+              <i class="fas fa-minus text-xs text-gray-600"></i>
             </button>
 
-            <span class="quantity text-gray-800 font-bold text-lg min-w-[2rem] text-center" style="color: #5c3d2e;">
+            <span class="quantity-display min-w-[2rem] text-center font-bold text-login-primary">
               {{ getItemQuantityInCart(item.id) }}
             </span>
 
             <button
-              (click)="updateItemQuantity(item.id, getItemQuantityInCart(item.id) + 1)"
-              class="qty-btn-menu text-white w-10 h-10 rounded-full flex items-center justify-center hover:opacity-90 transition-all shadow-md"
-              style="background-color: #94694c;"
+              (click)="updateItemQuantityById(item.id, getItemQuantityInCart(item.id) + 1)"
+              class="quantity-btn plus w-8 h-8 rounded-full bg-[#94694c] hover:bg-[#7a5a3f] text-white flex items-center justify-center transition-colors"
             >
-              <i class="fas fa-plus text-sm"></i>
+              <i class="fas fa-plus text-xs"></i>
             </button>
           </div>
 
@@ -133,115 +162,5 @@
       </button>
       <span *ngIf="!searchTerm">ลองเลือกหมวดหมู่อื่น</span>
     </p>
-  </div>
-
-
-
-  <!-- Cart Modal -->
-  <div
-    *ngIf="showCartModal"
-    class="cart-modal-overlay fixed inset-0 bg-black bg-opacity-50 z-[9999] flex items-center justify-center p-4"
-    (click)="closeCartModal()"
-    (keydown.escape)="closeCartModal()"
-    role="presentation"
-  >
-    <div
-      class="cart-modal bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
-      (click)="$event.stopPropagation()"
-      role="dialog"
-      aria-modal="true"
-      aria-label="หน้าต่างตะกร้าสินค้า"
-    >
-      <!-- Modal Header -->
-      <div class="modal-header bg-orange-500 text-white p-4 flex items-center justify-between">
-        <h2 class="text-xl font-bold flex items-center gap-2">
-          <i class="fas fa-shopping-cart"></i>
-          ออร์เดอร์ของคุณ
-        </h2>
-        <button
-          (click)="closeCartModal()"
-          class="text-white hover:text-orange-200 transition-colors"
-        >
-          <i class="fas fa-times text-xl"></i>
-        </button>
-      </div>
-
-      <!-- Cart Items -->
-      <div class="cart-items max-h-96 overflow-y-auto">
-        <div *ngIf="cartItems.length === 0" class="empty-cart text-center py-8">
-          <i class="fas fa-shopping-cart text-4xl text-gray-300 mb-4"></i>
-          <p class="text-gray-500">ตะกร้าของคุณว่างเปล่า</p>
-        </div>
-
-        <div *ngFor="let item of cartItems" class="cart-item flex items-center gap-4 p-4 border-b border-gray-100 dark:border-gray-700">
-          <!-- Item Image -->
-          <div class="item-image w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-            <img [src]="item.image" [alt]="item.name" class="w-full h-full object-cover">
-          </div>
-
-          <!-- Item Details -->
-          <div class="item-details flex-1 min-w-0">
-            <h4 class="item-name font-semibold text-gray-800 dark:text-white text-sm truncate">
-              {{ item.name }}
-            </h4>
-            <p class="item-price text-orange-500 font-bold text-sm">
-              ฿{{ item.price }}
-            </p>
-          </div>
-
-          <!-- Quantity Controls -->
-          <div class="quantity-controls flex items-center gap-2">
-            <button
-              (click)="updateCartItemQuantity(item.id, item.quantity - 1)"
-              class="qty-btn bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors"
-            >
-              <i class="fas fa-minus text-xs"></i>
-            </button>
-
-            <span class="quantity text-gray-800 dark:text-white font-semibold min-w-[2rem] text-center">
-              {{ item.quantity }}
-            </span>
-
-            <button
-              (click)="updateCartItemQuantity(item.id, item.quantity + 1)"
-              class="qty-btn bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
-            >
-              <i class="fas fa-plus text-xs"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Cart Footer -->
-      <div *ngIf="cartItems.length > 0" class="cart-footer p-4 bg-gray-50 dark:bg-gray-700">
-        <!-- Total -->
-        <div class="total-section flex items-center justify-between mb-4 pb-4 border-b border-gray-200 dark:border-gray-600">
-          <span class="total-label text-lg font-semibold text-gray-800 dark:text-white">
-            ยอดรวมทั้งหมด:
-          </span>
-          <span class="total-amount text-2xl font-bold text-orange-500">
-            ฿{{ cartTotal.toFixed(2) }}
-          </span>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="action-buttons space-y-2">
-          <button
-            class="order-btn w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95"
-          >
-            <i class="fas fa-check mr-2"></i>
-            สั่งออร์เดอร์
-          </button>
-
-          <button
-            (click)="clearCart()"
-            class="clear-btn w-full bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300 py-2 rounded-xl font-medium transition-colors"
-          >
-            <i class="fas fa-trash mr-2"></i>
-            ล้างตะกร้า
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 </div>

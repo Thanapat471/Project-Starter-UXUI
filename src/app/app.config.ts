@@ -13,7 +13,18 @@ import {
   SettingOutline,
   EllipsisOutline,
   CheckOutline,
+  CarryOutOutline,
+  TeamOutline,
+  RiseOutline,
+  ClockCircleOutline,
+  InboxOutline,
+  LoadingOutline,
+  WarningOutline,
+  SearchOutline,
+  EditOutline,
+  DeleteOutline,
   CoffeeOutline,
+  TagOutline,
   LockOutline,
   UserOutline,
   InfoCircleOutline,
@@ -28,7 +39,10 @@ import {
   TableOutline,
   ShoppingCartOutline,
   CreditCardOutline,
-  LogoutOutline
+  LogoutOutline,
+  DollarOutline,
+  LeftOutline,
+  MinusOutline
 } from '@ant-design/icons-angular/icons';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
@@ -50,7 +64,18 @@ export const appConfig: ApplicationConfig = {
       SettingOutline,
       EllipsisOutline,
       CheckOutline,
+      CarryOutOutline,
+      TeamOutline,
+      RiseOutline,
+      ClockCircleOutline,
+      InboxOutline,
+      LoadingOutline,
+      WarningOutline,
+      SearchOutline,
+      EditOutline,
+      DeleteOutline,
       CoffeeOutline,
+      TagOutline,
       LockOutline,
       UserOutline,
       InfoCircleOutline,
@@ -60,7 +85,15 @@ export const appConfig: ApplicationConfig = {
       HomeOutline,
       DashboardOutline,
       MenuFoldOutline,
-      MenuUnfoldOutline
+      MenuUnfoldOutline,
+      AppstoreOutline,
+      TableOutline,
+      ShoppingCartOutline,
+      CreditCardOutline,
+      LogoutOutline,
+      DollarOutline,
+      LeftOutline,
+      MinusOutline
     ]),
     provideNzConfig({
       theme: {

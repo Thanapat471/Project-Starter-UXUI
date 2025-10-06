@@ -45,6 +45,20 @@ export interface ConfirmPaymentRequest {
   transactionRef?: string;
 }
 
+export interface ConfirmPaymentResponse {
+  payment: {
+    id: number;
+    status: string;
+    amount: number;
+    tableId: number;
+    orderIds: number[];
+  };
+  orders: {
+    id: number;
+    status: string;
+  }[];
+}
+
 export interface CheckoutRequest {
   items: {
     menuItemId: number;

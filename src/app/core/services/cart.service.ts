@@ -48,7 +48,7 @@ export class CartService {
   updateQuantity(itemId: number, quantity: number): void {
     const currentItems = this.cartItems.value;
     const item = currentItems.find(cartItem => cartItem.id === itemId);
-    
+
     if (item) {
       if (quantity <= 0) {
         this.removeFromCart(itemId);
@@ -79,5 +79,10 @@ export class CartService {
 
   getCartTotal(): number {
     return this.cartTotal.value;
+  }
+
+  getItemQuantity(itemId: number): number {
+    const item = this.cartItems.value.find(cartItem => cartItem.id === itemId);
+    return item ? item.quantity : 0;
   }
 }

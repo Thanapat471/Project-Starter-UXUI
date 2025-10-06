@@ -35,14 +35,14 @@ export class Sidebar {
       route: '/features/dashboard'
     },
     {
-      label: 'จัดการโต๊ะ',
-      icon: 'coffee',
-      route: '/features/table'
-    },
-    {
       label: 'จัดการเมนู',
       icon: 'coffee',
-      route: '/features/home'
+      route: '/features/menu'
+    },
+    {
+      label: 'จัดการโต๊ะ',
+      icon: 'table',
+      route: '/features/table'
     },
     {
       label: 'ชำระเงิน',

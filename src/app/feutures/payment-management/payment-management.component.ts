@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PaymentService } from '../../core/services/payment.service';
-import { OrderService } from '../../core/services/order.service';
+import { OrdersService } from '../../core/services/orders.service';
 import { ReceiptService } from '../../core/services/receipt.service';
 import {
   PromptPayPaymentResponse,
@@ -25,7 +25,7 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly paymentService = inject(PaymentService);
-  private readonly orderService = inject(OrderService);
+  private readonly orderService = inject(OrdersService);
   private readonly receiptService = inject(ReceiptService);
 
   // Current order/table data
@@ -72,14 +72,14 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
     this.orderService.getOrders()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (orders) => {
-          this.currentOrder = orders.find(o => o.id === this.orderId) || null;
+        next: (orders: Order[]) => {
+          this.currentOrder = orders.find((o: Order) => o.id === this.orderId) || null;
           this.loading = false;
           if (this.currentOrder) {
             this.paidAmount = this.currentOrder.total;
           }
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Failed to load order:', error);
           this.loading = false;
         }
@@ -174,22 +174,84 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
 
     this.processingPayment = true;
 
-    this.paymentService.confirmPayment(this.promptPayData.paymentId, {
-      transactionRef: `MANUAL-CONFIRM-${Date.now()}`
-    })
+    this.paymentService.confirmPayment(this.promptPayData.paymentId)
     .pipe(takeUntil(this.destroy$))
     .subscribe({
       next: (response) => {
         console.log('PromptPay payment confirmed:', response);
         this.processingPayment = false;
         this.showQRCode = false;
-        alert('Payment confirmed successfully!');
+
+        // Show detailed confirmation message
+        const payment = response.payment;
+        const orders = response.orders;
+
+        let message = `Payment confirmed successfully!\n`;
+        message += `Payment ID: ${payment.id}\n`;
+        message += `Amount: ฿${payment.amount}\n`;
+        message += `Status: ${payment.status}\n`;
+
+        if (orders && orders.length > 0) {
+          message += `\nOrders updated (${orders.length}):\n`;
+          orders.forEach((order: any) => {
+            message += `- Order ${order.id}: ${order.status}\n`;
+          });
+        }
+
+        alert(message);
         this.router.navigate(['/features/dashboard']);
       },
       error: (error) => {
         console.error('Failed to confirm payment:', error);
         this.processingPayment = false;
-        alert('Failed to confirm payment');
+        alert('Failed to confirm payment. Please try again.');
+      }
+    });
+  }
+
+  // Generic payment confirmation by payment ID
+  confirmPaymentById(paymentId: number) {
+    this.processingPayment = true;
+
+    this.paymentService.confirmPayment(paymentId)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (response) => {
+        console.log('Payment confirmed:', response);
+        this.processingPayment = false;
+
+        // Show detailed confirmation message
+        const payment = response.payment;
+        const orders = response.orders;
+
+        let message = `Payment confirmed successfully!\n`;
+        message += `Payment ID: ${payment.id}\n`;
+        message += `Amount: ฿${payment.amount}\n`;
+        message += `Status: ${payment.status}\n`;
+        message += `Table ID: ${payment.tableId}\n`;
+
+        if (orders && orders.length > 0) {
+          message += `\nOrders updated (${orders.length}):\n`;
+          orders.forEach((order: any) => {
+            message += `- Order ${order.id}: ${order.status}\n`;
+          });
+        }
+
+        alert(message);
+
+        // Refresh pending tables list
+        this.loadPendingTables();
+      },
+      error: (error) => {
+        console.error('Failed to confirm payment:', error);
+        this.processingPayment = false;
+
+        let errorMessage = 'Failed to confirm payment.';
+        if (error.error?.message) {
+          errorMessage += `\nError: ${error.error.message}`;
+        }
+
+        alert(errorMessage);
       }
     });
   }

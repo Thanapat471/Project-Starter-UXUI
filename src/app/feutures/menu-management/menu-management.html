@@ -1,0 +1,355 @@
+<div class="menu-page">
+  <header class="page-header">
+    <div>
+      <h1>จัดการเมนู</h1>
+      <p class="page-subtitle">เพิ่ม แก้ไข และจัดการรายการเมนู</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="category-btn" (click)="openCategoryModal()">
+        <span nz-icon nzType="appstore"></span>
+        จัดการหมวดหมู่
+      </button>
+      <button type="button" class="add-menu-btn" (click)="openCreateModal()">
+        <span nz-icon nzType="plus"></span>
+        เพิ่มเมนูใหม่
+      </button>
+    </div>
+  </header>
+
+  <div class="page-filters">
+    <label class="search-group">
+      <span nz-icon nzType="search"></span>
+      <input
+        #searchBox
+        type="search"
+        placeholder="ค้นหาเมนู..."
+        [value]="searchTerm()"
+        (input)="onSearch(searchBox.value)"
+      />
+    </label>
+
+    <label class="select-group">
+      <select
+        #categorySelect
+        [value]="selectedCategory()"
+        (change)="onSelectCategory(categorySelect.value)"
+      >
+        <option value="all">ทุกหมวดหมู่</option>
+        <option *ngFor="let category of categories()" [value]="category.id">{{ category.name }}</option>
+      </select>
+    </label>
+  </div>
+
+  <section class="menu-content">
+    <ng-container *ngIf="!loading(); else loadingState">
+      <ng-container *ngIf="!error(); else errorState">
+        <ng-container *ngIf="filteredMenuItems().length; else emptyState">
+          <div class="menu-grid">
+            <article class="menu-card" *ngFor="let item of filteredMenuItems(); let i = index; trackBy: trackByMenuId">
+              <div class="menu-card__header">
+                <h3>{{ item.name }}</h3>
+                <span class="status-badge" [ngClass]="item.statusClass">{{ item.statusLabel }}</span>
+              </div>
+
+              <ng-container *ngIf="item.imageUrl; else menuImagePlaceholder">
+                <div class="menu-card__media">
+                  <img [src]="item.imageUrl" [alt]="item.name" [attr.loading]="i === 0 ? 'eager' : 'lazy'" />
+                </div>
+              </ng-container>
+              <ng-template #menuImagePlaceholder>
+                <div class="menu-card__media menu-card__media--placeholder">
+                  <span nz-icon nzType="coffee"></span>
+                </div>
+              </ng-template>
+
+              <div class="menu-card__meta" *ngIf="item.category">
+                <div class="menu-category">
+                  <span nz-icon nzType="tag"></span>
+                  <span>{{ item.category }}</span>
+                </div>
+              </div>
+
+              <p class="menu-desc" *ngIf="item.description">{{ item.description }}</p>
+
+              <div class="menu-card__footer">
+                <span class="menu-price">{{ item.priceLabel }}</span>
+                <div class="menu-actions">
+                  <button
+                    type="button"
+                    class="menu-action menu-action--edit"
+                    aria-label="แก้ไขเมนู"
+                    (click)="editMenu(item)"
+                  >
+                    <span nz-icon nzType="edit"></span>
+                  </button>
+                  <button
+                    type="button"
+                    class="menu-action menu-action--delete"
+                    aria-label="ลบเมนู"
+                    (click)="confirmDeleteMenu(item)"
+                  >
+                    <span nz-icon nzType="delete"></span>
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </section>
+</div>
+
+<nz-modal
+  nzClassName="menu-create-modal"
+  [nzVisible]="addModalOpen()"
+  [nzFooter]="null"
+  [nzTitle]="isEditing() ? 'แก้ไขเมนู' : 'เพิ่มเมนูใหม่'"
+  nzCentered
+  nzWidth="640"
+  [nzMaskClosable]="!submitting()"
+  (nzOnCancel)="closeCreateModal()"
+>
+  <ng-container *nzModalContent>
+    <form [formGroup]="addMenuForm" (ngSubmit)="submitCreateMenu()" class="add-menu-form" nz-form>
+      <label class="form-field form-field--full" nz-form-item>
+        <span class="form-label">ชื่อเมนู</span>
+        <input nz-input nzSize="large" formControlName="name" placeholder="เช่น กาแฟลาเต้" />
+        <span class="form-error" *ngIf="addMenuForm.controls.name.invalid && addMenuForm.controls.name.touched">
+          กรุณากรอกชื่อเมนู
+        </span>
+      </label>
+
+      <label class="form-field" nz-form-item>
+        <span class="form-label">หมวดหมู่</span>
+        <nz-select
+          formControlName="categoryId"
+          nzPlaceHolder="เลือกหมวดหมู่"
+          nzSize="large"
+          nzNotFoundContent="ไม่มีหมวดหมู่"
+          [nzDisabled]="!hasCategories()"
+        >
+          <nz-option
+            *ngFor="let category of categories()"
+            [nzLabel]="category.name"
+            [nzValue]="category.id"
+          ></nz-option>
+        </nz-select>
+        <span class="form-error" *ngIf="addMenuForm.controls.categoryId.invalid && addMenuForm.controls.categoryId.touched">
+          กรุณาเลือกหมวดหมู่
+        </span>
+        <span class="form-hint" *ngIf="!hasCategories()">
+          ยังไม่มีหมวดหมู่ในระบบ กรุณาสร้างหมวดหมู่ก่อน
+        </span>
+      </label>
+
+      <label class="form-field" nz-form-item>
+        <span class="form-label">ราคา (บาท)</span>
+        <nz-input-number
+          formControlName="price"
+          nzSize="large"
+          nzMin="0"
+          nzStep="1"
+          [nzFormatter]="priceFormatter"
+          [nzParser]="priceParser"
+        ></nz-input-number>
+        <span class="form-error" *ngIf="addMenuForm.controls.price.invalid && addMenuForm.controls.price.touched">
+          กรุณาระบุราคาให้ถูกต้อง
+        </span>
+      </label>
+
+      <label class="form-field form-field--full" nz-form-item>
+        <span class="form-label">รายละเอียด (ถ้ามี)</span>
+        <textarea
+          nz-input
+          formControlName="description"
+          rows="4"
+          placeholder="อธิบายเมนู..."
+        ></textarea>
+      </label>
+
+      <div class="form-field form-field--full" nz-form-item>
+        <span class="form-label">รูปภาพเมนู</span>
+        <div class="file-upload">
+          <input
+            #imageInput
+            type="file"
+            accept="image/*"
+            (change)="onSelectImage($event)"
+          />
+          <button type="button" class="file-upload__button" (click)="imageInput.click()">
+            <span nz-icon nzType="plus"></span>
+            เลือกไฟล์
+          </button>
+          <span class="file-upload__name">
+            {{
+              selectedImageName()
+                || (isEditing() && editingImageUrl() ? 'ใช้รูปเดิม' : 'ยังไม่ได้เลือกไฟล์')
+            }}
+          </span>
+          <button
+            type="button"
+            class="file-upload__clear"
+            *ngIf="selectedImageName()"
+            (click)="clearSelectedImage(imageInput)"
+          >
+            <span nz-icon nzType="delete"></span>
+          </button>
+        </div>
+        <span class="form-hint">รองรับไฟล์ภาพ .jpg, .png, .webp ขนาดไม่เกิน 5 MB</span>
+        <ng-container *ngIf="selectedImagePreview(); else existingImagePreview">
+          <div class="image-preview">
+            <img [src]="selectedImagePreview()" alt="พรีวิวรูปใหม่" />
+          </div>
+        </ng-container>
+        <ng-template #existingImagePreview>
+          <div class="image-preview" *ngIf="isEditing() && editingImageUrl()">
+            <img [src]="editingImageUrl()" alt="ภาพเมนูปัจจุบัน" />
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="form-submit-wrapper">
+        <button
+          nz-button
+          nzType="primary"
+          class="form-submit"
+          type="submit"
+          [disabled]="submitting() || addMenuForm.invalid || !hasCategories()"
+          [nzLoading]="submitting()"
+        >
+          {{ isEditing() ? 'บันทึกการเปลี่ยนแปลง' : 'เพิ่มเมนู' }}
+        </button>
+      </div>
+    </form>
+  </ng-container>
+</nz-modal>
+
+<!-- Category Management Modal -->
+<nz-modal
+  nzClassName="category-management-modal"
+  [nzVisible]="categoryModalOpen()"
+  [nzFooter]="null"
+  nzTitle="จัดการหมวดหมู่เมนู"
+  nzCentered
+  nzWidth="720"
+  [nzMaskClosable]="!categorySubmitting()"
+  (nzOnCancel)="closeCategoryModal()"
+>
+  <ng-container *nzModalContent>
+    <div class="category-management-content">
+      <!-- Add Category Form -->
+      <div class="add-category-section">
+        <h3>{{ isEditingCategory() ? 'แก้ไขหมวดหมู่' : 'เพิ่มหมวดหมู่ใหม่' }}</h3>
+        <form [formGroup]="categoryForm" (ngSubmit)="submitCategory()" class="category-form">
+          <div class="form-row">
+            <input 
+              nz-input 
+              nzSize="large" 
+              formControlName="name" 
+              placeholder="เช่น เครื่องดื่ม, อาหารหลัก, ของหวาน" 
+              maxlength="50"
+            />
+            <button
+              nz-button
+              nzType="primary"
+              class="add-btn"
+              type="submit"
+              [disabled]="categorySubmitting() || categoryForm.invalid"
+              [nzLoading]="categorySubmitting()"
+            >
+              {{ isEditingCategory() ? 'บันทึก' : 'เพิ่ม' }}
+            </button>
+            <button
+              *ngIf="isEditingCategory()"
+              nz-button
+              type="button"
+              class="cancel-btn"
+              (click)="cancelEditCategory()"
+            >
+              ยกเลิก
+            </button>
+          </div>
+          <div class="form-error" *ngIf="categoryForm.controls.name.invalid && categoryForm.controls.name.touched">
+            กรุณากรอกชื่อหมวดหมู่ (ไม่เกิน 50 ตัวอักษร)
+          </div>
+        </form>
+      </div>
+
+      <!-- Categories List -->
+      <div class="categories-list-section">
+        <div class="list-header">
+          <h3>หมวดหมู่ที่มีอยู่ ({{ categories().length }} หมวดหมู่)</h3>
+          <div class="search-box">
+            <span nz-icon nzType="search"></span>
+            <input
+              #categorySearchBox
+              type="search"
+              placeholder="ค้นหาหมวดหมู่..."
+              [value]="categorySearchTerm()"
+              (input)="onCategorySearch(categorySearchBox.value)"
+            />
+          </div>
+        </div>
+
+        <div class="categories-list" *ngIf="filteredCategoriesForModal().length; else noCategoriesTemplate">
+          <div class="category-item" *ngFor="let category of filteredCategoriesForModal(); trackBy: trackByCategoryId">
+            <div class="category-info">
+              <h4>{{ category.name }}</h4>
+              <p class="category-count">{{ getMenuCountByCategory(category.id) }} รายการเมนู</p>
+            </div>
+            <div class="category-actions">
+              <button
+                type="button"
+                class="action-btn edit-btn"
+                (click)="editCategory(category)"
+                [disabled]="categorySubmitting()"
+              >
+                <span nz-icon nzType="edit"></span>
+                แก้ไข
+              </button>
+              <button
+                type="button"
+                class="action-btn delete-btn"
+                (click)="confirmDeleteCategory(category)"
+                [disabled]="categorySubmitting()"
+              >
+                <span nz-icon nzType="delete"></span>
+                ลบ
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noCategoriesTemplate>
+          <div class="empty-state">
+            <span nz-icon nzType="inbox"></span>
+            <p>{{ categorySearchTerm() ? 'ไม่พบหมวดหมู่ที่ค้นหา' : 'ยังไม่มีหมวดหมู่' }}</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </ng-container>
+</nz-modal>
+
+<ng-template #loadingState>
+  <div class="menu-state menu-state--loading">
+    <span nz-icon nzType="loading"></span>
+    <p>กำลังโหลดรายการเมนู...</p>
+  </div>
+</ng-template>
+
+<ng-template #errorState>
+  <div class="menu-state menu-state--error">
+    <span nz-icon nzType="warning"></span>
+    <p>{{ error() }}</p>
+    <button type="button" class="menu-retry" (click)="reload()">ลองอีกครั้ง</button>
+  </div>
+</ng-template>
+
+<ng-template #emptyState>
+  <div class="menu-state menu-state--empty">
+    <span nz-icon nzType="inbox"></span>
+    <p>ยังไม่มีรายการเมนู</p>
+  </div>
+</ng-template>
