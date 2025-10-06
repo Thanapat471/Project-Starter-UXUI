@@ -9,8 +9,186 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <!-- Initial loading styles - แสดงทันทีก่อน Angular โหลด -->
+  <style>
+    .initial-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, #fdf9f4 0%, #f4e6d6 50%, #f0dfcc 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .initial-loading::before,
+    .initial-loading::after {
+      content: '';
+      position: absolute;
+      border-radius: 999px;
+      background: linear-gradient(160deg, rgba(148, 105, 76, 0.12), rgba(92, 61, 46, 0.06));
+      z-index: 0;
+    }
+
+    .initial-loading::before {
+      width: 400px;
+      height: 400px;
+      top: -150px;
+      left: -100px;
+      animation: initialFloat 6s ease-in-out infinite;
+    }
+
+    .initial-loading::after {
+      width: 320px;
+      height: 320px;
+      bottom: -120px;
+      right: -80px;
+      animation: initialFloat 6s ease-in-out infinite reverse;
+    }
+
+    @keyframes initialFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    .initial-loading-container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.95);
+      /* Fallback for browsers that don't support backdrop-filter */
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      padding: 3rem 2.5rem;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px -20px rgba(92, 61, 46, 0.35);
+      border: 1px solid rgba(148, 105, 76, 0.1);
+      max-width: 400px;
+    }
+
+    .initial-spinner {
+      width: 80px;
+      height: 80px;
+      position: relative;
+      margin: 0 auto 1.5rem;
+    }
+
+    .initial-spinner-ring {
+      position: absolute;
+      border: 3px solid transparent;
+      border-radius: 50%;
+      animation: initialSpin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    }
+
+    .initial-spinner-ring:nth-child(1) {
+      width: 70px; height: 70px;
+      border-top-color: #946948;
+      border-width: 4px;
+      animation-delay: -0.45s;
+    }
+
+    .initial-spinner-ring:nth-child(2) {
+      width: 58px; height: 58px;
+      top: 6px; left: 6px;
+      border-top-color: #b8956f;
+      border-width: 3px;
+      animation-delay: -0.3s;
+    }
+
+    .initial-spinner-ring:nth-child(3) {
+      width: 46px; height: 46px;
+      top: 12px; left: 12px;
+      border-top-color: #d4b896;
+      border-width: 3px;
+      animation-delay: -0.15s;
+    }
+
+    .initial-spinner-ring:nth-child(4) {
+      width: 34px; height: 34px;
+      top: 18px; left: 18px;
+      border-top-color: #e8d4bb;
+      border-width: 2px;
+    }
+
+    @keyframes initialSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .initial-loading-text {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #5c3d2e;
+      margin: 0 0 0.5rem 0;
+      letter-spacing: 0.5px;
+      animation: initialPulse 2s ease-in-out infinite;
+    }
+
+    .initial-loading-subtitle {
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: #946948;
+      margin: 0;
+      font-style: italic;
+      opacity: 0.7;
+      animation: initialFade 3s ease-in-out infinite;
+    }
+
+    @keyframes initialPulse {
+      0%, 100% { opacity: 0.9; }
+      50% { opacity: 0.6; }
+    }
+
+    @keyframes initialFade {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ซ่อน initial loading เมื่อ Angular พร้อม */
+    .angular-loaded .initial-loading {
+      display: none;
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      .initial-loading {
+        background: radial-gradient(circle at center, #2a1f1a 0%, #1f1612 50%, #191310 100%);
+      }
+      .initial-loading-container {
+        background: rgba(42, 31, 26, 0.95);
+        border: 1px solid rgba(148, 105, 76, 0.2);
+        box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.5);
+      }
+      .initial-loading-text { color: #f4e6d6; }
+      .initial-loading-subtitle { color: #b8956f; }
+      .initial-loading::before,
+      .initial-loading::after {
+        background: linear-gradient(160deg, rgba(148, 105, 76, 0.08), rgba(92, 61, 46, 0.04));
+      }
+    }
+  </style>
 </head>
 <body class="theme-blue bg-theme text-theme">
+  <!-- Initial loading - แสดงทันทีจนกว่า Angular จะพร้อม -->
+  <div class="initial-loading" id="initial-loading">
+    <div class="initial-loading-container">
+      <div class="initial-spinner">
+        <div class="initial-spinner-ring"></div>
+        <div class="initial-spinner-ring"></div>
+        <div class="initial-spinner-ring"></div>
+        <div class="initial-spinner-ring"></div>
+      </div>
+      <h3 class="initial-loading-text">กำลังเตรียมข้อมูล</h3>
+      <p class="initial-loading-subtitle">โปรดรอสักครู่...</p>
+    </div>
+  </div>
+
   <app-root></app-root>
 </body>
 </html>

@@ -1,0 +1,15 @@
+/* App level styles */
+.app-container {
+  min-height: 100vh;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Smooth transitions for router outlet */
+router-outlet {
+  display: block;
+}
+
+/* Ensure smooth transition for initial loading */
+body {
+  transition: all 0.3s ease-in-out;
+}
