@@ -42,6 +42,7 @@ import {
   LogoutOutline,
   DollarOutline,
   LeftOutline,
+  ArrowLeftOutline,
   MinusOutline
 } from '@ant-design/icons-angular/icons';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -93,6 +94,7 @@ export const appConfig: ApplicationConfig = {
       LogoutOutline,
       DollarOutline,
       LeftOutline,
+      ArrowLeftOutline,
       MinusOutline
     ]),
     provideNzConfig({
