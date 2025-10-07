@@ -199,44 +199,14 @@
 
                 <!-- PromptPay Payment Form -->
                 <div *ngIf="paymentMethod() === 'PROMPTPAY'" class="promptpay-payment-form">
-                  <div *ngIf="!showQRCode()" class="qr-generate">
+                  <div class="qr-generate">
                     <button 
-                      class="checkout-btn promptpay-generate"
-                      [disabled]="processingPayment()"
+                      class="checkout-btn qr-btn"
+                      [disabled]="processingPayment() || cart().length === 0"
                       (click)="generatePromptPay()">
-                      <span nz-icon nzType="credit-card"></span>
+                      <span nz-icon nzType="qrcode"></span>
                       <span>{{ processingPayment() ? 'กำลังสร้าง QR...' : 'สร้าง QR Code' }}</span>
                     </button>
-                  </div>
-
-                  <div *ngIf="showQRCode() && promptPayData()" class="qr-display">
-                    <div class="qr-header">
-                      <h5>สแกน QR Code เพื่อชำระเงิน</h5>
-                    </div>
-                    <div class="qr-code-container">
-                      <div class="qr-code-image">
-                        <img [src]="promptPayData().qrCode" alt="PromptPay QR Code" class="qr-image" />
-                        <div class="qr-amount">{{ promptPayData().amount | currency:'THB':'symbol':'1.0-0' }}</div>
-                      </div>
-                    </div>
-                    <div class="qr-info">
-                      <p><span>เบอร์โทร:</span> {{ promptPayData().promptpayPhone }}</p>
-                      <p><span>หมดอายุ:</span> {{ promptPayData().expiresIn }}</p>
-                    </div>
-                    <div class="qr-actions">
-                      <button 
-                        class="checkout-btn qr-confirm"
-                        [disabled]="processingPayment()"
-                        (click)="confirmPromptPayPayment()">
-                        <span nz-icon nzType="check"></span>
-                        <span>{{ processingPayment() ? 'กำลังยืนยัน...' : 'ยืนยันการชำระเงิน' }}</span>
-                      </button>
-                      <button 
-                        class="btn-cancel"
-                        (click)="showQRCode.set(false); promptPayData.set(null)">
-                        <span>ยกเลิก</span>
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -393,4 +363,52 @@
       <p class="empty-cart-subtitle">เลือกเมนูที่ต้องการเพื่อเริ่มสั่งอาหาร</p>
     </div>
   </ng-template>
+</div>
+
+<!-- QR Code Modal -->
+<div *ngIf="showQRCode() && promptPayData()" class="qr-modal-overlay" (click)="closeQRModal()">
+  <div class="qr-modal" (click)="$event.stopPropagation()">
+    <div class="qr-modal-header">
+      <h3>สแกน QR Code เพื่อชำระเงิน</h3>
+      <button class="qr-modal-close" (click)="closeQRModal()">
+        <span nz-icon nzType="close"></span>
+      </button>
+    </div>
+    
+    <div class="qr-modal-content">
+      <div class="qr-code-display">
+        <img [src]="promptPayData().qrCode" alt="PromptPay QR Code" class="qr-code-image" />
+        <div class="qr-amount-display">{{ promptPayData().amount | currency:'THB':'symbol':'1.0-0' }}</div>
+      </div>
+      
+      <div class="qr-payment-info">
+        <div class="qr-info-item">
+          <span class="qr-info-label">เบอร์โทร:</span>
+          <span class="qr-info-value">{{ promptPayData().promptpayPhone }}</span>
+        </div>
+        <div class="qr-info-item">
+          <span class="qr-info-label">หมดอายุ:</span>
+          <span class="qr-info-value">{{ promptPayData().expiresIn }}</span>
+        </div>
+        <div class="qr-info-item">
+          <span class="qr-info-label">รหัสอ้างอิง:</span>
+          <span class="qr-info-value">{{ promptPayData().transactionRef }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="qr-modal-actions">
+      <button 
+        class="qr-confirm-btn"
+        [disabled]="processingPayment()"
+        (click)="confirmPromptPayPayment()">
+        <span nz-icon nzType="check"></span>
+        <span>{{ processingPayment() ? 'กำลังยืนยัน...' : 'ยืนยันการชำระเงิน' }}</span>
+      </button>
+      <button class="qr-cancel-btn" (click)="closeQRModal()">
+        <span nz-icon nzType="close"></span>
+        <span>ยกเลิก</span>
+      </button>
+    </div>
+  </div>
 </div>

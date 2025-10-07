@@ -398,6 +398,12 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     });
   }
 
+  closeQRModal() {
+    this.showQRCode.set(false);
+    this.promptPayData.set(null);
+    this.processingPayment.set(false);
+  }
+
   resetCart() {
     this.cart.set([]);
     this.paidAmount.set(0);

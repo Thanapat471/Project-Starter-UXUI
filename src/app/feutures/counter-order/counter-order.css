@@ -1014,7 +1014,220 @@
   font-weight: 500;
 }
 
-/* Responsive Design */
+/* QR Code Modal Styles */
+.qr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+.qr-modal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(92, 61, 46, 0.3);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  position: relative;
+  border: 2px solid #946b4c;
+}
+
+.qr-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #946b4c, #b8956c);
+  color: white;
+}
+
+.qr-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.qr-modal-close {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.qr-modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.qr-modal-content {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.qr-code-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(148, 107, 76, 0.2);
+  border: 2px solid #946b4c;
+}
+
+.qr-code-image {
+  width: 250px;
+  height: 250px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.qr-amount-display {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4b2a18;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.qr-payment-info {
+  width: 100%;
+  background: rgba(148, 107, 76, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.qr-info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.75rem 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(148, 107, 76, 0.2);
+}
+
+.qr-info-item:last-child {
+  border-bottom: none;
+}
+
+.qr-info-label {
+  font-weight: 600;
+  color: #5c3d2e;
+}
+
+.qr-info-value {
+  font-weight: 500;
+  color: #4b2a18;
+  text-align: right;
+}
+
+.qr-modal-actions {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  background: rgba(148, 107, 76, 0.05);
+  border-top: 1px solid rgba(148, 107, 76, 0.2);
+}
+
+.qr-confirm-btn {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #946b4c, #b8956c);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.qr-confirm-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(148, 107, 76, 0.4);
+}
+
+.qr-confirm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.qr-cancel-btn {
+  padding: 1rem 1.5rem;
+  background: transparent;
+  color: #5c3d2e;
+  border: 2px solid #946b4c;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.qr-cancel-btn:hover {
+  background: rgba(148, 107, 76, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Mobile Responsive for Modal */
+@media (max-width: 768px) {
+  .qr-modal {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
+  }
+  
+  .qr-modal-header {
+    padding: 1rem 1.5rem;
+  }
+  
+  .qr-modal-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .qr-modal-content {
+    padding: 1.5rem;
+  }
+  
+  .qr-code-display {
+    padding: 1rem;
+  }
+  
+  .qr-code-image {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .qr-amount-display {
+    font-size: 1.25rem;
+  }
+  
+  .qr-modal-actions {
+    flex-direction: column;
+    padding: 1rem 1.5rem;
+  }
+}
 @media (max-width: 1200px) {
   .page-content {
     grid-template-columns: 1fr;
