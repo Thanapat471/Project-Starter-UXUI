@@ -184,9 +184,9 @@
         <!-- Close Button -->
         <button 
           (click)="closeItemModal()"
-          class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-300 hover:bg-gray-400 text-gray-600 hover:text-gray-800 flex items-center justify-center transition-all duration-300"
+          class="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 border border-gray-300 text-gray-700 hover:text-gray-900 flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md"
         >
-          <i nz-icon nzType="close" nzTheme="outline" class="text-sm"></i>
+          <i nz-icon nzType="close" nzTheme="outline" class="text-lg font-bold"></i>
         </button>
       </div>
 
@@ -208,7 +208,7 @@
             <button
               *ngFor="let opt of option.options"
               (click)="selectOption(option.id, opt.value)"
-              [class]="'option-btn p-4 rounded-xl border-2 transition-all duration-300 text-center relative ' +
+              [class]="'option-btn p-4 rounded-xl border-2 transition-all duration-300 text-center relative min-h-[5rem] flex flex-col justify-center items-center ' +
                        (selectedOptions[option.id.toString()] === opt.value ? 'border-[#94694c] bg-[#f7f3f0] text-[#5c3d2e]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
             >
               <div class="font-medium">{{ opt.value }}</div>
@@ -234,7 +234,7 @@
             <div
               *ngFor="let opt of option.options"
               (click)="selectOption(option.id, opt.value)"
-              [class]="'option-btn p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 flex items-center justify-between ' +
+              [class]="'option-btn p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 flex items-center justify-between min-h-[5rem] ' +
                        (selectedOptions[option.id.toString()] === opt.value ? 'border-[#94694c] bg-[#f7f3f0]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
             >
               <div class="flex items-center">

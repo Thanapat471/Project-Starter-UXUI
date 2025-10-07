@@ -1035,6 +1035,36 @@
   text-align: center;
 }
 
+/* Modal Close Button */
+.modal-header button {
+  background: rgba(148, 105, 76, 0.1) !important;
+  color: #5c3d2e !important;
+  border: 2px solid rgba(148, 105, 76, 0.2) !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  font-size: 1.25rem !important;
+  font-weight: bold !important;
+  box-shadow: 0 2px 8px rgba(148, 105, 76, 0.2) !important;
+}
+
+.modal-header button:hover {
+  background: rgba(148, 105, 76, 0.2) !important;
+  color: #94694c !important;
+  border-color: rgba(148, 105, 76, 0.4) !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 12px rgba(148, 105, 76, 0.3) !important;
+}
+
+.modal-header button:active {
+  transform: scale(0.95) !important;
+}
+
 /* Modal Footer */
 .modal-footer {
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
