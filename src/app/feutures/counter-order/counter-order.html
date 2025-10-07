@@ -1,0 +1,253 @@
+<div class="counter-order-page">
+  <!-- Header Section -->
+  <section class="page-header">
+    <div class="header-left">
+      <button nz-button nzType="text" class="back-btn" (click)="goBack()">
+        <span nz-icon nzType="arrow-left"></span>
+      </button>
+      <div>
+        <h1>สั่งหน้าเคาน์เตอร์</h1>
+        <p class="page-subtitle">เลือกเมนูและจัดการออเดอร์</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <!-- Cart info display -->
+      <div class="header-cart-info" *ngIf="cartItemCount > 0">
+        <div class="cart-quick-summary">
+          <span class="cart-count">{{ cartItemCount }} รายการ</span>
+          <span class="cart-total">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="page-content">
+    <!-- Menu Section -->
+    <section class="menu-section">
+      <!-- Search and Filter Bar -->
+      <div class="search-filter-bar">
+        <div class="search-input-container">
+          <nz-input-group nzPrefixIcon="search" class="search-input">
+            <input 
+              type="text" 
+              nz-input 
+              placeholder="ค้นหาเมนู..." 
+              [ngModel]="searchTerm()"
+              (ngModelChange)="onSearch($event)" />
+          </nz-input-group>
+        </div>
+        
+        <!-- Category Filter -->
+        <div class="category-filter">
+          <button
+            *ngFor="let category of categories()"
+            nz-button
+            class="category-btn"
+            [nzType]="selectedCategory() === category.name ? 'primary' : 'default'"
+            (click)="selectCategory(category.name)">
+            {{ category.name }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Menu Items Grid -->
+      <div class="menu-grid-container">
+        <nz-spin [nzSpinning]="loading()" nzTip="กำลังโหลดเมนู...">
+          <div class="menu-grid" *ngIf="!loading()">
+            <article 
+              class="menu-item-card" 
+              *ngFor="let item of filteredMenuItems">
+              <div class="menu-item-image">
+                <img 
+                  [src]="item.imageUrl || 'https://images.unsplash.com/photo-1546173159-315724a31696?w=300&h=200&fit=crop'" 
+                  [alt]="item.name"
+                  (error)="onImageError($event)" />
+                <div class="menu-item-overlay">
+                  <button 
+                    nz-button 
+                    nzType="primary" 
+                    nzShape="circle"
+                    class="add-to-cart-btn"
+                    (click)="addToCart(item)">
+                    <span nz-icon nzType="plus"></span>
+                  </button>
+                </div>
+              </div>
+              <div class="menu-item-info">
+                <div class="menu-item-header">
+                  <h3 class="menu-item-name">{{ item.name }}</h3>
+                  <div class="menu-item-price">{{ item.price | currency:'THB':'symbol':'1.0-0' }}</div>
+                </div>
+                <p class="menu-item-description" *ngIf="item.description">{{ item.description }}</p>
+                <div class="menu-item-meta">
+                  <nz-tag class="category-tag">{{ item.category.name }}</nz-tag>
+                  <nz-tag 
+                    *ngIf="!item.isAvailable" 
+                    nzColor="red">
+                    หมด
+                  </nz-tag>
+                </div>
+              </div>
+            </article>
+          </div>
+        </nz-spin>
+
+        <!-- Empty State -->
+        <div class="empty-menu" *ngIf="!loading() && filteredMenuItems.length === 0">
+          <span nz-icon nzType="inbox" class="empty-icon"></span>
+          <p class="empty-title">ไม่พบเมนูที่ตรงกับการค้นหา</p>
+          <p class="empty-subtitle">ลองเปลี่ยนคำค้นหาหรือหมวดหมู่</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cart Section (Desktop) -->
+        <!-- Cart Section (Always Visible) -->
+    <section class="cart-section">
+      <div class="cart-panel">
+        <header class="cart-header">
+          <div class="cart-title">
+            <span nz-icon nzType="shopping-cart"></span>
+            <h2>ตะกร้าสินค้า</h2>
+          </div>
+        </header>
+
+        <div class="cart-content">
+          <ng-container *ngIf="cart().length > 0; else emptyCart">
+            <div class="cart-items">
+              <article class="cart-item" *ngFor="let item of cart()">
+                <div class="cart-item-info">
+                  <h4 class="cart-item-name">{{ item.name }}</h4>
+                  <div class="cart-item-price">{{ item.price | currency:'THB':'symbol':'1.0-0' }}</div>
+                </div>
+                <div class="cart-item-controls">
+                  <div class="quantity-controls">
+                    <button 
+                      nz-button 
+                      nzSize="small" 
+                      nzShape="circle"
+                      class="quantity-btn"
+                      (click)="updateCartItemQuantity(item.id, item.quantity - 1)">
+                      <span nz-icon nzType="minus"></span>
+                    </button>
+                    <span class="quantity-display">{{ item.quantity }}</span>
+                    <button 
+                      nz-button 
+                      nzSize="small" 
+                      nzShape="circle"
+                      class="quantity-btn"
+                      (click)="updateCartItemQuantity(item.id, item.quantity + 1)">
+                      <span nz-icon nzType="plus"></span>
+                    </button>
+                  </div>
+                  <button 
+                    nz-button 
+                    nzType="text" 
+                    nzDanger
+                    nzSize="small"
+                    class="remove-btn"
+                    (click)="removeFromCart(item.id)">
+                    <span nz-icon nzType="delete"></span>
+                  </button>
+                </div>
+                <div class="cart-item-total">{{ item.total | currency:'THB':'symbol':'1.0-0' }}</div>
+              </article>
+            </div>
+
+            <div class="cart-summary">
+              <div class="summary-row">
+                <span class="summary-label">รวมทั้งหมด</span>
+                <span class="summary-value">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
+              </div>
+              <button nz-button nzType="primary" nzSize="large" class="checkout-btn">
+                <span nz-icon nzType="credit-card"></span>
+                ดำเนินการชำระเงิน
+              </button>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Floating Cart Button (Mobile) -->
+  <div class="floating-cart" *ngIf="showFloatingCart() && cartItemCount > 0">
+    <button 
+      nz-button 
+      nzType="primary" 
+      nzSize="large"
+      class="floating-cart-btn"
+      (click)="toggleCart()">
+      <span nz-icon nzType="shopping-cart"></span>
+      <span class="cart-info-mobile">
+        <span class="cart-count-mobile">{{ cartItemCount }}</span>
+        <span class="cart-total-mobile">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
+      </span>
+      <nz-badge [nzCount]="cartItemCount" [nzShowZero]="false"></nz-badge>
+    </button>
+  </div>
+
+  <!-- Mobile Cart Modal -->
+  <nz-drawer
+    [nzVisible]="showFloatingCart() && cartVisible()"
+    [nzClosable]="true"
+    [nzTitle]="'ตะกร้าสินค้า'"
+    [nzPlacement]="'bottom'"
+    [nzHeight]="'70vh'"
+    (nzOnClose)="toggleCart()">
+    <ng-container *nzDrawerContent>
+      <div class="mobile-cart-content">
+        <ng-container *ngIf="cart().length > 0; else emptyCart">
+          <div class="mobile-cart-items">
+            <article class="mobile-cart-item" *ngFor="let item of cart()">
+              <div class="mobile-cart-item-info">
+                <h4 class="mobile-cart-item-name">{{ item.name }}</h4>
+                <div class="mobile-cart-item-price">{{ item.price | currency:'THB':'symbol':'1.0-0' }}</div>
+              </div>
+              <div class="mobile-cart-item-controls">
+                <div class="mobile-quantity-controls">
+                  <button 
+                    nz-button 
+                    nzSize="small" 
+                    nzShape="circle"
+                    (click)="updateCartItemQuantity(item.id, item.quantity - 1)">
+                    <span nz-icon nzType="minus"></span>
+                  </button>
+                  <span class="mobile-quantity-display">{{ item.quantity }}</span>
+                  <button 
+                    nz-button 
+                    nzSize="small" 
+                    nzShape="circle"
+                    (click)="updateCartItemQuantity(item.id, item.quantity + 1)">
+                    <span nz-icon nzType="plus"></span>
+                  </button>
+                </div>
+                <div class="mobile-cart-item-total">{{ item.total | currency:'THB':'symbol':'1.0-0' }}</div>
+              </div>
+            </article>
+          </div>
+
+          <div class="mobile-cart-summary">
+            <div class="mobile-summary-row">
+              <span class="mobile-summary-label">รวมทั้งหมด</span>
+              <span class="mobile-summary-value">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
+            </div>
+            <button nz-button nzType="primary" nzSize="large" class="mobile-checkout-btn">
+              <span nz-icon nzType="credit-card"></span>
+              ดำเนินการชำระเงิน
+            </button>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+  </nz-drawer>
+
+  <!-- Empty Cart Template -->
+  <ng-template #emptyCart>
+    <div class="empty-cart">
+      <span nz-icon nzType="shopping-cart" class="empty-cart-icon"></span>
+      <p class="empty-cart-title">ตะกร้าว่าง</p>
+      <p class="empty-cart-subtitle">เลือกเมนูที่ต้องการเพื่อเริ่มสั่งอาหาร</p>
+    </div>
+  </ng-template>
+</div>

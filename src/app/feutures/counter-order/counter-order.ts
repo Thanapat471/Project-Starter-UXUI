@@ -10,6 +10,7 @@ import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { MenuService, MenuItem, MenuCategory } from '../../core/services/menu.service';
 import { HttpClientModule } from '@angular/common/http';
 
@@ -34,10 +35,11 @@ interface CartItem {
     NzInputModule,
     NzTagModule,
     NzBadgeModule,
-    NzSpinModule
+    NzSpinModule,
+    NzDrawerModule
   ],
-  templateUrl: './counter-order.component.html',
-  styleUrls: ['./counter-order.component.css']
+  templateUrl: './counter-order.html',
+  styleUrls: ['./counter-order.css']
 })
 export class CounterOrderComponent implements OnInit, OnDestroy {
   searchTerm = signal<string>('');
