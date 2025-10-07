@@ -149,10 +149,96 @@
                 <span class="summary-label">รวมทั้งหมด</span>
                 <span class="summary-value">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
               </div>
-              <button class="checkout-btn">
-                <span nz-icon nzType="credit-card"></span>
-                ดำเนินการชำระเงิน
-              </button>
+              
+              <!-- Payment Method Selection -->
+              <div class="payment-section">
+                <h4 class="payment-title">วิธีการชำระเงิน</h4>
+                <div class="payment-methods">
+                  <button 
+                    class="payment-method-btn"
+                    [class.active]="paymentMethod() === 'CASH'"
+                    (click)="setPaymentMethod('CASH')">
+                    <span nz-icon nzType="dollar"></span>
+                    <span>เงินสด</span>
+                  </button>
+                  <button 
+                    class="payment-method-btn"
+                    [class.active]="paymentMethod() === 'PROMPTPAY'"
+                    (click)="setPaymentMethod('PROMPTPAY')">
+                    <span nz-icon nzType="credit-card"></span>
+                    <span>PromptPay</span>
+                  </button>
+                </div>
+
+                <!-- Cash Payment Form -->
+                <div *ngIf="paymentMethod() === 'CASH'" class="cash-payment-form">
+                  <div class="amount-input-group">
+                    <label for="paidAmount">จำนวนเงินที่ได้รับ:</label>
+                    <nz-input-number
+                      id="paidAmount"
+                      [(ngModel)]="paidAmount"
+                      [nzMin]="cartTotal"
+                      [nzStep]="1"
+                      [nzPlaceHolder]="'กรอกจำนวนเงิน'"
+                      style="width: 100%">
+                    </nz-input-number>
+                  </div>
+                  <div class="change-display" *ngIf="paidAmount() > cartTotal">
+                    <span class="change-label">เงินทอน:</span>
+                    <span class="change-amount">{{ changeAmount | currency:'THB':'symbol':'1.0-0' }}</span>
+                  </div>
+                  <button 
+                    class="checkout-btn cash-checkout"
+                    [disabled]="!validateCashAmount() || processingPayment()"
+                    (click)="processCashPayment()">
+                    <span nz-icon nzType="check"></span>
+                    <span>{{ processingPayment() ? 'กำลังดำเนินการ...' : 'ยืนยันการชำระเงิน' }}</span>
+                  </button>
+                </div>
+
+                <!-- PromptPay Payment Form -->
+                <div *ngIf="paymentMethod() === 'PROMPTPAY'" class="promptpay-payment-form">
+                  <div *ngIf="!showQRCode()" class="qr-generate">
+                    <button 
+                      class="checkout-btn promptpay-generate"
+                      [disabled]="processingPayment()"
+                      (click)="generatePromptPay()">
+                      <span nz-icon nzType="credit-card"></span>
+                      <span>{{ processingPayment() ? 'กำลังสร้าง QR...' : 'สร้าง QR Code' }}</span>
+                    </button>
+                  </div>
+
+                  <div *ngIf="showQRCode() && promptPayData()" class="qr-display">
+                    <div class="qr-header">
+                      <h5>สแกน QR Code เพื่อชำระเงิน</h5>
+                    </div>
+                    <div class="qr-code-container">
+                      <div class="qr-placeholder">
+                        QR CODE
+                        <div class="qr-amount">{{ promptPayData().amount | currency:'THB':'symbol':'1.0-0' }}</div>
+                      </div>
+                    </div>
+                    <div class="qr-info">
+                      <p><span>เบอร์โทร:</span> {{ promptPayData().promptpayPhone }}</p>
+                      <p><span>หมดอายุ:</span> {{ promptPayData().expiresIn }}</p>
+                    </div>
+                    <div class="qr-actions">
+                      <button 
+                        class="checkout-btn qr-confirm"
+                        [disabled]="processingPayment()"
+                        (click)="confirmPromptPayPayment()">
+                        <span nz-icon nzType="check"></span>
+                        <span>{{ processingPayment() ? 'กำลังยืนยัน...' : 'ยืนยันการชำระเงิน' }}</span>
+                      </button>
+                      <button 
+                        class="btn-cancel"
+                        (click)="showQRCode.set(false); promptPayData.set(null)">
+                        <span>ยกเลิก</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </ng-container>
         </div>
@@ -214,10 +300,83 @@
               <span class="mobile-summary-label">รวมทั้งหมด</span>
               <span class="mobile-summary-value">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
             </div>
-            <button class="mobile-checkout-btn">
-              <span nz-icon nzType="credit-card"></span>
-              ดำเนินการชำระเงิน
-            </button>
+            
+            <!-- Mobile Payment Section -->
+            <div class="mobile-payment-section">
+              <h4 class="mobile-payment-title">วิธีการชำระเงิน</h4>
+              <div class="mobile-payment-methods">
+                <button 
+                  class="mobile-payment-method-btn"
+                  [class.active]="paymentMethod() === 'CASH'"
+                  (click)="setPaymentMethod('CASH')">
+                  <span nz-icon nzType="dollar"></span>
+                  <span>เงินสด</span>
+                </button>
+                <button 
+                  class="mobile-payment-method-btn"
+                  [class.active]="paymentMethod() === 'PROMPTPAY'"
+                  (click)="setPaymentMethod('PROMPTPAY')">
+                  <span nz-icon nzType="credit-card"></span>
+                  <span>PromptPay</span>
+                </button>
+              </div>
+
+              <!-- Mobile Cash Payment -->
+              <div *ngIf="paymentMethod() === 'CASH'" class="mobile-cash-payment">
+                <div class="mobile-amount-input">
+                  <label>จำนวนเงินที่ได้รับ:</label>
+                  <nz-input-number
+                    [(ngModel)]="paidAmount"
+                    [nzMin]="cartTotal"
+                    [nzStep]="1"
+                    [nzPlaceHolder]="'กรอกจำนวนเงิน'"
+                    style="width: 100%">
+                  </nz-input-number>
+                </div>
+                <div class="mobile-change-display" *ngIf="paidAmount() > cartTotal">
+                  <span>เงินทอน: {{ changeAmount | currency:'THB':'symbol':'1.0-0' }}</span>
+                </div>
+                <button 
+                  class="mobile-checkout-btn"
+                  [disabled]="!validateCashAmount() || processingPayment()"
+                  (click)="processCashPayment()">
+                  <span nz-icon nzType="check"></span>
+                  <span>{{ processingPayment() ? 'กำลังดำเนินการ...' : 'ยืนยันการชำระเงิน' }}</span>
+                </button>
+              </div>
+
+              <!-- Mobile PromptPay Payment -->
+              <div *ngIf="paymentMethod() === 'PROMPTPAY'" class="mobile-promptpay-payment">
+                <div *ngIf="!showQRCode()">
+                  <button 
+                    class="mobile-checkout-btn"
+                    [disabled]="processingPayment()"
+                    (click)="generatePromptPay()">
+                    <span nz-icon nzType="credit-card"></span>
+                    <span>{{ processingPayment() ? 'กำลังสร้าง QR...' : 'สร้าง QR Code' }}</span>
+                  </button>
+                </div>
+
+                <div *ngIf="showQRCode() && promptPayData()" class="mobile-qr-display">
+                  <h5>สแกน QR Code เพื่อชำระเงิน</h5>
+                  <div class="mobile-qr-placeholder">
+                    QR CODE
+                    <div>{{ promptPayData().amount | currency:'THB':'symbol':'1.0-0' }}</div>
+                  </div>
+                  <div class="mobile-qr-info">
+                    <p>เบอร์โทร: {{ promptPayData().promptpayPhone }}</p>
+                    <p>หมดอายุ: {{ promptPayData().expiresIn }}</p>
+                  </div>
+                  <button 
+                    class="mobile-checkout-btn"
+                    [disabled]="processingPayment()"
+                    (click)="confirmPromptPayPayment()">
+                    <span nz-icon nzType="check"></span>
+                    <span>{{ processingPayment() ? 'กำลังยืนยัน...' : 'ยืนยันการชำระเงิน' }}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </ng-container>
       </div>

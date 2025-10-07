@@ -1117,3 +1117,401 @@
   border-radius: 8px !important;
   font-weight: 500 !important;
 }
+
+/* Payment Section Styles */
+.payment-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgba(92, 61, 46, 0.1);
+}
+
+.payment-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4b2a18;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.payment-methods {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.payment-method-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 2px solid rgba(92, 61, 46, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  color: #5c3d2e;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.payment-method-btn:hover {
+  border-color: rgba(148, 105, 76, 0.5);
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(92, 61, 46, 0.15);
+}
+
+.payment-method-btn.active {
+  border-color: #946b4c;
+  background: linear-gradient(135deg, #946b4c 0%, #5c3d2e 100%);
+  color: white;
+  box-shadow: 0 6px 20px rgba(148, 105, 76, 0.3);
+}
+
+.payment-method-btn span[nz-icon] {
+  font-size: 1.5rem;
+}
+
+/* Cash Payment Form */
+.cash-payment-form {
+  background: rgba(255, 255, 255, 0.8);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(92, 61, 46, 0.1);
+}
+
+.amount-input-group {
+  margin-bottom: 1rem;
+}
+
+.amount-input-group label {
+  display: block;
+  font-weight: 600;
+  color: #4b2a18;
+  margin-bottom: 0.5rem;
+}
+
+.change-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #e8f5e8 0%, #d4f4d4 100%);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid #a7d4a7;
+}
+
+.change-label {
+  font-weight: 600;
+  color: #2d5a2d;
+}
+
+.change-amount {
+  font-weight: 700;
+  color: #1a4a1a;
+  font-size: 1.1rem;
+}
+
+/* PromptPay Payment Form */
+.promptpay-payment-form {
+  background: rgba(255, 255, 255, 0.8);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(92, 61, 46, 0.1);
+}
+
+.qr-display {
+  text-align: center;
+}
+
+.qr-header h5 {
+  color: #4b2a18;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.qr-code-container {
+  margin: 1.5rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.qr-placeholder {
+  width: 180px;
+  height: 180px;
+  border: 2px dashed #946b4c;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(148, 107, 76, 0.1);
+  color: #5c3d2e;
+  font-weight: 600;
+  gap: 0.5rem;
+}
+
+.qr-amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #4b2a18;
+}
+
+.qr-info {
+  text-align: left;
+  margin: 1rem 0;
+  padding: 1rem;
+  background: rgba(148, 107, 76, 0.1);
+  border-radius: 8px;
+}
+
+.qr-info p {
+  margin: 0.5rem 0;
+  color: #5c3d2e;
+}
+
+.qr-info span {
+  font-weight: 600;
+}
+
+.qr-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn-cancel {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid rgba(92, 61, 46, 0.3);
+  border-radius: 8px;
+  background: transparent;
+  color: #5c3d2e;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  border-color: #946b4c;
+  background: rgba(148, 107, 76, 0.1);
+}
+
+/* Enhanced Checkout Buttons */
+.checkout-btn {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.checkout-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.cash-checkout {
+  background: linear-gradient(135deg, #2d5a2d 0%, #1a4a1a 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(45, 90, 45, 0.3);
+}
+
+.cash-checkout:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(45, 90, 45, 0.4);
+}
+
+.promptpay-generate,
+.qr-confirm {
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+}
+
+.promptpay-generate:not(:disabled):hover,
+.qr-confirm:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+}
+
+/* Mobile Payment Styles */
+.mobile-payment-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid rgba(92, 61, 46, 0.1);
+}
+
+.mobile-payment-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4b2a18;
+  margin-bottom: 1rem;
+}
+
+.mobile-payment-methods {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.mobile-payment-method-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem 0.5rem;
+  border: 2px solid rgba(92, 61, 46, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.7);
+  color: #5c3d2e;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
+}
+
+.mobile-payment-method-btn:hover {
+  border-color: rgba(148, 105, 76, 0.5);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.mobile-payment-method-btn.active {
+  border-color: #946b4c;
+  background: linear-gradient(135deg, #946b4c 0%, #5c3d2e 100%);
+  color: white;
+}
+
+.mobile-cash-payment,
+.mobile-promptpay-payment {
+  background: rgba(255, 255, 255, 0.8);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(92, 61, 46, 0.1);
+}
+
+.mobile-amount-input {
+  margin-bottom: 1rem;
+}
+
+.mobile-amount-input label {
+  display: block;
+  font-weight: 600;
+  color: #4b2a18;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.mobile-change-display {
+  text-align: center;
+  padding: 0.5rem;
+  background: linear-gradient(135deg, #e8f5e8 0%, #d4f4d4 100%);
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  color: #2d5a2d;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.mobile-qr-display {
+  text-align: center;
+}
+
+.mobile-qr-display h5 {
+  color: #4b2a18;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.mobile-qr-placeholder {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed #946b4c;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(148, 107, 76, 0.1);
+  color: #5c3d2e;
+  font-weight: 600;
+  margin: 1rem auto;
+  font-size: 0.75rem;
+}
+
+.mobile-qr-info {
+  text-align: left;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+}
+
+.mobile-qr-info p {
+  margin: 0.25rem 0;
+  color: #5c3d2e;
+}
+
+.mobile-checkout-btn {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #946b4c 0%, #5c3d2e 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(148, 107, 76, 0.3);
+}
+
+.mobile-checkout-btn:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(148, 107, 76, 0.4);
+}
+
+.mobile-checkout-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Input Number Component Override */
+:host ::ng-deep .ant-input-number {
+  width: 100% !important;
+  border-radius: 8px !important;
+  border-color: rgba(92, 61, 46, 0.2) !important;
+}
+
+:host ::ng-deep .ant-input-number:hover {
+  border-color: #946b4c !important;
+}
+
+:host ::ng-deep .ant-input-number:focus,
+:host ::ng-deep .ant-input-number-focused {
+  border-color: #946b4c !important;
+  box-shadow: 0 0 0 2px rgba(148, 107, 76, 0.2) !important;
+}
+
+:host ::ng-deep .ant-input-number-input {
+  color: #5c3d2e !important;
+  font-weight: 500 !important;
+}

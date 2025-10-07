@@ -2,6 +2,7 @@ import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -11,7 +12,10 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { MenuService, MenuItem, MenuCategory } from '../../core/services/menu.service';
+import { PaymentService } from '../../core/services/payment.service';
 import { HttpClientModule } from '@angular/common/http';
 
 interface CartItem {
@@ -36,7 +40,9 @@ interface CartItem {
     NzTagModule,
     NzBadgeModule,
     NzSpinModule,
-    NzDrawerModule
+    NzDrawerModule,
+    NzRadioModule,
+    NzInputNumberModule
   ],
   templateUrl: './counter-order.html',
   styleUrls: ['./counter-order.css']
@@ -51,9 +57,19 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   loading = signal<boolean>(false);
   cart = signal<CartItem[]>([]);
 
+  // Payment related properties
+  paymentMethod = signal<'CASH' | 'PROMPTPAY'>('CASH');
+  paidAmount = signal<number>(0);
+  processingPayment = signal<boolean>(false);
+  showQRCode = signal<boolean>(false);
+  promptPayData = signal<any>(null);
+
+  private readonly destroy$ = new Subject<void>();
+
   constructor(
     private router: Router,
     private menuService: MenuService,
+    private paymentService: PaymentService,
     private message: NzMessageService
   ) {
     this.checkScreenSize();
@@ -66,6 +82,8 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     window.removeEventListener('resize', () => this.checkScreenSize());
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private checkScreenSize() {
@@ -175,6 +193,76 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   removeFromCart(itemId: string) {
     const updatedCart = this.cart().filter(item => item.id !== itemId);
     this.cart.set(updatedCart);
+  }
+
+  // Payment Methods
+  setPaymentMethod(method: 'CASH' | 'PROMPTPAY') {
+    this.paymentMethod.set(method);
+    this.showQRCode.set(false);
+    this.promptPayData.set(null);
+    if (method === 'CASH') {
+      this.paidAmount.set(this.cartTotal);
+    }
+  }
+
+  validateCashAmount(): boolean {
+    return this.paidAmount() >= this.cartTotal;
+  }
+
+  get changeAmount(): number {
+    return Math.max(0, this.paidAmount() - this.cartTotal);
+  }
+
+  processCashPayment() {
+    if (!this.validateCashAmount()) {
+      this.message.error('จำนวนเงินที่ได้รับต้องมากกว่าหรือเท่ากับยอดรวม');
+      return;
+    }
+
+    this.processingPayment.set(true);
+    
+    // Simulate payment processing
+    setTimeout(() => {
+      this.message.success(`ชำระเงินสำเร็จ เงินทอน: ${this.changeAmount} บาท`);
+      this.resetCart();
+      this.processingPayment.set(false);
+    }, 1500);
+  }
+
+  generatePromptPay() {
+    this.processingPayment.set(true);
+    
+    // Simulate QR code generation
+    setTimeout(() => {
+      const mockQRData = {
+        qrCode: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+        amount: this.cartTotal,
+        promptpayPhone: '0xx-xxx-xxxx',
+        expiresIn: '15 นาที'
+      };
+      this.promptPayData.set(mockQRData);
+      this.showQRCode.set(true);
+      this.processingPayment.set(false);
+    }, 1500);
+  }
+
+  confirmPromptPayPayment() {
+    this.processingPayment.set(true);
+    
+    // Simulate payment confirmation
+    setTimeout(() => {
+      this.message.success('ชำระเงินผ่าน PromptPay สำเร็จ');
+      this.resetCart();
+      this.processingPayment.set(false);
+      this.showQRCode.set(false);
+      this.promptPayData.set(null);
+    }, 2000);
+  }
+
+  resetCart() {
+    this.cart.set([]);
+    this.paidAmount.set(0);
+    this.paymentMethod.set('CASH');
   }
 
   goBack() {
