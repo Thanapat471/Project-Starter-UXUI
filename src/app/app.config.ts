@@ -6,7 +6,7 @@ import { provideNzConfig } from 'ng-zorro-antd/core/config';
 import { provideNzI18n, en_US } from 'ng-zorro-antd/i18n';
 import { provideNzIcons } from 'ng-zorro-antd/icon';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
-import {
+import { 
   PlusCircleOutline,
   PlusOutline,
   DownloadOutline,
@@ -44,7 +44,8 @@ import {
   LeftOutline,
   ArrowLeftOutline,
   CheckCircleOutline,
-  MinusOutline
+  MinusOutline,
+  ScanOutline
 } from '@ant-design/icons-angular/icons';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
@@ -59,7 +60,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideNzI18n(en_US),
-    provideNzIcons([
+  provideNzIcons([
       PlusCircleOutline,
       PlusOutline,
       DownloadOutline,
@@ -97,7 +98,8 @@ export const appConfig: ApplicationConfig = {
       LeftOutline,
       ArrowLeftOutline,
       CheckCircleOutline,
-      MinusOutline
+  MinusOutline,
+  ScanOutline
     ]),
     provideNzConfig({
       theme: {

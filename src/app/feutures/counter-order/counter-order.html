@@ -204,7 +204,7 @@
                       class="checkout-btn qr-btn"
                       [disabled]="processingPayment() || cart().length === 0"
                       (click)="generatePromptPay()">
-                      <span nz-icon nzType="qrcode"></span>
+                      <span nz-icon nzType="scan"></span>
                       <span>{{ processingPayment() ? 'กำลังสร้าง QR...' : 'สร้าง QR Code' }}</span>
                     </button>
                   </div>
