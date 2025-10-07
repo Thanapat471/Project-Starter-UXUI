@@ -214,8 +214,8 @@
                       <h5>สแกน QR Code เพื่อชำระเงิน</h5>
                     </div>
                     <div class="qr-code-container">
-                      <div class="qr-placeholder">
-                        QR CODE
+                      <div class="qr-code-image">
+                        <img [src]="promptPayData().qrCode" alt="PromptPay QR Code" class="qr-image" />
                         <div class="qr-amount">{{ promptPayData().amount | currency:'THB':'symbol':'1.0-0' }}</div>
                       </div>
                     </div>
