@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -22,7 +22,7 @@ import { CheckoutRequest, CheckoutResponse } from '../../shared/models/payment.m
 import { HttpClientModule } from '@angular/common/http';
 import { takeUntil } from 'rxjs/operators';
 
-interface MenuOption {
+interface MenuOptionSelection {
   type: string;
   value: string;
 }
@@ -33,7 +33,7 @@ interface CartItem {
   price: number;
   quantity: number;
   total: number;
-  options: MenuOption[];
+  options: MenuOptionSelection[];
 }
 
 @Component({
@@ -66,6 +66,14 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   categories = signal<MenuCategory[]>([]);
   loading = signal<boolean>(false);
   cart = signal<CartItem[]>([]);
+
+  // Modal/select options state
+  private optionModalVisible = signal<boolean>(false);
+  private modalItem = signal<MenuItem | null>(null);
+  private modalSelected: ReturnType<typeof signal<Record<number, string>>> = signal<Record<number, string>>({});
+  private modalQty = signal<number>(1);
+  private editing = signal<boolean>(false);
+  private editingIndex: number | null = null;
 
   // Payment related properties
   paymentMethod = signal<'CASH' | 'PROMPTPAY'>('CASH');
@@ -174,7 +182,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   // ตัวอย่างการเพิ่มสินค้าพร้อม options ตามตัวอย่าง Request Body
   addToCartWithOptions(menuItem: MenuItem) {
     // ตัวอย่าง options สำหรับเครื่องดื่ม (ตาม Request Body)
-    const options: MenuOption[] = [
+    const options: MenuOptionSelection[] = [
       { type: 'SWEETNESS', value: 'หวานปกติ' },
       { type: 'SIZE', value: 'เล็ก' },
       { type: 'TEMPERATURE', value: 'เย็น' }
@@ -183,7 +191,20 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     this.addToCart(menuItem, options);
   }
 
-  addToCart(menuItem: MenuItem, options: MenuOption[] = []) {
+  private getOptionExtraPrice(menuItem: MenuItem, options: MenuOptionSelection[] = []): number {
+    if (!menuItem?.options || !options?.length) return 0;
+    const selectedByType = new Map(options.map(o => [o.type, o.value]));
+    let extra = 0;
+    for (const group of menuItem.options) {
+      const sel = selectedByType.get(group.type);
+      if (!sel) continue;
+      const found = group.options.find(o => o.value === sel);
+      if (found) extra += found.price || 0;
+    }
+    return extra;
+  }
+
+  addToCart(menuItem: MenuItem, options: MenuOptionSelection[] = []) {
     const currentCart = this.cart();
     // สร้าง unique key จาก menuItemId และ options เพื่อแยกรายการที่มี options ต่างกัน
     const optionsKey = options.map(opt => `${opt.type}:${opt.value}`).sort().join('|');
@@ -201,12 +222,13 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
       );
       this.cart.set(updatedCart);
     } else {
+      const unitPrice = menuItem.price + this.getOptionExtraPrice(menuItem, options);
       const newItem: CartItem = {
         menuItemId: parseInt(menuItem.id),
         name: menuItem.name,
-        price: menuItem.price,
+        price: unitPrice,
         quantity: 1,
-        total: menuItem.price,
+        total: unitPrice,
         options: options
       };
       this.cart.set([...currentCart, newItem]);
@@ -230,6 +252,157 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   removeFromCart(index: number) {
     const updatedCart = this.cart().filter((_, i) => i !== index);
     this.cart.set(updatedCart);
+  }
+
+  // ============ Menu Option Modal & Selection ============
+  onAddToCartClick(item: MenuItem) {
+    if (item.options && item.options.length > 0) {
+      // Prepare modal with defaults (preselect first value for required groups)
+      const defaults: Record<number, string> = {};
+      for (const group of item.options) {
+        if (group.isRequired && group.options.length > 0) {
+          defaults[group.id] = group.options[0].value;
+        }
+      }
+      this.modalItem.set(item);
+      this.modalSelected.set(defaults);
+      this.modalQty.set(1);
+      this.editing.set(false);
+      this.editingIndex = null;
+      this.optionModalVisible.set(true);
+    } else {
+      // No options -> add directly
+      this.addToCart(item);
+    }
+  }
+
+  openEditCartItemModal(cartItem: CartItem, index: number) {
+    const menu = this.menuItems().find(m => parseInt(m.id) === cartItem.menuItemId) || null;
+    if (!menu) {
+      this.message.error('ไม่พบข้อมูลเมนูสำหรับแก้ไข');
+      return;
+    }
+    const mapping: Record<number, string> = {};
+    // Map by type -> value from existing cart options
+    const byType = new Map(cartItem.options.map(o => [o.type, o.value]));
+    for (const group of menu.options || []) {
+      const val = byType.get(group.type);
+      if (val) mapping[group.id] = val;
+    }
+    this.modalItem.set(menu);
+    this.modalSelected.set(mapping);
+    this.modalQty.set(cartItem.quantity);
+    this.editing.set(true);
+    this.editingIndex = index;
+    this.optionModalVisible.set(true);
+  }
+
+  showMenuOptionModal() {
+    return this.optionModalVisible();
+  }
+
+  closeMenuOptionModal() {
+    this.optionModalVisible.set(false);
+    this.modalItem.set(null);
+    this.modalSelected.set({});
+    this.modalQty.set(1);
+    this.editing.set(false);
+    this.editingIndex = null;
+  }
+
+  selectedMenuItem() {
+    return this.modalItem();
+  }
+
+  getOptionIcon(type: string): string {
+    const map: Record<string, string> = {
+      SIZE: 'column-height',
+      SWEETNESS: 'heart',
+      TEMPERATURE: 'heat-map',
+      TOPPING: 'plus-circle'
+    };
+    return map[type] ?? 'setting';
+  }
+
+  selectMenuOption(optionId: number, value: string) {
+    const sel = { ...this.modalSelected() };
+    sel[optionId] = value;
+    this.modalSelected.set(sel);
+  }
+
+  selectedMenuOptions() {
+    return this.modalSelected();
+  }
+
+  decreaseModalQuantity() {
+    const q = this.modalQty();
+    if (q > 1) this.modalQty.set(q - 1);
+  }
+
+  increaseModalQuantity() {
+    this.modalQty.set(this.modalQty() + 1);
+  }
+
+  modalQuantity() {
+    return this.modalQty();
+  }
+
+  private buildSelectedOptionsList(menu: MenuItem, mapping: Record<number, string>): MenuOptionSelection[] {
+    const list: MenuOptionSelection[] = [];
+    for (const group of menu.options || []) {
+      const val = mapping[group.id];
+      if (val) list.push({ type: group.type, value: val });
+    }
+    return list;
+  }
+
+  calculateModalTotalPrice(): number {
+    const menu = this.modalItem();
+    if (!menu) return 0;
+    const mapping = this.modalSelected();
+    const selected = this.buildSelectedOptionsList(menu, mapping);
+    const unit = menu.price + this.getOptionExtraPrice(menu, selected);
+    return unit * this.modalQty();
+  }
+
+  isEditingCartItem() {
+    return this.editing();
+  }
+
+  confirmMenuOptionSelection() {
+    const menu = this.modalItem();
+    if (!menu) return;
+
+    // Validate required options
+    const mapping = this.modalSelected();
+    const missingRequired = (menu.options || []).some(g => g.isRequired && !mapping[g.id]);
+    if (missingRequired) {
+      this.message.error('กรุณาเลือกตัวเลือกที่จำเป็นให้ครบถ้วน');
+      return;
+    }
+
+    const selected = this.buildSelectedOptionsList(menu, mapping);
+    const unitPrice = menu.price + this.getOptionExtraPrice(menu, selected);
+    const qty = this.modalQty();
+
+    if (this.editing() && this.editingIndex !== null) {
+      const index = this.editingIndex;
+      const updated = this.cart().map((it, i) => i === index ? {
+        ...it,
+        price: unitPrice,
+        quantity: qty,
+        total: unitPrice * qty,
+        options: selected
+      } : it);
+      this.cart.set(updated);
+    } else {
+      // Use addToCart logic qty times (preserving merge on same options)
+      for (let i = 0; i < qty; i++) {
+        this.addToCart(menu, selected);
+      }
+    }
+
+    this.closeMenuOptionModal();
   }
 
   // Payment Methods

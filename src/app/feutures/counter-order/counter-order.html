@@ -68,7 +68,7 @@
                     nzType="primary" 
                     nzShape="circle"
                     class="add-to-cart-btn"
-                    (click)="addToCart(item)">
+                    (click)="onAddToCartClick(item)">
                     <span nz-icon nzType="plus"></span>
                   </button>
                 </div>
@@ -116,32 +116,59 @@
           <ng-container *ngIf="cart().length > 0; else emptyCart">
             <div class="cart-items">
               <article class="cart-item" *ngFor="let item of cart(); let i = index">
-                <div class="cart-item-info">
-                  <h4 class="cart-item-name">{{ item.name }}</h4>
-                  <!-- Options hidden -->
-                  <div class="cart-item-price">{{ item.price | currency:'THB':'symbol':'1.0-0' }}</div>
-                </div>
-                <div class="cart-item-controls">
-                  <div class="quantity-controls">
-                    <button 
-                      class="quantity-btn minus-btn"
-                      (click)="updateCartItemQuantity(i, item.quantity - 1)">
-                      <span nz-icon nzType="minus"></span>
-                    </button>
-                    <span class="quantity-display">{{ item.quantity }}</span>
-                    <button 
-                      class="quantity-btn plus-btn"
-                      (click)="updateCartItemQuantity(i, item.quantity + 1)">
-                      <span nz-icon nzType="plus"></span>
-                    </button>
+                <div class="cart-item-main">
+                  <div class="cart-item-header">
+                    <div class="cart-item-info">
+                      <h4 class="cart-item-name">{{ item.name }}</h4>
+                      <div class="cart-item-price-unit">{{ item.price | currency:'THB':'symbol':'1.0-0' }}/ชิ้น</div>
+                    </div>
+                    <div class="cart-item-total">{{ item.total | currency:'THB':'symbol':'1.0-0' }}</div>
                   </div>
-                  <button 
-                    class="remove-btn"
-                    (click)="removeFromCart(i)">
-                    <span nz-icon nzType="delete"></span>
-                  </button>
+                  
+                  <!-- Show Options -->
+                  <div class="cart-item-options" *ngIf="item.options && item.options.length > 0">
+                    <span nz-icon nzType="setting" class="options-icon"></span>
+                    <div class="options-list">
+                      <span class="option-tag" *ngFor="let option of item.options">
+                        {{ option.value }}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div class="cart-item-footer">
+                    <div class="quantity-section">
+                      <span class="quantity-label">จำนวน:</span>
+                      <div class="quantity-controls">
+                        <button 
+                          class="quantity-btn minus-btn"
+                          (click)="updateCartItemQuantity(i, item.quantity - 1)">
+                          <span nz-icon nzType="minus"></span>
+                        </button>
+                        <span class="quantity-display">{{ item.quantity }}</span>
+                        <button 
+                          class="quantity-btn plus-btn"
+                          (click)="updateCartItemQuantity(i, item.quantity + 1)">
+                          <span nz-icon nzType="plus"></span>
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div class="cart-item-actions">
+                      <button 
+                        class="action-btn edit-btn"
+                        (click)="openEditCartItemModal(item, i)"
+                        title="แก้ไขตัวเลือก">
+                        <span nz-icon nzType="edit"></span>
+                      </button>
+                      <button 
+                        class="action-btn remove-btn"
+                        (click)="removeFromCart(i)"
+                        title="ลบออกจากตะกร้า">
+                        <span nz-icon nzType="delete"></span>
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div class="cart-item-total">{{ item.total | currency:'THB':'symbol':'1.0-0' }}</div>
               </article>
             </div>
 
@@ -177,7 +204,8 @@
                     <label for="paidAmount">จำนวนเงินที่ได้รับ:</label>
                     <nz-input-number
                       id="paidAmount"
-                      [(ngModel)]="paidAmount"
+                      [ngModel]="paidAmount()"
+                      (ngModelChange)="paidAmount.set($event)"
                       [nzMin]="cartTotal"
                       [nzStep]="1"
                       [nzPlaceHolder]="'กรอกจำนวนเงิน'"
@@ -298,7 +326,8 @@
                 <div class="mobile-amount-input">
                   <label>จำนวนเงินที่ได้รับ:</label>
                   <nz-input-number
-                    [(ngModel)]="paidAmount"
+                    [ngModel]="paidAmount()"
+                    (ngModelChange)="paidAmount.set($event)"
                     [nzMin]="cartTotal"
                     [nzStep]="1"
                     [nzPlaceHolder]="'กรอกจำนวนเงิน'"
@@ -411,6 +440,115 @@
         <span nz-icon nzType="close"></span>
         <span>ยกเลิก</span>
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- Menu Option Modal -->
+<div *ngIf="showMenuOptionModal()" class="menu-option-modal-overlay" (click)="closeMenuOptionModal()">
+  <div class="menu-option-modal" (click)="$event.stopPropagation()">
+    <!-- Modal Header -->
+    <div class="menu-option-modal-header">
+      <div class="modal-title-section">
+        <h2 class="modal-title">{{ selectedMenuItem()?.name }}</h2>
+        <p class="modal-subtitle" *ngIf="selectedMenuItem()?.description">{{ selectedMenuItem()?.description }}</p>
+      </div>
+      
+      <!-- Close Button -->
+      <button class="modal-close-btn" (click)="closeMenuOptionModal()">
+        <span nz-icon nzType="close"></span>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="menu-option-modal-content">
+      
+      <!-- Dynamic Options from MenuItem -->
+      <div *ngFor="let option of selectedMenuItem()?.options" class="option-group">
+        <h3 class="option-title">
+          <span nz-icon [nzType]="getOptionIcon(option.type)" class="option-icon"></span>
+          {{ option.name }}
+          <span *ngIf="option.isRequired" class="required-star">*</span>
+        </h3>
+        
+        <!-- Grid layout for most option types -->
+        <div *ngIf="option.type !== 'SIZE'" class="option-buttons-grid">
+          <button
+            *ngFor="let opt of option.options"
+            (click)="selectMenuOption(option.id, opt.value)"
+            [class]="'option-btn ' + (selectedMenuOptions()[option.id] === opt.value ? 'selected' : '')">
+            <div class="option-value">{{ opt.value }}</div>
+            <div *ngIf="opt.price > 0" class="option-price">+{{ opt.price }}฿</div>
+            
+            <!-- Selected indicator -->
+            <div *ngIf="selectedMenuOptions()[option.id] === opt.value" class="selected-indicator">
+              <span nz-icon nzType="check"></span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Special layout for SIZE options -->
+        <div *ngIf="option.type === 'SIZE'" class="option-buttons-list">
+          <div
+            *ngFor="let opt of option.options"
+            (click)="selectMenuOption(option.id, opt.value)"
+            [class]="'option-btn-list ' + (selectedMenuOptions()[option.id] === opt.value ? 'selected' : '')">
+            <div class="option-details">
+              <span class="option-value">{{ opt.value }}</span>
+              <span *ngIf="opt.price !== 0" class="option-price-inline">
+                ({{ opt.price > 0 ? '+' : '' }}{{ opt.price }}฿)
+              </span>
+            </div>
+            <div [class]="'radio-indicator ' + (selectedMenuOptions()[option.id] === opt.value ? 'selected' : '')">
+              <div *ngIf="selectedMenuOptions()[option.id] === opt.value" class="radio-dot"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quantity Section -->
+      <div class="quantity-section">
+        <h3 class="quantity-title">
+          <span class="quantity-icon">🔢</span>
+          จำนวน
+        </h3>
+        <div class="quantity-controls">
+          <button
+            (click)="decreaseModalQuantity()"
+            [disabled]="modalQuantity() <= 1"
+            class="qty-btn minus">
+            <span nz-icon nzType="minus"></span>
+          </button>
+
+          <span class="quantity-display">{{ modalQuantity() }}</span>
+
+          <button
+            (click)="increaseModalQuantity()"
+            class="qty-btn plus">
+            <span nz-icon nzType="plus"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="menu-option-modal-footer">
+      <div class="total-price-section">
+        <span class="total-label">ราคารวม:</span>
+        <span class="total-price">฿{{ calculateModalTotalPrice() }}</span>
+      </div>
+      
+      <div class="modal-actions">
+        <button class="cancel-btn" (click)="closeMenuOptionModal()">
+          ยกเลิก
+        </button>
+        <button
+          (click)="confirmMenuOptionSelection()"
+          class="confirm-btn">
+          <span nz-icon nzType="shopping-cart"></span>
+          {{ isEditingCartItem() ? 'อัปเดต' : 'เพิ่มลงตะกร้า' }} {{ modalQuantity() }} รายการ
+        </button>
+      </div>
     </div>
   </div>
 </div>
