@@ -340,15 +340,14 @@ export class MenuManagement {
       isAvailable: editingId ? this.editingMenu()?.isAvailable ?? true : true
     };
 
-    // เพิ่ม options ถ้ามี
-    if (hasOptions && this.currentOptions().length > 0) {
-      payload.options = this.currentOptions().map(group => ({
-        name: group.name,
-        type: group.type,
-        options: group.options,
-        isRequired: group.isRequired,
-        maxSelections: group.maxSelections
-      }));
+    const optionPayload = hasOptions ? this.buildOptionPayload() : [];
+    if (hasOptions && optionPayload.length === 0) {
+      this.message.warning('กรุณาระบุตัวเลือกอย่างน้อยหนึ่งรายการ หรือปิดตัวเลือกเพิ่มเติม');
+      return;
+    }
+
+    if (optionPayload.length > 0) {
+      payload.options = optionPayload;
     }
 
     if (image instanceof File) {
@@ -380,6 +379,49 @@ export class MenuManagement {
           this.message.error(message);
         }
       });
+  }
+
+  private buildOptionPayload(): NonNullable<CreateMenuItemPayload['options']> {
+    return this.currentOptions()
+      .map(group => {
+        const name = this.cleanPlaceholder(group?.name);
+        if (!name) {
+          return null;
+        }
+
+        const values = Array.isArray(group?.options)
+          ? group.options
+              .map(option => {
+                const valueLabel = this.cleanPlaceholder(option?.value);
+                if (!valueLabel) {
+                  return null;
+                }
+
+                const numericPrice = Number(option?.price);
+                return {
+                  value: valueLabel,
+                  price: Number.isFinite(numericPrice) ? numericPrice : 0
+                };
+              })
+              .filter((value): value is { value: string; price: number } => value !== null)
+          : [];
+
+        if (values.length === 0) {
+          return null;
+        }
+
+        const rawMax = Number(group?.maxSelections);
+        const normalizedMax = Number.isFinite(rawMax) && rawMax > 0 ? rawMax : 1;
+
+        return {
+          name,
+          type: this.normalizeOptionType(group?.type),
+          options: values,
+          isRequired: !!group?.isRequired,
+          maxSelections: Math.min(normalizedMax, values.length)
+        };
+      })
+      .filter((group): group is NonNullable<CreateMenuItemPayload['options']>[number] => group !== null);
   }
 
   onSelectImage(event: Event): void {
@@ -430,12 +472,22 @@ export class MenuManagement {
     this.editingMenu.set(menu);
     this.editingImageUrl.set(menu.imageUrl);
     this.clearSelectedImage();
+    const optionGroups = Array.isArray(menu.options)
+      ? menu.options.map(group => ({
+          ...group,
+          options: group.options.map(option => ({ ...option }))
+        }))
+      : [];
+    const hasExistingOptions = optionGroups.length > 0;
+    this.hasOptions.set(hasExistingOptions);
+    this.currentOptions.set(optionGroups);
     this.addMenuForm.reset({
       name: menu.name,
       categoryId: menu.categoryId ?? '',
       price: menu.price,
       description: menu.description,
-      image: null
+      image: null,
+      hasOptions: hasExistingOptions
     });
     this.addMenuForm.markAsPristine();
     this.addMenuForm.markAsUntouched();
@@ -582,14 +634,8 @@ export class MenuManagement {
   }
 
   private prepareCreateForm(): void {
-    this.editingMenuId.set(null);
-    this.editingMenu.set(null);
-    this.editingImageUrl.set(null);
+    this.resetMenuForm();
     this.clearSelectedImage();
-    this.addMenuForm.reset({ name: '', categoryId: '', price: 0, description: '', image: null });
-    this.addMenuForm.markAsPristine();
-    this.addMenuForm.markAsUntouched();
-    this.submitting.set(false);
   }
 
   private prepareCategoryForm(): void {
@@ -694,6 +740,8 @@ export class MenuManagement {
       || null;
     const imageUrl = rawImage ? this.normalizeImageUrl(rawImage) : null;
 
+    const options = this.mapMenuOptions(item.options);
+
     return {
       id: String(item.id),
       categoryId,
@@ -705,8 +753,53 @@ export class MenuManagement {
       statusLabel: isAvailable ? 'เปิดขาย' : 'ปิดขาย',
       statusClass: isAvailable ? 'status--available' : 'status--unavailable',
       isAvailable,
-      imageUrl
+      imageUrl,
+      options
     };
+  }
+
+  private mapMenuOptions(options: MenuItemDto['options']): MenuOptionGroup[] | undefined {
+    if (!Array.isArray(options) || options.length === 0) {
+      return undefined;
+    }
+
+    const mapped = options
+      .map(option => {
+        const optionName = this.cleanPlaceholder(option?.name) || 'ตัวเลือก';
+        const optionType = this.normalizeOptionType(option?.type);
+        const values = Array.isArray(option?.options)
+          ? option.options
+              .map(value => ({
+                value: this.cleanPlaceholder(value?.value),
+                price: Number.isFinite(Number(value?.price)) ? Number(value?.price) : 0
+              }))
+              .filter(v => !!v.value)
+          : [];
+
+        if (values.length === 0) {
+          return null;
+        }
+
+        const rawMax = Number(option?.maxSelections);
+        const safeMax = Number.isFinite(rawMax) && rawMax > 0 ? rawMax : 1;
+
+        return {
+          name: optionName,
+          type: optionType,
+          options: values,
+          isRequired: option?.isRequired ?? false,
+          maxSelections: Math.min(safeMax, values.length)
+        } satisfies MenuOptionGroup;
+      })
+      .filter((group): group is MenuOptionGroup => group !== null);
+
+    return mapped.length > 0 ? mapped : undefined;
+  }
+
+  private normalizeOptionType(type: unknown): MenuOptionGroup['type'] {
+    const upper = typeof type === 'string' ? type.trim().toUpperCase() : '';
+    const allowed: MenuOptionGroup['type'][] = ['SWEETNESS', 'SIZE', 'TEMPERATURE', 'TOPPING', 'OTHER'];
+    return allowed.includes(upper as MenuOptionGroup['type']) ? (upper as MenuOptionGroup['type']) : 'OTHER';
   }
 
   private normalizeImageUrl(path: string): string {
