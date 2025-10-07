@@ -1136,6 +1136,16 @@
   text-align: right;
 }
 
+.countdown-timer {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #d4621a;
+  background: rgba(212, 98, 26, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+}
+
 .qr-modal-actions {
   display: flex;
   gap: 1rem;
@@ -1144,11 +1154,10 @@
   border-top: 1px solid rgba(148, 107, 76, 0.2);
 }
 
-.qr-confirm-btn {
+.qr-confirm-btn,
+.qr-cancel-btn {
   flex: 1;
   padding: 1rem 1.5rem;
-  background: linear-gradient(135deg, #946b4c, #b8956c);
-  color: white;
   border: none;
   border-radius: 12px;
   font-weight: 600;
@@ -1158,6 +1167,11 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+}
+
+.qr-confirm-btn {
+  background: linear-gradient(135deg, #946b4c, #b8956c);
+  color: white;
 }
 
 .qr-confirm-btn:hover:not(:disabled) {
@@ -1172,18 +1186,9 @@
 }
 
 .qr-cancel-btn {
-  padding: 1rem 1.5rem;
   background: transparent;
   color: #5c3d2e;
   border: 2px solid #946b4c;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
 }
 
 .qr-cancel-btn:hover {

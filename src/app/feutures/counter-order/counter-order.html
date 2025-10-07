@@ -388,7 +388,9 @@
         </div>
         <div class="qr-info-item">
           <span class="qr-info-label">หมดอายุ:</span>
-          <span class="qr-info-value">{{ promptPayData().expiresIn }}</span>
+          <span class="qr-info-value countdown-timer">
+            {{ countdownMinutes() < 10 ? '0' + countdownMinutes() : countdownMinutes() }}:{{ countdownSeconds() < 10 ? '0' + countdownSeconds() : countdownSeconds() }}
+          </span>
         </div>
         <div class="qr-info-item">
           <span class="qr-info-label">รหัสอ้างอิง:</span>

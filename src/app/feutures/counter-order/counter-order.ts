@@ -73,6 +73,11 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   processingPayment = signal<boolean>(false);
   showQRCode = signal<boolean>(false);
   promptPayData = signal<any>(null);
+  
+  // Countdown timer properties
+  countdownMinutes = signal<number>(0);
+  countdownSeconds = signal<number>(0);
+  private countdownInterval: any = null;
 
   private readonly destroy$ = new Subject<void>();
 
@@ -96,6 +101,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     window.removeEventListener('resize', () => this.checkScreenSize());
     this.destroy$.next();
     this.destroy$.complete();
+    this.stopCountdown();
   }
 
   private checkScreenSize() {
@@ -340,6 +346,12 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
             expiresIn: response.promptpay.expiresIn,
             transactionRef: response.payment.transactionRef
           });
+          
+          // Start countdown timer (15 minutes = 900 seconds)
+          this.startCountdown(15 * 60);
+          
+          // Start countdown timer (15 minutes = 900 seconds)
+          this.startCountdown(15 * 60);
         } else {
           // Fallback ถ้าไม่มีข้อมูล PromptPay
           this.processingPayment.set(false);
@@ -371,6 +383,8 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
         this.processingPayment.set(false);
         this.showQRCode.set(false);
         this.promptPayData.set(null);
+        this.stopCountdown();
+        this.stopCountdown();
         
         // Show success message first
         this.message.success(message);
@@ -402,6 +416,34 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     this.showQRCode.set(false);
     this.promptPayData.set(null);
     this.processingPayment.set(false);
+    this.stopCountdown();
+  }
+
+  private startCountdown(totalSeconds: number) {
+    this.stopCountdown(); // Clear any existing interval
+    
+    const updateCountdown = () => {
+      if (totalSeconds <= 0) {
+        this.stopCountdown();
+        this.closeQRModal();
+        this.message.warning('QR Code หมดอายุแล้ว กรุณาสร้างใหม่');
+        return;
+      }
+      
+      this.countdownMinutes.set(Math.floor(totalSeconds / 60));
+      this.countdownSeconds.set(totalSeconds % 60);
+      totalSeconds--;
+    };
+    
+    updateCountdown(); // Initial call
+    this.countdownInterval = setInterval(updateCountdown, 1000);
+  }
+  
+  private stopCountdown() {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
+    }
   }
 
   resetCart() {
