@@ -65,6 +65,68 @@ export class Dashboard {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly orders = signal<DashboardOrder[]>([]);
+  
+  // Pagination properties
+  readonly currentPage = signal(1);
+    readonly pageSize = signal(5);
+  readonly total = computed(() => this.orders().length);
+  
+  // Paginated orders
+  readonly paginatedOrders = computed(() => {
+    const allOrders = this.orders();
+    const page = this.currentPage();
+    const size = this.pageSize();
+    const startIndex = (page - 1) * size;
+    const endIndex = startIndex + size;
+    return allOrders.slice(startIndex, endIndex);
+  });
+
+  // Pagination helpers
+  readonly totalPages = computed(() => Math.ceil(this.total() / this.pageSize()));
+  readonly startIndex = computed(() => (this.currentPage() - 1) * this.pageSize() + 1);
+  readonly endIndex = computed(() => Math.min(this.currentPage() * this.pageSize(), this.total()));
+  readonly hasNextPage = computed(() => this.currentPage() < this.totalPages());
+  readonly hasPrevPage = computed(() => this.currentPage() > 1);
+  
+  // Page numbers for pagination display
+  readonly pageNumbers = computed(() => {
+    const total = this.totalPages();
+    const current = this.currentPage();
+    const pages: (number | string)[] = [];
+    
+    if (total <= 7) {
+      // Show all pages if total is small
+      for (let i = 1; i <= total; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Show smart pagination
+      pages.push(1);
+      
+      if (current > 4) {
+        pages.push('...');
+      }
+      
+      const start = Math.max(2, current - 1);
+      const end = Math.min(total - 1, current + 1);
+      
+      for (let i = start; i <= end; i++) {
+        if (i !== 1 && i !== total) {
+          pages.push(i);
+        }
+      }
+      
+      if (current < total - 3) {
+        pages.push('...');
+      }
+      
+      if (total > 1) {
+        pages.push(total);
+      }
+    }
+    
+    return pages;
+  });
 
   readonly ordersCount = computed(() => this.orders().length);
 
@@ -181,5 +243,47 @@ export class Dashboard {
 
   navigateToCounterOrder(): void {
     this.router.navigate(['/features/counter-order']);
+  }
+
+  onPageChange(page: number): void {
+    console.log('onPageChange called with page:', page);
+    if (page >= 1 && page <= this.totalPages()) {
+      this.currentPage.set(page);
+    }
+  }
+
+  onPageSizeChange(size: number): void {
+    console.log('onPageSizeChange called with size:', size);
+    this.pageSize.set(size);
+    this.currentPage.set(1); // Reset to first page when page size changes
+  }
+  
+  onPageSizeSelectChange(event: Event): void {
+    console.log('onPageSizeSelectChange called');
+    const target = event.target as HTMLSelectElement;
+    if (target) {
+      this.onPageSizeChange(+target.value);
+    }
+  }
+  
+  onPageNumberClick(page: string | number): void {
+    console.log('onPageNumberClick called with page:', page);
+    if (typeof page === 'number') {
+      this.onPageChange(page);
+    }
+  }
+  
+  goToNextPage(): void {
+    console.log('goToNextPage called, current page:', this.currentPage());
+    if (this.hasNextPage()) {
+      this.currentPage.set(this.currentPage() + 1);
+    }
+  }
+  
+  goToPrevPage(): void {
+    console.log('goToPrevPage called, current page:', this.currentPage());
+    if (this.hasPrevPage()) {
+      this.currentPage.set(this.currentPage() - 1);
+    }
   }
 }
