@@ -17,8 +17,10 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { MenuService, MenuItem, MenuCategory } from '../../core/services/menu.service';
 import { PaymentService } from '../../core/services/payment.service';
 import { OrdersService } from '../../core/services/orders.service';
+import { ReceiptService } from '../../core/services/receipt.service';
 import { CheckoutRequest, CheckoutResponse } from '../../shared/models/payment.model';
 import { HttpClientModule } from '@angular/common/http';
+import { takeUntil } from 'rxjs/operators';
 
 interface MenuOption {
   type: string;
@@ -79,6 +81,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     private menuService: MenuService,
     private paymentService: PaymentService,
     private ordersService: OrdersService,
+    private receiptService: ReceiptService,
     private message: NzMessageService
   ) {
     this.checkScreenSize();
@@ -268,19 +271,28 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     this.ordersService.checkout(checkoutRequest).subscribe({
       next: (response: CheckoutResponse) => {
         const changeAmount = this.paidAmount() - response.order.total;
-        this.message.success(`ชำระเงินสำเร็จ\nหมายเลขใบเสร็จ: ${response.receipt.receiptNumber}\nเงินทอน: ${changeAmount} บาท`);
+        let message = `ชำระเงินสำเร็จ\nหมายเลขใบเสร็จ: ${response.receipt.receiptNumber}\nเงินทอน: ${changeAmount} บาท`;
+        
         this.resetCart();
         this.processingPayment.set(false);
         
-        // Navigate back to dashboard after successful payment
-        setTimeout(() => {
-          console.log('Navigating to dashboard after cash payment');
-          this.router.navigate(['/features/dashboard']).catch(err => {
-            console.error('Navigation error after cash payment:', err);
-            // Fallback: try to go to login if dashboard fails
-            this.router.navigate(['/login']);
-          });
-        }, 2000);
+        // Show success message first
+        this.message.success(message);
+        
+        // Auto-download receipt if available with delay
+        if (response.receipt?.id) {
+          setTimeout(() => {
+            this.autoDownloadReceipt(response.receipt!.id, response.receipt!.receiptNumber);
+          }, 500);
+        }
+        
+        // Navigate back to dashboard immediately
+        console.log('Navigating to dashboard after cash payment');
+        this.router.navigate(['/features/dashboard']).catch(err => {
+          console.error('Navigation error after cash payment:', err);
+          // Fallback: try to go to login if dashboard fails
+          this.router.navigate(['/login']);
+        });
       },
       error: (error) => {
         console.error('Cash payment error:', error);
@@ -353,21 +365,30 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     // สำหรับ PromptPay ใน counter จะเป็นการยืนยันโดย staff ว่าลูกค้าชำระแล้ว
     this.paymentService.confirmPayment(this.promptPayData().paymentId).subscribe({
       next: (response) => {
-        this.message.success(`ชำระเงินผ่าน PromptPay สำเร็จ\nหมายเลขใบเสร็จ: ${response.receipt?.receiptNumber || 'N/A'}`);
+        let message = `ชำระเงินผ่าน PromptPay สำเร็จ\nหมายเลขใบเสร็จ: ${response.receipt?.receiptNumber || 'N/A'}`;
+        
         this.resetCart();
         this.processingPayment.set(false);
         this.showQRCode.set(false);
         this.promptPayData.set(null);
         
-        // Navigate back to dashboard after successful payment
-        setTimeout(() => {
-          console.log('Navigating to dashboard after PromptPay payment');
-          this.router.navigate(['/features/dashboard']).catch(err => {
-            console.error('Navigation error after PromptPay payment:', err);
-            // Fallback: try to go to login if dashboard fails
-            this.router.navigate(['/login']);
-          });
-        }, 2000);
+        // Show success message first
+        this.message.success(message);
+        
+        // Auto-download receipt if available with delay
+        if (response.receipt?.id) {
+          setTimeout(() => {
+            this.autoDownloadReceipt(response.receipt!.id, response.receipt!.receiptNumber);
+          }, 500);
+        }
+        
+        // Navigate back to dashboard immediately
+        console.log('Navigating to dashboard after PromptPay payment');
+        this.router.navigate(['/features/dashboard']).catch(err => {
+          console.error('Navigation error after PromptPay payment:', err);
+          // Fallback: try to go to login if dashboard fails
+          this.router.navigate(['/login']);
+        });
       },
       error: (error) => {
         console.error('PromptPay confirmation error:', error);
@@ -381,6 +402,121 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     this.cart.set([]);
     this.paidAmount.set(0);
     this.paymentMethod.set('CASH');
+  }
+
+  /**
+   * Automatically download receipt PDF after payment completion
+   */
+  private autoDownloadReceipt(receiptId: number, receiptNumber: string) {
+    if (!receiptId) {
+      console.log('No receipt ID available for auto-download');
+      return;
+    }
+
+    console.log(`=== Auto-downloading receipt: ${receiptNumber} (ID: ${receiptId}) ===`);
+    console.log('API URL will be:', `http://localhost:8080/api/receipts/${receiptId}/pdf`);
+
+    this.receiptService.downloadReceiptPDF(receiptId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (blob) => {
+          console.log('✅ Receipt blob received successfully:', {
+            size: blob.size,
+            type: blob.type,
+            receiptNumber: receiptNumber
+          });
+
+          if (blob.size === 0) {
+            console.error('❌ Received empty blob');
+            this.message.error('ไฟล์ใบเสร็จว่าง กรุณาติดต่อผู้ดูแลระบบ');
+            return;
+          }
+
+          try {
+            console.log('🔄 Attempting to create download...');
+
+            // Create blob URL
+            const blobUrl = window.URL.createObjectURL(blob);
+            console.log('✅ Blob URL created:', blobUrl);
+
+            // Create download link
+            const downloadLink = document.createElement('a');
+            downloadLink.href = blobUrl;
+            downloadLink.download = `${receiptNumber}.pdf`;
+            downloadLink.style.display = 'none';
+            downloadLink.target = '_blank';
+
+            // Add explicit mime type
+            downloadLink.type = 'application/pdf';
+
+            console.log('🔄 Adding link to DOM and triggering click...');
+
+            // Add to DOM
+            document.body.appendChild(downloadLink);
+
+            // Create and dispatch click event manually for better browser compatibility
+            const clickEvent = new MouseEvent('click', {
+              view: window,
+              bubbles: true,
+              cancelable: true
+            });
+
+            downloadLink.dispatchEvent(clickEvent);
+
+            console.log('✅ Download click event dispatched');
+
+            // Cleanup after a delay
+            setTimeout(() => {
+              try {
+                document.body.removeChild(downloadLink);
+                window.URL.revokeObjectURL(blobUrl);
+                console.log('✅ Cleanup completed for:', receiptNumber);
+              } catch (cleanupError) {
+                console.warn('⚠️ Cleanup error (non-critical):', cleanupError);
+              }
+            }, 1000);
+
+          } catch (error) {
+            console.error('❌ Download creation failed:', error);
+
+            // Fallback: Open in new tab
+            try {
+              console.log('🔄 Trying fallback: Open in new tab...');
+              const blobUrl = window.URL.createObjectURL(blob);
+              const newTab = window.open(blobUrl, '_blank');
+
+              if (newTab) {
+                console.log('✅ Opened receipt in new tab');
+                // Auto-cleanup URL after 5 seconds
+                setTimeout(() => window.URL.revokeObjectURL(blobUrl), 5000);
+              } else {
+                throw new Error('Failed to open new tab');
+              }
+            } catch (fallbackError) {
+              console.error('❌ All download methods failed:', fallbackError);
+              this.message.error('ไม่สามารถดาวน์โหลดใบเสร็จได้ กรุณาลองใหม่อีกครั้ง');
+            }
+          }
+        },
+        error: (error) => {
+          console.error('❌ Receipt download failed:', error);
+          console.error('Error details:', {
+            status: error.status,
+            statusText: error.statusText,
+            message: error.message,
+            url: error.url
+          });
+          
+          let errorMessage = 'เกิดข้อผิดพลาดในการดาวน์โหลดใบเสร็จ';
+          if (error.status === 404) {
+            errorMessage = 'ไม่พบไฟล์ใบเสร็จ';
+          } else if (error.status === 500) {
+            errorMessage = 'เซิร์ฟเวอร์มีปัญหา กรุณาลองใหม่ภายหลัง';
+          }
+          
+          this.message.error(errorMessage);
+        }
+      });
   }
 
   goBack() {
