@@ -75,7 +75,7 @@
           </article>
           
           <!-- Custom Pagination Component -->
-          <div class="custom-pagination" *ngIf="total() > pageSize()">
+          <div class="custom-pagination" *ngIf="orders().length > 0">
             <div class="pagination-info">
               <span>แสดง {{ startIndex() }}-{{ endIndex() }} จาก {{ total() }} รายการ</span>
             </div>
