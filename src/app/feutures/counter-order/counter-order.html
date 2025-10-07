@@ -27,23 +27,23 @@
       <!-- Search and Filter Bar -->
       <div class="search-filter-bar">
         <div class="search-input-container">
-          <nz-input-group nzPrefixIcon="search" class="search-input">
+          <div class="search-wrapper">
+            <span nz-icon nzType="search" class="search-icon"></span>
             <input 
               type="text" 
-              nz-input 
+              class="search-input"
               placeholder="ค้นหาเมนู..." 
               [ngModel]="searchTerm()"
               (ngModelChange)="onSearch($event)" />
-          </nz-input-group>
+          </div>
         </div>
         
         <!-- Category Filter -->
         <div class="category-filter">
           <button
             *ngFor="let category of categories()"
-            nz-button
             class="category-btn"
-            [nzType]="selectedCategory() === category.name ? 'primary' : 'default'"
+            [class.active]="selectedCategory() === category.name"
             (click)="selectCategory(category.name)">
             {{ category.name }}
           </button>
@@ -123,28 +123,18 @@
                 <div class="cart-item-controls">
                   <div class="quantity-controls">
                     <button 
-                      nz-button 
-                      nzSize="small" 
-                      nzShape="circle"
-                      class="quantity-btn"
+                      class="quantity-btn minus-btn"
                       (click)="updateCartItemQuantity(item.id, item.quantity - 1)">
                       <span nz-icon nzType="minus"></span>
                     </button>
                     <span class="quantity-display">{{ item.quantity }}</span>
                     <button 
-                      nz-button 
-                      nzSize="small" 
-                      nzShape="circle"
-                      class="quantity-btn"
+                      class="quantity-btn plus-btn"
                       (click)="updateCartItemQuantity(item.id, item.quantity + 1)">
                       <span nz-icon nzType="plus"></span>
                     </button>
                   </div>
                   <button 
-                    nz-button 
-                    nzType="text" 
-                    nzDanger
-                    nzSize="small"
                     class="remove-btn"
                     (click)="removeFromCart(item.id)">
                     <span nz-icon nzType="delete"></span>
@@ -159,7 +149,7 @@
                 <span class="summary-label">รวมทั้งหมด</span>
                 <span class="summary-value">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
               </div>
-              <button nz-button nzType="primary" nzSize="large" class="checkout-btn">
+              <button class="checkout-btn">
                 <span nz-icon nzType="credit-card"></span>
                 ดำเนินการชำระเงิน
               </button>
@@ -173,9 +163,6 @@
   <!-- Floating Cart Button (Mobile) -->
   <div class="floating-cart" *ngIf="showFloatingCart() && cartItemCount > 0">
     <button 
-      nz-button 
-      nzType="primary" 
-      nzSize="large"
       class="floating-cart-btn"
       (click)="toggleCart()">
       <span nz-icon nzType="shopping-cart"></span>
@@ -183,7 +170,6 @@
         <span class="cart-count-mobile">{{ cartItemCount }}</span>
         <span class="cart-total-mobile">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
       </span>
-      <nz-badge [nzCount]="cartItemCount" [nzShowZero]="false"></nz-badge>
     </button>
   </div>
 
@@ -207,17 +193,13 @@
               <div class="mobile-cart-item-controls">
                 <div class="mobile-quantity-controls">
                   <button 
-                    nz-button 
-                    nzSize="small" 
-                    nzShape="circle"
+                    class="mobile-quantity-btn minus-btn"
                     (click)="updateCartItemQuantity(item.id, item.quantity - 1)">
                     <span nz-icon nzType="minus"></span>
                   </button>
                   <span class="mobile-quantity-display">{{ item.quantity }}</span>
                   <button 
-                    nz-button 
-                    nzSize="small" 
-                    nzShape="circle"
+                    class="mobile-quantity-btn plus-btn"
                     (click)="updateCartItemQuantity(item.id, item.quantity + 1)">
                     <span nz-icon nzType="plus"></span>
                   </button>
@@ -232,7 +214,7 @@
               <span class="mobile-summary-label">รวมทั้งหมด</span>
               <span class="mobile-summary-value">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
             </div>
-            <button nz-button nzType="primary" nzSize="large" class="mobile-checkout-btn">
+            <button class="mobile-checkout-btn">
               <span nz-icon nzType="credit-card"></span>
               ดำเนินการชำระเงิน
             </button>
