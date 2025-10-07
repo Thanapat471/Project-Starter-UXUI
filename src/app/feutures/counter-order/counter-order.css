@@ -643,6 +643,22 @@
   font-weight: 500;
 }
 
+.cart-item-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 4px 0;
+}
+
+.option-tag {
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  background: rgba(148, 105, 76, 0.1);
+  color: #8a6b55;
+  border-radius: 4px;
+  border: 1px solid rgba(148, 105, 76, 0.2);
+}
+
 .cart-item-controls {
   display: flex;
   flex-direction: column;
@@ -842,6 +858,23 @@
 .mobile-cart-item-price {
   font-size: 0.9rem;
   color: #8a6b55;
+  font-weight: 500;
+}
+
+.mobile-cart-item-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 4px 0;
+}
+
+.mobile-option-tag {
+  font-size: 0.7rem;
+  padding: 2px 5px;
+  background: rgba(148, 105, 76, 0.1);
+  color: #8a6b55;
+  border-radius: 3px;
+  border: 1px solid rgba(148, 105, 76, 0.2);
 }
 
 .mobile-cart-item-controls {

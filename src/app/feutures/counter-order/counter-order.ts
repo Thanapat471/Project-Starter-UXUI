@@ -16,14 +16,22 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { MenuService, MenuItem, MenuCategory } from '../../core/services/menu.service';
 import { PaymentService } from '../../core/services/payment.service';
+import { OrdersService } from '../../core/services/orders.service';
+import { CheckoutRequest, CheckoutResponse } from '../../shared/models/payment.model';
 import { HttpClientModule } from '@angular/common/http';
 
+interface MenuOption {
+  type: string;
+  value: string;
+}
+
 interface CartItem {
-  id: string;
+  menuItemId: number;
   name: string;
   price: number;
   quantity: number;
   total: number;
+  options: MenuOption[];
 }
 
 @Component({
@@ -70,6 +78,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     private router: Router,
     private menuService: MenuService,
     private paymentService: PaymentService,
+    private ordersService: OrdersService,
     private message: NzMessageService
   ) {
     this.checkScreenSize();
@@ -153,45 +162,64 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     this.selectedCategory.set(category);
   }
 
-  addToCart(menuItem: MenuItem) {
+  // ตัวอย่างการเพิ่มสินค้าพร้อม options ตามตัวอย่าง Request Body
+  addToCartWithOptions(menuItem: MenuItem) {
+    // ตัวอย่าง options สำหรับเครื่องดื่ม (ตาม Request Body)
+    const options: MenuOption[] = [
+      { type: 'SWEETNESS', value: 'หวานปกติ' },
+      { type: 'SIZE', value: 'เล็ก' },
+      { type: 'TEMPERATURE', value: 'เย็น' }
+    ];
+
+    this.addToCart(menuItem, options);
+  }
+
+  addToCart(menuItem: MenuItem, options: MenuOption[] = []) {
     const currentCart = this.cart();
-    const existingItem = currentCart.find(item => item.id === menuItem.id);
+    // สร้าง unique key จาก menuItemId และ options เพื่อแยกรายการที่มี options ต่างกัน
+    const optionsKey = options.map(opt => `${opt.type}:${opt.value}`).sort().join('|');
+    const existingItem = currentCart.find(item => 
+      item.menuItemId === parseInt(menuItem.id) &&
+      item.options.map(opt => `${opt.type}:${opt.value}`).sort().join('|') === optionsKey
+    );
 
     if (existingItem) {
       const updatedCart = currentCart.map(item => 
-        item.id === menuItem.id 
+        item.menuItemId === parseInt(menuItem.id) &&
+        item.options.map(opt => `${opt.type}:${opt.value}`).sort().join('|') === optionsKey
           ? { ...item, quantity: item.quantity + 1, total: (item.quantity + 1) * item.price }
           : item
       );
       this.cart.set(updatedCart);
     } else {
       const newItem: CartItem = {
-        id: menuItem.id,
+        menuItemId: parseInt(menuItem.id),
         name: menuItem.name,
         price: menuItem.price,
         quantity: 1,
-        total: menuItem.price
+        total: menuItem.price,
+        options: options
       };
       this.cart.set([...currentCart, newItem]);
     }
   }
 
-  updateCartItemQuantity(itemId: string, newQuantity: number) {
+  updateCartItemQuantity(index: number, newQuantity: number) {
     if (newQuantity <= 0) {
-      this.removeFromCart(itemId);
+      this.removeFromCart(index);
       return;
     }
 
-    const updatedCart = this.cart().map(item =>
-      item.id === itemId
+    const updatedCart = this.cart().map((item, i) =>
+      i === index
         ? { ...item, quantity: newQuantity, total: newQuantity * item.price }
         : item
     );
     this.cart.set(updatedCart);
   }
 
-  removeFromCart(itemId: string) {
-    const updatedCart = this.cart().filter(item => item.id !== itemId);
+  removeFromCart(index: number) {
+    const updatedCart = this.cart().filter((_, i) => i !== index);
     this.cart.set(updatedCart);
   }
 
@@ -219,44 +247,134 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (this.cart().length === 0) {
+      this.message.error('กรุณาเพิ่มสินค้าในตะกร้า');
+      return;
+    }
+
     this.processingPayment.set(true);
     
-    // Simulate payment processing
-    setTimeout(() => {
-      this.message.success(`ชำระเงินสำเร็จ เงินทอน: ${this.changeAmount} บาท`);
-      this.resetCart();
-      this.processingPayment.set(false);
-    }, 1500);
+    const checkoutRequest: CheckoutRequest = {
+      paymentMethod: 'CASH',
+      paidAmount: this.paidAmount(),
+      items: this.cart().map(item => ({
+        menuItemId: item.menuItemId,
+        quantity: item.quantity,
+        options: item.options && item.options.length > 0 ? item.options : undefined
+      })),
+      notes: 'ลูกค้าจ่ายเงินสด'
+    };
+
+    this.ordersService.checkout(checkoutRequest).subscribe({
+      next: (response: CheckoutResponse) => {
+        const changeAmount = this.paidAmount() - response.order.total;
+        this.message.success(`ชำระเงินสำเร็จ\nหมายเลขใบเสร็จ: ${response.receipt.receiptNumber}\nเงินทอน: ${changeAmount} บาท`);
+        this.resetCart();
+        this.processingPayment.set(false);
+        
+        // Navigate back to dashboard after successful payment
+        setTimeout(() => {
+          console.log('Navigating to dashboard after cash payment');
+          this.router.navigate(['/features/dashboard']).catch(err => {
+            console.error('Navigation error after cash payment:', err);
+            // Fallback: try to go to login if dashboard fails
+            this.router.navigate(['/login']);
+          });
+        }, 2000);
+      },
+      error: (error) => {
+        console.error('Cash payment error:', error);
+        this.message.error('เกิดข้อผิดพลาดในการชำระเงิน กรุณาลองใหม่อีกครั้ง');
+        this.processingPayment.set(false);
+      }
+    });
   }
 
   generatePromptPay() {
+    if (this.cart().length === 0) {
+      this.message.error('กรุณาเพิ่มสินค้าในตะกร้า');
+      return;
+    }
+
     this.processingPayment.set(true);
     
-    // Simulate QR code generation
-    setTimeout(() => {
-      const mockQRData = {
-        qrCode: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
-        amount: this.cartTotal,
-        promptpayPhone: '0xx-xxx-xxxx',
-        expiresIn: '15 นาที'
-      };
-      this.promptPayData.set(mockQRData);
-      this.showQRCode.set(true);
-      this.processingPayment.set(false);
-    }, 1500);
+    const checkoutRequest: CheckoutRequest = {
+      paymentMethod: 'PROMPTPAY',
+      items: this.cart().map(item => ({
+        menuItemId: item.menuItemId,
+        quantity: item.quantity,
+        options: item.options && item.options.length > 0 ? item.options : undefined
+      })),
+      notes: 'ลูกค้าจ่ายผ่าน PromptPay'
+    };
+
+    this.ordersService.checkout(checkoutRequest).subscribe({
+      next: (response: CheckoutResponse) => {
+        console.log('PromptPay checkout response:', response);
+        console.log('PromptPay data:', response.promptpay);
+        
+        // ตรวจสอบว่ามีข้อมูล PromptPay หรือไม่
+        if (response.promptpay && response.promptpay.qrCode) {
+          this.showQRCode.set(true);
+          this.processingPayment.set(false);
+          this.message.success(`สร้าง QR Code สำเร็จ\nจำนวนเงิน: ${response.promptpay.amount} บาท`);
+          
+          // ดึงข้อมูล QR Code จาก promptpay object
+          this.promptPayData.set({
+            paymentId: response.promptpay.paymentId,
+            qrCode: response.promptpay.qrCode,
+            amount: response.promptpay.amount,
+            promptpayPhone: response.promptpay.promptpayPhone,
+            expiresIn: response.promptpay.expiresIn,
+            transactionRef: response.payment.transactionRef
+          });
+        } else {
+          // Fallback ถ้าไม่มีข้อมูล PromptPay
+          this.processingPayment.set(false);
+          this.message.error('ไม่สามารถสร้าง QR Code ได้ กรุณาลองใหม่อีกครั้ง');
+        }
+      },
+      error: (error) => {
+        console.error('PromptPay generation error:', error);
+        this.message.error('เกิดข้อผิดพลาดในการสร้าง QR Code กรุณาลองใหม่อีกครั้ง');
+        this.processingPayment.set(false);
+      }
+    });
   }
 
   confirmPromptPayPayment() {
+    if (!this.promptPayData()) {
+      this.message.error('ไม่พบข้อมูลการชำระเงิน');
+      return;
+    }
+
     this.processingPayment.set(true);
     
-    // Simulate payment confirmation
-    setTimeout(() => {
-      this.message.success('ชำระเงินผ่าน PromptPay สำเร็จ');
-      this.resetCart();
-      this.processingPayment.set(false);
-      this.showQRCode.set(false);
-      this.promptPayData.set(null);
-    }, 2000);
+    // สำหรับ PromptPay ใน counter จะเป็นการยืนยันโดย staff ว่าลูกค้าชำระแล้ว
+    this.paymentService.confirmPayment(this.promptPayData().paymentId).subscribe({
+      next: (response) => {
+        this.message.success(`ชำระเงินผ่าน PromptPay สำเร็จ\nหมายเลขใบเสร็จ: ${response.receipt?.receiptNumber || 'N/A'}`);
+        this.resetCart();
+        this.processingPayment.set(false);
+        this.showQRCode.set(false);
+        this.promptPayData.set(null);
+        
+        // Navigate back to dashboard after successful payment
+        setTimeout(() => {
+          console.log('Navigating to dashboard after PromptPay payment');
+          this.router.navigate(['/features/dashboard']).catch(err => {
+            console.error('Navigation error after PromptPay payment:', err);
+            // Fallback: try to go to login if dashboard fails
+            this.router.navigate(['/login']);
+          });
+        }, 2000);
+      },
+      error: (error) => {
+        console.error('PromptPay confirmation error:', error);
+        this.message.error('เกิดข้อผิดพลาดในการยืนยันการชำระเงิน');
+        this.processingPayment.set(false);
+      }
+    });
   }
 
   resetCart() {
@@ -266,7 +384,12 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigate(['/features/dashboard']);
+    console.log('Navigating back to dashboard');
+    this.router.navigate(['/features/dashboard']).catch(err => {
+      console.error('Navigation error:', err);
+      // Fallback: try to go to login if dashboard fails
+      this.router.navigate(['/login']);
+    });
   }
 
   onSearch(value: string) {

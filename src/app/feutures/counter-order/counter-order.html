@@ -115,28 +115,29 @@
         <div class="cart-content">
           <ng-container *ngIf="cart().length > 0; else emptyCart">
             <div class="cart-items">
-              <article class="cart-item" *ngFor="let item of cart()">
+              <article class="cart-item" *ngFor="let item of cart(); let i = index">
                 <div class="cart-item-info">
                   <h4 class="cart-item-name">{{ item.name }}</h4>
+                  <!-- Options hidden -->
                   <div class="cart-item-price">{{ item.price | currency:'THB':'symbol':'1.0-0' }}</div>
                 </div>
                 <div class="cart-item-controls">
                   <div class="quantity-controls">
                     <button 
                       class="quantity-btn minus-btn"
-                      (click)="updateCartItemQuantity(item.id, item.quantity - 1)">
+                      (click)="updateCartItemQuantity(i, item.quantity - 1)">
                       <span nz-icon nzType="minus"></span>
                     </button>
                     <span class="quantity-display">{{ item.quantity }}</span>
                     <button 
                       class="quantity-btn plus-btn"
-                      (click)="updateCartItemQuantity(item.id, item.quantity + 1)">
+                      (click)="updateCartItemQuantity(i, item.quantity + 1)">
                       <span nz-icon nzType="plus"></span>
                     </button>
                   </div>
                   <button 
                     class="remove-btn"
-                    (click)="removeFromCart(item.id)">
+                    (click)="removeFromCart(i)">
                     <span nz-icon nzType="delete"></span>
                   </button>
                 </div>
@@ -271,22 +272,23 @@
       <div class="mobile-cart-content">
         <ng-container *ngIf="cart().length > 0; else emptyCart">
           <div class="mobile-cart-items">
-            <article class="mobile-cart-item" *ngFor="let item of cart()">
+            <article class="mobile-cart-item" *ngFor="let item of cart(); let i = index">
               <div class="mobile-cart-item-info">
                 <h4 class="mobile-cart-item-name">{{ item.name }}</h4>
+                <!-- Options hidden -->
                 <div class="mobile-cart-item-price">{{ item.price | currency:'THB':'symbol':'1.0-0' }}</div>
               </div>
               <div class="mobile-cart-item-controls">
                 <div class="mobile-quantity-controls">
                   <button 
                     class="mobile-quantity-btn minus-btn"
-                    (click)="updateCartItemQuantity(item.id, item.quantity - 1)">
+                    (click)="updateCartItemQuantity(i, item.quantity - 1)">
                     <span nz-icon nzType="minus"></span>
                   </button>
                   <span class="mobile-quantity-display">{{ item.quantity }}</span>
                   <button 
                     class="mobile-quantity-btn plus-btn"
-                    (click)="updateCartItemQuantity(item.id, item.quantity + 1)">
+                    (click)="updateCartItemQuantity(i, item.quantity + 1)">
                     <span nz-icon nzType="plus"></span>
                   </button>
                 </div>

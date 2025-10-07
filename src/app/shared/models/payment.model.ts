@@ -7,6 +7,10 @@ export interface Payment {
   method: 'CASH' | 'E_WALLET';
   status: 'PENDING' | 'COMPLETED' | 'FAILED';
   transactionRef: string;
+  qrCode?: string;
+  qrString?: string;
+  promptpayPhone?: string;
+  expiresIn?: string;
 }
 
 export interface PromptPayPaymentRequest {
@@ -91,17 +95,18 @@ export interface CheckoutRequest {
     menuItemId: number;
     quantity: number;
     options?: {
-      menuOptionId: number;
-      selectedValue: string;
+      type: string;
+      value: string;
     }[];
   }[];
-  paymentMethod: 'CASH' | 'E_WALLET';
+  paymentMethod: 'CASH' | 'E_WALLET' | 'PROMPTPAY';
   paidAmount?: number;
   notes?: string;
 }
 
 export interface CheckoutResponse {
   success: boolean;
+  flow?: string;
   order: {
     id: number;
     total: number;
@@ -109,6 +114,16 @@ export interface CheckoutResponse {
     source: string;
   };
   payment: Payment;
+  promptpay?: {
+    paymentId: number;
+    qrCode: string;
+    amount: number;
+    currency: string;
+    promptpayPhone: string;
+    message: string;
+    expiresIn: string;
+    confirmUrl: string;
+  };
   receipt: {
     id: number;
     receiptNumber: string;
