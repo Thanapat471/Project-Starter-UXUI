@@ -93,6 +93,10 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
   menuItems: MenuItem[] = [];
   isLoadingMenu = false;
   menuError = '';
+  
+  // Show More functionality
+  showAll = false;
+  itemsPerPage = 5;
 
   // Item Modal properties
   showItemModal = false;
@@ -130,6 +134,19 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     return items;
   }
 
+  get displayedItems(): MenuItem[] {
+    const filtered = this.filteredItems;
+    return this.showAll ? filtered : filtered.slice(0, this.itemsPerPage);
+  }
+
+  get hasMoreItems(): boolean {
+    return this.filteredItems.length > this.itemsPerPage;
+  }
+
+  get skeletonArray(): number[] {
+    return Array(this.itemsPerPage).fill(0).map((_, i) => i);
+  }
+
   private updateFilteredItems(): void {
     // This method is kept for compatibility but does nothing
     // since we're using getter approach
@@ -148,6 +165,14 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
 
   onSearchChange(): void {
     this.updateFilteredItems();
+  }
+
+  toggleShowMore(): void {
+    this.showAll = !this.showAll;
+    // Scroll to top when showing less
+    if (!this.showAll) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   ngOnInit(): void {

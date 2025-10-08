@@ -68,10 +68,34 @@
     </div>
   </div>
 
+  <!-- Skeleton Loading -->
+  <div *ngIf="isLoadingMenu" class="menu-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let item of skeletonArray" class="skeleton-card">
+      <!-- Skeleton Image -->
+      <div class="skeleton-image"></div>
+      
+      <!-- Skeleton Content -->
+      <div class="p-6">
+        <!-- Skeleton Title -->
+        <div class="skeleton-text title mb-3"></div>
+        
+        <!-- Skeleton Description -->
+        <div class="skeleton-text mb-2" style="width: 90%;"></div>
+        <div class="skeleton-text mb-4" style="width: 70%;"></div>
+        
+        <!-- Skeleton Footer -->
+        <div class="flex items-center justify-between">
+          <div class="skeleton-text price"></div>
+          <div class="skeleton-button"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Menu Items Grid (only show when not loading and no error) -->
   <div *ngIf="!isLoadingMenu && !menuError" class="menu-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <div
-      *ngFor="let item of filteredItems"
+      *ngFor="let item of displayedItems"
       class="menu-card card-login-theme rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
     >
       <!-- Food Image -->
@@ -141,8 +165,24 @@
     </div>
   </div>
 
+  <!-- Show More/Less Button -->
+  <div *ngIf="!isLoadingMenu && !menuError && hasMoreItems" class="show-more-container">
+    <button 
+      (click)="toggleShowMore()"
+      [class]="'show-more-btn ' + (showAll ? 'show-less-btn' : '')"
+    >
+      <span *ngIf="!showAll">แสดงเพิ่มเติม</span>
+      <span *ngIf="showAll">แสดงน้อยลง</span>
+      <i 
+        nz-icon 
+        [nzType]="showAll ? 'up' : 'down'" 
+        nzTheme="outline"
+      ></i>
+    </button>
+  </div>
+
   <!-- Empty State -->
-  <div *ngIf="filteredItems.length === 0" class="empty-state text-center py-16">
+  <div *ngIf="!isLoadingMenu && filteredItems.length === 0" class="empty-state text-center py-16">
     <div class="text-6xl text-gray-300 dark:text-gray-600 mb-4">
       <i class="fas fa-search"></i>
     </div>
