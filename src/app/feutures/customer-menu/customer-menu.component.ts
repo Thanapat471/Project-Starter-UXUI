@@ -98,6 +98,8 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
   showAll = false;
   itemsPerPage = 5;
 
+  
+
   // Item Modal properties
   showItemModal = false;
   selectedItem: MenuItem | null = null;

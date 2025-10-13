@@ -849,10 +849,30 @@
     font-size: 0.875rem;
   }
 
+  /* Show More Button Mobile */
+  .show-more-container {
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+  }
+
+  .show-more-btn {
+    padding: 1rem 1.5rem;
+    min-width: 140px;
+    font-size: 0.875rem;
+    /* Ensure it's clickable on mobile */
+    min-height: 48px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    z-index: 1;
+  }
+
   .cart-modal {
     margin: 1rem;
     max-width: calc(100vw - 2rem);
   }
+
 
   .cart-item {
     padding: 0.75rem;
@@ -1006,6 +1026,8 @@
 .show-less-btn:hover i {
   transform: translateY(-2px);
 }
+
+
 
 /* Utility Classes */
 .line-clamp-1 {
