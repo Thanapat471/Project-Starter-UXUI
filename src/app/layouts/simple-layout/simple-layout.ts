@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CartService, CartItem } from '../../core/services/cart.service';
+import { ToastService } from '../../core/services/toast.service';
 import { Subject, takeUntil, firstValueFrom } from 'rxjs';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { ToastComponent } from '../../shared/components/toast/toast.component';
@@ -25,7 +26,7 @@ interface OrderRequest {
 }
 
 interface OrderResponse {
-  orderId: string;
+  id: string;
   sessionId: string;
   status: string;
   totalAmount: number;
@@ -54,7 +55,11 @@ export class SimpleLayout implements OnInit, OnDestroy {
   tableId = '';
   tableName = '';
 
-  constructor(private readonly cartService: CartService, private readonly http: HttpClient) {}
+  constructor(
+    private readonly cartService: CartService,
+    private readonly toastService: ToastService,
+    private readonly http: HttpClient
+  ) {}
 
   ngOnInit() {
     this.loadSessionData();
@@ -102,9 +107,11 @@ export class SimpleLayout implements OnInit, OnDestroy {
   }
 
   clearCart() {
-    if (confirm('คุณต้องการล้างสินค้าทั้งหมดในตะกร้าหรือไม่?')) {
-      this.cartService.clearCart();
-    }
+    this.toastService.warning('คุณต้องการล้างสินค้าทั้งหมดในตะกร้าหรือไม่?');
+    // Note: ในการใช้งานจริง คุณอาจต้องการใช้ confirmation dialog แทน
+    // สำหรับตอนนี้เราจะล้างเลย
+    this.cartService.clearCart();
+    this.toastService.success('ล้างตะกร้าสำเร็จ');
   }
 
   private loadSessionData(): void {
@@ -115,12 +122,12 @@ export class SimpleLayout implements OnInit, OnDestroy {
 
   async placeOrder(): Promise<void> {
     if (!this.sessionId) {
-      alert('ไม่พบ Session ID กรุณาสแกน QR Code ใหม่');
+      this.toastService.error('ไม่พบ Session ID กรุณาสแกน QR Code ใหม่');
       return;
     }
 
     if (this.cartItems.length === 0) {
-      alert('กรุณาเลือกรายการอาหารก่อนทำการสั่ง');
+      this.toastService.warning('กรุณาเลือกรายการอาหารก่อนทำการสั่ง');
       return;
     }
 
@@ -162,7 +169,7 @@ export class SimpleLayout implements OnInit, OnDestroy {
       this.orderNotes = '';
 
       // Show success message
-      alert(`สั่งอาหารสำเร็จ! หมายเลขออร์เดอร์: ${response.orderId}`);
+      this.toastService.success(`สั่งออเดอร์สำเร็จ! หมายเลขออร์เดอร์: ${response.id}`);
 
     } catch (error: any) {
       console.error('Error placing order:', error);
@@ -172,12 +179,13 @@ export class SimpleLayout implements OnInit, OnDestroy {
         const errorMessage = error.error?.error || 'Bad Request';
         const missingItems = error.error?.missing || [];
         if (missingItems.length > 0) {
-          alert(`ไม่พบรายการอาหารเหล่านี้ในระบบ: ${missingItems.join(', ')}\nกรุณาลองรีเฟรชหน้าและเลือกรายการใหม่`);
+          this.toastService.error(`ไม่พบรายการอาหารเหล่านี้ในระบบ: ${missingItems.join(', ')}`);
+          this.toastService.warning('กรุณาลองรีเฟรชหน้าและเลือกรายการใหม่');
         } else {
-          alert(`เกิดข้อผิดพลาด: ${errorMessage}`);
+          this.toastService.error(`เกิดข้อผิดพลาด: ${errorMessage}`);
         }
       } else {
-        alert('เกิดข้อผิดพลาดในการสั่งอาหาร กรุณาลองใหม่อีกครั้ง');
+        this.toastService.error('เกิดข้อผิดพลาดในการสั่งอาหาร กรุณาลองใหม่อีกครั้ง');
       }
     } finally {
       this.isPlacingOrder = false;

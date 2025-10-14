@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CartService, CartItemOption } from '../../core/services/cart.service';
+import { ToastService } from '../../core/services/toast.service';
 import { Subject, firstValueFrom } from 'rxjs';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 interface Category {
@@ -93,12 +94,12 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
   menuItems: MenuItem[] = [];
   isLoadingMenu = false;
   menuError = '';
-  
+
   // Show More functionality
   showAll = false;
   itemsPerPage = 5;
 
-  
+
 
   // Item Modal properties
   showItemModal = false;
@@ -108,6 +109,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly cartService: CartService,
+    private readonly toastService: ToastService,
     private readonly http: HttpClient,
     private readonly route: ActivatedRoute,
     private readonly router: Router
@@ -299,6 +301,9 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
       price: item.price,
       image: item.imageUrl || '/assets/images/placeholder.jpg' // Fallback image
     }, []); // Empty options for simple add to cart
+
+    // Show success toast
+    this.toastService.success(`เพิ่ม ${item.name} ลงตะกร้าแล้ว`);
   }
 
   getItemQuantityInCart(itemId: string): number {
@@ -423,6 +428,9 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.modalQuantity; i++) {
       this.cartService.addToCart(itemToAdd, cartOptions);
     }
+
+    // Show success toast
+    this.toastService.success(`เพิ่ม ${this.selectedItem.name} ${this.modalQuantity} รายการลงตะกร้าแล้ว`);
 
     this.closeItemModal();
   }
