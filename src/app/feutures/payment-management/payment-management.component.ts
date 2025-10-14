@@ -142,19 +142,11 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
         const elementRect = element.getBoundingClientRect();
         const offsetTop = window.pageYOffset + elementRect.top - 100; // offset 100px จากด้านบน
 
+        // ดีดลงไปเลย (instant) ไม่ใช้ smooth scroll
         window.scrollTo({
           top: Math.max(0, offsetTop),
           behavior: 'smooth'
         });
-
-        // เพิ่ม visual feedback ให้ user รู้ว่า scroll แล้ว
-        element.style.transition = 'box-shadow 0.3s ease';
-        element.style.boxShadow = '0 0 0 3px rgba(148, 105, 76, 0.3)';
-
-        // ลบ highlight หลัง 1.5 วินาที
-        setTimeout(() => {
-          element.style.boxShadow = '';
-        }, 1500);
 
         break;
       }
