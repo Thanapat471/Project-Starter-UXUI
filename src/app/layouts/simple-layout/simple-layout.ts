@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { CartService, CartItem } from '../../core/services/cart.service';
 import { Subject, takeUntil, firstValueFrom } from 'rxjs';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { ToastComponent } from '../../shared/components/toast/toast.component';
 
 interface OrderItem {
   menuItemId: number;
@@ -33,7 +34,7 @@ interface OrderResponse {
 
 @Component({
   selector: 'app-simple-layout',
-  imports: [RouterOutlet, CommonModule, FormsModule, NzIconModule],
+  imports: [RouterOutlet, CommonModule, FormsModule, NzIconModule, ToastComponent],
   templateUrl: './simple-layout.html',
   styleUrls: ['./simple-layout.css']
 })

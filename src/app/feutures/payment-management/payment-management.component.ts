@@ -6,6 +6,7 @@ import { PaymentService } from '../../core/services/payment.service';
 import { OrdersService } from '../../core/services/orders.service';
 import { ReceiptService } from '../../core/services/receipt.service';
 import { TableService } from '../../core/services/table.service';
+import { ToastService } from '../../core/services/toast.service';
 import {
   PromptPayPaymentResponse,
   CheckoutRequest
@@ -28,6 +29,7 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
   private readonly orderService = inject(OrdersService);
   private readonly receiptService = inject(ReceiptService);
   private readonly tableService = inject(TableService);
+  private readonly toastService = inject(ToastService);
 
   // Current order/table data
   orderId: number | null = null;
@@ -130,11 +132,12 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
           this.promptPayData = response;
           this.showQRCode = true;
           this.processingPayment = false;
+          this.toastService.success('QR Code PromptPay สร้างสำเร็จแล้ว');
         },
         error: (error) => {
           console.error('Failed to generate PromptPay:', error);
           this.processingPayment = false;
-          alert('Failed to generate PromptPay QR Code');
+          this.toastService.error('ไม่สามารถสร้าง QR Code PromptPay ได้');
         }
       });
   }
@@ -160,12 +163,13 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
         next: (response) => {
           console.log('Cash payment successful:', response);
           this.processingPayment = false;
+          this.toastService.success('ชำระเงินสดสำเร็จแล้ว');
           this.showPaymentSuccess(response);
         },
         error: (error) => {
           console.error('Failed to process cash payment:', error);
           this.processingPayment = false;
-          alert('Failed to process cash payment');
+          this.toastService.error('ไม่สามารถชำระเงินสดได้');
         }
       });
   }
@@ -183,25 +187,12 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
         this.processingPayment = false;
         this.showQRCode = false;
 
-        // Show detailed confirmation message
-        const payment = response.payment;
-        const orders = response.orders;
-
-        let message = `Payment confirmed successfully!\n`;
-        message += `Payment ID: ${payment.id}\n`;
-        message += `Amount: ฿${payment.amount}\n`;
-        message += `Status: ${payment.status}\n`;
-
-        if (orders && orders.length > 0) {
-          message += `\nOrders updated (${orders.length}):\n`;
-          orders.forEach((order: any) => {
-            message += `- Order ${order.id}: ${order.status}\n`;
-          });
-        }
+        // Show success toast
+        this.toastService.success('ชำระเงิน PromptPay สำเร็จแล้ว');
 
         // Auto-download receipt if available
         if (response.receipt?.id) {
-          message += `\nReceipt: ${response.receipt.receiptNumber}`;
+          this.toastService.info(`ใบเสร็จ: ${response.receipt.receiptNumber}`);
 
           // Delay auto-download to ensure it happens after alert is dismissed
           setTimeout(() => {
@@ -211,8 +202,6 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
           }, 500);
         }
 
-        alert(message);
-
         // Auto-close table session after successful payment
         this.autoCloseTableSession();
 
@@ -221,7 +210,7 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
       error: (error) => {
         console.error('Failed to confirm payment:', error);
         this.processingPayment = false;
-        alert('Failed to confirm payment. Please try again.');
+        this.toastService.error('ไม่สามารถยืนยันการชำระเงินได้ กรุณาลองใหม่อีกครั้ง');
       }
     });
   }
@@ -237,36 +226,27 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
         console.log('Payment confirmed:', response);
         this.processingPayment = false;
 
-        // Show detailed confirmation message
+        // Show success toast with payment details
         const payment = response.payment;
         const orders = response.orders;
 
-        let message = `Payment confirmed successfully!\n`;
-        message += `Payment ID: ${payment.id}\n`;
-        message += `Amount: ฿${payment.amount}\n`;
-        message += `Status: ${payment.status}\n`;
-        message += `Table ID: ${payment.tableId}\n`;
+        this.toastService.success(`การชำระเงินสำเร็จ! จำนวนเงิน: ฿${payment.amount}`);
 
         if (orders && orders.length > 0) {
-          message += `\nOrders updated (${orders.length}):\n`;
-          orders.forEach((order: any) => {
-            message += `- Order ${order.id}: ${order.status}\n`;
-          });
+          this.toastService.info(`อัปเดตออเดอร์แล้ว ${orders.length} รายการ`);
         }
 
         // Auto-download receipt if available
         if (response.receipt?.id) {
-          message += `\nReceipt: ${response.receipt.receiptNumber}`;
+          this.toastService.info(`ใบเสร็จ: ${response.receipt.receiptNumber}`);
 
-          // Delay auto-download to ensure it happens after alert is dismissed
+          // Delay auto-download to ensure it happens after toast is dismissed
           setTimeout(() => {
             if (response.receipt) {
               this.autoDownloadReceipt(response.receipt.id, response.receipt.receiptNumber);
             }
           }, 500);
         }
-
-        alert(message);
 
         // Auto-close table session if we have sessionId
         if (this.sessionId) {
@@ -280,12 +260,10 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
         console.error('Failed to confirm payment:', error);
         this.processingPayment = false;
 
-        let errorMessage = 'Failed to confirm payment.';
+        this.toastService.error('ไม่สามารถยืนยันการชำระเงินได้');
         if (error.error?.message) {
-          errorMessage += `\nError: ${error.error.message}`;
+          this.toastService.error(`ข้อผิดพลาด: ${error.error.message}`);
         }
-
-        alert(errorMessage);
       }
     });
   }
@@ -301,23 +279,22 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
 
   private showPaymentSuccess(response: any) {
     const changeAmount = response.payment.changeAmount;
-    let message = 'Payment successful!';
 
     if (changeAmount > 0) {
-      message += `\nChange: ฿${changeAmount}`;
+      this.toastService.success(`ชำระเงินสำเร็จ! เงินทอน: ฿${changeAmount}`);
+    } else {
+      this.toastService.success('ชำระเงินสำเร็จ!');
     }
 
     // Auto-download receipt if available
     if (response.receipt?.id) {
-      message += `\nReceipt: ${response.receipt.receiptNumber}`;
+      this.toastService.info(`ใบเสร็จ: ${response.receipt.receiptNumber}`);
 
-      // Delay auto-download to ensure it happens after alert is dismissed
+      // Delay auto-download to ensure it happens after toast is dismissed
       setTimeout(() => {
         this.autoDownloadReceipt(response.receipt!.id, response.receipt!.receiptNumber);
       }, 500);
     }
-
-    alert(message);
 
     // Auto-close table session after successful payment
     this.autoCloseTableSession();
@@ -348,7 +325,7 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
 
           if (blob.size === 0) {
             console.error('❌ Received empty blob');
-            alert('ไฟล์ใบเสร็จว่าง กรุณาติดต่อผู้ดูแลระบบ');
+            this.toastService.error('ไฟล์ใบเสร็จว่าง กรุณาติดต่อผู้ดูแลระบบ');
             return;
           }
 
@@ -414,7 +391,7 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
               }
             } catch (fallbackError) {
               console.error('❌ All download methods failed:', fallbackError);
-              alert(`ไม่สามารถดาวน์โหลดใบเสร็จ ${receiptNumber} ได้ กรุณาดาวน์โหลดจากหน้าประวัติ`);
+              this.toastService.error(`ไม่สามารถดาวน์โหลดใบเสร็จ ${receiptNumber} ได้ กรุณาดาวน์โหลดจากหน้าประวัติ`);
             }
           }
         },
@@ -426,7 +403,7 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
             statusText: error.statusText,
             url: error.url
           });
-          alert('เกิดข้อผิดพลาดในการดาวน์โหลดใบเสร็จ กรุณาลองใหม่อีกครั้ง');
+          this.toastService.error('เกิดข้อผิดพลาดในการดาวน์โหลดใบเสร็จ กรุณาลองใหม่อีกครั้ง');
         }
       });
   }
@@ -477,24 +454,24 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
           console.log('Checkout successful:', response);
           this.processingPayment = false;
 
-          let message = 'Checkout successful!';
+          let message = 'ชำระเงินสำเร็จ!';
           if (response.payment.changeAmount > 0) {
-            message += `\nChange: ฿${response.payment.changeAmount}`;
+            message += ` เงินทอน: ฿${response.payment.changeAmount}`;
           }
+
+          this.toastService.success(message);
 
           // Auto-download receipt if available
           if (response.receipt?.id) {
-            message += `\nReceipt: ${response.receipt.receiptNumber}`;
+            this.toastService.info(`ใบเสร็จ: ${response.receipt.receiptNumber}`);
 
-            // Delay auto-download to ensure it happens after alert is dismissed
+            // Delay auto-download to ensure it happens after toast is dismissed
             setTimeout(() => {
               if (response.receipt) {
                 this.autoDownloadReceipt(response.receipt.id, response.receipt.receiptNumber);
               }
             }, 500);
           }
-
-          alert(message);
 
           // Auto-close table session if this was a table-based checkout
           if (this.sessionId) {
@@ -506,7 +483,7 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Checkout failed:', error);
           this.processingPayment = false;
-          alert('Checkout failed. Please try again.');
+          this.toastService.error('ไม่สามารถชำระเงินได้ กรุณาลองใหม่อีกครั้ง');
         }
       });
   }
