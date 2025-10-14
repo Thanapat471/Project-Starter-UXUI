@@ -53,6 +53,12 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
   // UI state
   selectedTable: any = null;
   showQRCode = false;
+  showQRModal = false;
+
+  // QR Code countdown timer
+  qrCountdownInterval: any = null;
+  qrTimeRemaining = 0;
+  qrTimeRemainingFormatted = '00:00';
 
   ngOnInit() {
     // Check route parameters
@@ -132,8 +138,13 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
         next: (response) => {
           this.promptPayData = response;
           this.showQRCode = true;
+          this.showQRModal = true;
           this.processingPayment = false;
+          this.startQRCountdown();
           this.toastService.success('QR Code PromptPay สร้างสำเร็จแล้ว');
+
+          // Scroll to top to ensure modal is visible
+          this.scrollToTop();
         },
         error: (error) => {
           console.error('Failed to generate PromptPay:', error);
@@ -141,6 +152,66 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
           this.toastService.error('ไม่สามารถสร้าง QR Code PromptPay ได้');
         }
       });
+  }
+
+  // QR Modal Methods
+  closeQRModal() {
+    this.showQRModal = false;
+    this.showQRCode = false;
+    this.promptPayData = null;
+    this.stopQRCountdown();
+  }
+
+  // QR Countdown Methods
+  startQRCountdown() {
+    if (this.promptPayData?.expiresIn) {
+      // Parse expires in format like "15 minutes" or "900 seconds"
+      const expiresText = this.promptPayData.expiresIn.toLowerCase();
+      const numberRegex = /\d+/;
+
+      if (expiresText.includes('minute')) {
+        const match = numberRegex.exec(expiresText);
+        const minutes = parseInt(match?.[0] || '0');
+        this.qrTimeRemaining = minutes * 60;
+      } else if (expiresText.includes('second')) {
+        const match = numberRegex.exec(expiresText);
+        this.qrTimeRemaining = parseInt(match?.[0] || '0');
+      } else {
+        // Default to 15 minutes
+        this.qrTimeRemaining = 15 * 60;
+      }
+
+      this.updateCountdownDisplay();
+
+      this.qrCountdownInterval = setInterval(() => {
+        this.qrTimeRemaining--;
+        this.updateCountdownDisplay();
+
+        if (this.qrTimeRemaining <= 0) {
+          this.stopQRCountdown();
+          this.closeQRModal();
+          this.toastService.warning('QR Code หมดอายุแล้ว กรุณาสร้างใหม่');
+        }
+      }, 1000);
+    }
+  }
+
+  stopQRCountdown() {
+    if (this.qrCountdownInterval) {
+      clearInterval(this.qrCountdownInterval);
+      this.qrCountdownInterval = null;
+    }
+  }
+
+  updateCountdownDisplay() {
+    const minutes = Math.floor(this.qrTimeRemaining / 60);
+    const seconds = this.qrTimeRemaining % 60;
+    this.qrTimeRemainingFormatted =
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   processCashPayment() {
@@ -508,5 +579,6 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+    this.stopQRCountdown();
   }
 }

@@ -647,6 +647,231 @@
   margin-top: 1.5rem;
 }
 
+/* PromptPay Info */
+.promptpay-info {
+  margin: 1rem 0 2rem 0;
+  text-align: left;
+}
+
+.promptpay-info p {
+  color: #8a6b55;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* QR Modal Styles */
+.qr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.qr-modal {
+  background: white;
+  border-radius: 20px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideInModal 0.3s ease-out;
+  position: relative;
+}
+
+.qr-modal-header {
+  background: linear-gradient(135deg, #94694c, #5c3d2e);
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 20px 20px 0 0;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-content .header-icon {
+  color: white;
+  font-size: 1.5rem;
+}
+
+.qr-modal-header h2 {
+  margin: 0;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.close-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.qr-modal-content {
+  padding: 2rem;
+  text-align: center;
+}
+
+.qr-instruction {
+  margin-bottom: 1.5rem;
+}
+
+.qr-instruction p {
+  color: #5c3d2e;
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.qr-code-container {
+  margin: 2rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.qr-code-container img {
+  width: 200px;
+  height: 200px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(92, 61, 46, 0.1);
+  border: 2px solid #e6dcd1;
+  padding: 1rem;
+  background: white;
+}
+
+.payment-details {
+  margin: 2rem 0;
+  background: rgba(148, 105, 76, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid rgba(148, 105, 76, 0.1);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.75rem 0;
+  padding: 0.5rem 0;
+}
+
+.detail-row:not(:last-child) {
+  border-bottom: 1px solid rgba(148, 105, 76, 0.1);
+}
+
+.detail-row .label {
+  color: #8a6b55;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.detail-row .value {
+  color: #5c3d2e;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.detail-row .value.amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #5c3d2e, #94694c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.countdown-row {
+  background: rgba(255, 193, 7, 0.1);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0 0 0;
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.countdown-row .value.countdown {
+  font-family: 'Courier New', monospace;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ff6b35;
+  animation: pulse 2s infinite;
+}
+
+.qr-modal-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-direction: column;
+}
+
+.qr-modal-actions .btn-success,
+.qr-modal-actions .btn-secondary {
+  width: 100%;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.qr-modal-actions .btn-success {
+  order: 1;
+}
+
+.qr-modal-actions .btn-secondary {
+  order: 2;
+}
+
+/* Modal Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInModal {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Button Styles */
 .btn-primary {
   background: linear-gradient(135deg, #94694c, #5c3d2e);
@@ -819,7 +1044,33 @@
     font-size: 1.75rem;
   }
 
-  .order-summary, .payment-methods, .cash-payment, .promptpay-payment {
+  /* QR Modal Responsive */
+  .qr-modal {
+    max-width: 380px;
+    margin: 1rem;
+  }
+
+  .qr-modal-header {
+    padding: 1rem 1.5rem;
+  }
+
+  .qr-modal-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .qr-modal-content {
+    padding: 1.5rem;
+  }
+
+  .qr-code-container img {
+    width: 160px;
+    height: 160px;
+  }
+
+  .qr-modal-actions {
+    gap: 0.75rem;
+  }
+}  .order-summary, .payment-methods, .cash-payment, .promptpay-payment {
     padding: 1.5rem;
   }
 
@@ -833,7 +1084,7 @@
   .order-summary .total .total-icon {
     font-size: 1.25rem;
   }
-}
+
 
 @media (max-width: 480px) {
   .payment-management-container {
@@ -891,6 +1142,40 @@
   .cash-payment .btn-primary, .promptpay-payment .btn-primary {
     margin: 1rem auto 0 auto;
     min-width: 180px;
+  }
+
+  /* QR Modal Mobile */
+  .qr-modal {
+    max-width: 340px;
+    margin: 0.5rem;
+  }
+
+  .qr-modal-header {
+    padding: 1rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+
+  .qr-modal-header h2 {
+    font-size: 1.125rem;
+  }
+
+  .qr-modal-content {
+    padding: 1rem;
+  }
+
+  .qr-code-container img {
+    width: 140px;
+    height: 140px;
+  }
+
+  .close-btn {
+    width: 35px;
+    height: 35px;
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
   }
 }
 

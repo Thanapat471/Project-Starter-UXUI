@@ -164,40 +164,92 @@
       <div *ngIf="paymentMethod === 'E_WALLET'" class="promptpay-payment">
         <h4>ชำระผ่าน PromptPay</h4>
 
-        <div *ngIf="!showQRCode">
-          <button
-            (click)="generatePromptPay()"
-            [disabled]="processingPayment"
-            class="btn-primary"
-          >
-            <span>{{ processingPayment ? 'กำลังสร้าง QR...' : 'สร้าง QR Code' }}</span>
-          </button>
+
+
+        <button
+          (click)="generatePromptPay()"
+          [disabled]="processingPayment"
+          class="btn-primary"
+        >
+          <span>{{ processingPayment ? 'กำลังสร้าง QR...' : 'สร้าง QR Code' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Code Modal -->
+  <div
+    *ngIf="showQRModal"
+    class="qr-modal-overlay"
+    (click)="closeQRModal()"
+    (keydown.escape)="closeQRModal()"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="qr-modal-title"
+  >
+    <div
+      class="qr-modal bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()"
+    >
+      <!-- Modal Header -->
+      <div class="qr-modal-header">
+        <div class="header-content">
+          <nz-icon nzType="scan" nzTheme="outline" class="header-icon"></nz-icon>
+          <h2 id="qr-modal-title">ชำระผ่าน PromptPay</h2>
         </div>
 
-        <div *ngIf="showQRCode && promptPayData" class="qr-display">
-          <h5>สแกน QR Code เพื่อชำระเงิน</h5>
-          <div class="qr-code">
-            <img [src]="promptPayData.qrCode" alt="PromptPay QR Code">
-          </div>
-          <p><strong>จำนวนเงิน:</strong> ฿{{ promptPayData.amount }}</p>
-          <p><strong>เบอร์โทร:</strong> {{ promptPayData.promptpayPhone }}</p>
-          <p><strong>หมดอายุ:</strong> {{ promptPayData.expiresIn }}</p>
+        <!-- Close Button -->
+        <button
+          (click)="closeQRModal()"
+          class="close-btn"
+        >
+          <nz-icon nzType="close" nzTheme="outline"></nz-icon>
+        </button>
+      </div>
 
-          <div class="qr-actions">
-            <button
-              (click)="confirmPromptPayPayment()"
-              [disabled]="processingPayment"
-              class="btn-success"
-            >
-              <span>{{ processingPayment ? 'กำลังยืนยัน...' : 'ยืนยันการชำระเงิน' }}</span>
-            </button>
-            <button
-              (click)="showQRCode = false; promptPayData = null"
-              class="btn-secondary"
-            >
-              <span>ยกเลิก</span>
-            </button>
+      <!-- Modal Content -->
+      <div class="qr-modal-content" *ngIf="promptPayData">
+        <div class="qr-instruction">
+          <p>สแกน QR Code เพื่อชำระเงิน</p>
+        </div>
+
+        <!-- QR Code Display -->
+        <div class="qr-code-container">
+          <img [src]="promptPayData.qrCode" alt="PromptPay QR Code">
+        </div>
+
+        <!-- Payment Details -->
+        <div class="payment-details">
+          <div class="detail-row">
+            <span class="label">จำนวนเงิน:</span>
+            <span class="value amount">฿{{ promptPayData.amount }}</span>
           </div>
+          <div class="detail-row">
+            <span class="label">เบอร์โทร:</span>
+            <span class="value">{{ promptPayData.promptpayPhone }}</span>
+          </div>
+          <div class="detail-row countdown-row">
+            <span class="label">หมดอายุใน:</span>
+            <span class="value countdown">{{ qrTimeRemainingFormatted }}</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="qr-modal-actions">
+          <button
+            (click)="confirmPromptPayPayment()"
+            [disabled]="processingPayment"
+            class="btn-success"
+          >
+            <span>{{ processingPayment ? 'กำลังยืนยัน...' : 'ยืนยันการชำระเงิน' }}</span>
+          </button>
+          <button
+            (click)="closeQRModal()"
+            class="btn-secondary"
+          >
+            <span>ยกเลิก</span>
+          </button>
         </div>
       </div>
     </div>
