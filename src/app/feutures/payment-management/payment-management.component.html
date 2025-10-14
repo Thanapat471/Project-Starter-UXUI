@@ -51,7 +51,7 @@
   </div>
 
   <!-- Payment Processing (when order or table is selected) -->
-  <div *ngIf="(currentOrder || selectedTable) && !loading" class="payment-section">
+  <div *ngIf="(currentOrder || selectedTable) && !loading" class="payment-section" id="payment-section">
 
     <!-- Order Summary -->
     <div class="order-summary">
@@ -93,12 +93,9 @@
       </div>
 
       <div class="total-section">
-        <div class="total-label">
-          <nz-icon nzType="dollar" nzTheme="outline" class="total-icon"></nz-icon>
-          <span>ยอดรวมทั้งหมด</span>
-        </div>
-        <div class="total-amount">
-          ฿{{ currentOrder?.total || selectedTable?.totalAmount }}
+        <div class="total-container">
+          <span class="total-label">ยอดรวมทั้งหมด</span>
+          <span class="total-amount">฿{{ currentOrder?.total || selectedTable?.totalAmount }}</span>
         </div>
       </div>
     </div>

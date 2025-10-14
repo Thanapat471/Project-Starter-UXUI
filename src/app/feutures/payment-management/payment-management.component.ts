@@ -119,6 +119,46 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
 
     // Calculate total amount for the table
     this.paidAmount = table.totalAmount;
+
+    // Auto-scroll to payment section for better UX
+    setTimeout(() => {
+      this.scrollToPaymentSection();
+    }, 100);
+  }
+
+  private scrollToPaymentSection() {
+    // ลองหา element หลายๆ อันเพื่อให้แน่ใจว่า scroll ได้
+    const targets = [
+      '#payment-section',
+      '.payment-section',
+      '.order-summary',
+      '.payment-methods'
+    ];
+
+    for (const selector of targets) {
+      const element = document.querySelector(selector) as HTMLElement;
+      if (element) {
+        // เพิ่ม offset เล็กน้อยเพื่อให้เห็น header ของ section และไม่ติดขอบบน
+        const elementRect = element.getBoundingClientRect();
+        const offsetTop = window.pageYOffset + elementRect.top - 100; // offset 100px จากด้านบน
+
+        window.scrollTo({
+          top: Math.max(0, offsetTop),
+          behavior: 'smooth'
+        });
+
+        // เพิ่ม visual feedback ให้ user รู้ว่า scroll แล้ว
+        element.style.transition = 'box-shadow 0.3s ease';
+        element.style.boxShadow = '0 0 0 3px rgba(148, 105, 76, 0.3)';
+
+        // ลบ highlight หลัง 1.5 วินาที
+        setTimeout(() => {
+          element.style.boxShadow = '';
+        }, 1500);
+
+        break;
+      }
+    }
   }
 
   generatePromptPay() {
@@ -211,7 +251,19 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
   }
 
   scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Don't scroll to top, instead scroll to center to show modal properly
+    const modal = document.querySelector('.qr-modal-overlay');
+    if (modal) {
+      // Calculate optimal scroll position to center the modal
+      const modalRect = modal.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const optimalScrollY = window.scrollY + modalRect.top - (viewportHeight - modalRect.height) / 2;
+
+      window.scrollTo({
+        top: Math.max(0, optimalScrollY),
+        behavior: 'smooth'
+      });
+    }
   }
 
   processCashPayment() {

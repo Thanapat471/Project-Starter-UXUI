@@ -354,32 +354,29 @@
 }
 
 .total-section {
-  background: linear-gradient(135deg, rgba(148, 105, 76, 0.1), rgba(92, 61, 46, 0.05));
-  border-top: 1px solid rgba(148, 105, 76, 0.2);
-  padding: 1.5rem 2rem;
-  margin: 0;
+  background: linear-gradient(135deg, rgba(148, 105, 76, 0.08), rgba(92, 61, 46, 0.04));
+  border: 1px solid rgba(148, 105, 76, 0.2);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin: 1rem 0;
+}
+
+.total-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .total-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
   color: #8a6b55;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 500;
 }
 
-.total-label .total-icon {
-  color: #94694c;
-  font-size: 1.2rem;
-}
-
 .total-amount {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #5c3d2e;
-  text-align: left;
 }
 
 /* Payment Methods - New Design */
@@ -1037,11 +1034,19 @@
   }
 
   .total-section {
-    padding: 1rem 1.5rem;
+    padding: 1rem;
+    margin: 0.75rem 0;
+  }
+
+  .total-container {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
   }
 
   .total-amount {
-    font-size: 1.75rem;
+    font-size: 1.25rem;
+    color: #5c3d2e;
   }
 
   /* QR Modal Responsive */
