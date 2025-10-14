@@ -849,10 +849,30 @@
     font-size: 0.875rem;
   }
 
+  /* Show More Button Mobile */
+  .show-more-container {
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+  }
+
+  .show-more-btn {
+    padding: 1rem 1.5rem;
+    min-width: 140px;
+    font-size: 0.875rem;
+    /* Ensure it's clickable on mobile */
+    min-height: 48px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    z-index: 1;
+  }
+
   .cart-modal {
     margin: 1rem;
     max-width: calc(100vw - 2rem);
   }
+
 
   .cart-item {
     padding: 0.75rem;
@@ -884,6 +904,130 @@
     font-size: 1.25rem;
   }
 }
+
+/* Skeleton Loading */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-card {
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(148, 105, 76, 0.1);
+  box-shadow: 0 10px 30px -14px rgba(59, 28, 13, 0.35);
+}
+
+.skeleton-image {
+  height: 200px;
+  width: 100%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+.skeleton-text {
+  height: 16px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+.skeleton-text.title {
+  height: 20px;
+  margin-bottom: 8px;
+}
+
+.skeleton-text.price {
+  height: 24px;
+  width: 80px;
+}
+
+.skeleton-button {
+  height: 40px;
+  width: 100px;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+/* Show More Button */
+.show-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.show-more-btn {
+  background: linear-gradient(135deg, rgba(148, 105, 76, 0.1) 0%, rgba(92, 61, 46, 0.05) 100%);
+  color: #5c3d2e;
+  border: 2px solid rgba(148, 105, 76, 0.3);
+  padding: 0.875rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  min-width: 160px;
+  box-shadow: 0 4px 15px rgba(148, 105, 76, 0.1);
+}
+
+.show-more-btn:hover {
+  background: linear-gradient(135deg, rgba(148, 105, 76, 0.15) 0%, rgba(92, 61, 46, 0.08) 100%);
+  border-color: rgba(148, 105, 76, 0.5);
+  color: #94694c;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(148, 105, 76, 0.2);
+}
+
+.show-more-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.show-more-btn i {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.show-more-btn:hover i {
+  transform: translateY(2px);
+}
+
+.show-less-btn {
+  background: linear-gradient(135deg, #94694c 0%, #5c3d2e 100%);
+  color: white;
+  border: 2px solid #5c3d2e;
+}
+
+.show-less-btn:hover {
+  background: linear-gradient(135deg, #a0755a 0%, #6b4636 100%);
+  border-color: #6b4636;
+  color: white;
+}
+
+.show-less-btn:hover i {
+  transform: translateY(-2px);
+}
+
+
 
 /* Utility Classes */
 .line-clamp-1 {
@@ -1033,6 +1177,36 @@
   color: #5c3d2e;
   min-width: 3rem;
   text-align: center;
+}
+
+/* Modal Close Button */
+.modal-header button {
+  background: rgba(148, 105, 76, 0.1) !important;
+  color: #5c3d2e !important;
+  border: 2px solid rgba(148, 105, 76, 0.2) !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  font-size: 1.25rem !important;
+  font-weight: bold !important;
+  box-shadow: 0 2px 8px rgba(148, 105, 76, 0.2) !important;
+}
+
+.modal-header button:hover {
+  background: rgba(148, 105, 76, 0.2) !important;
+  color: #94694c !important;
+  border-color: rgba(148, 105, 76, 0.4) !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 12px rgba(148, 105, 76, 0.3) !important;
+}
+
+.modal-header button:active {
+  transform: scale(0.95) !important;
 }
 
 /* Modal Footer */
