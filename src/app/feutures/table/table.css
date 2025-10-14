@@ -363,9 +363,9 @@
   gap: 0.5rem;
 }
 
-.table-name::before {
-  content: '🍽️';
+.table-name span[nz-icon] {
   font-size: 1rem;
+  color: #94694c;
   opacity: 0.8;
 }
 

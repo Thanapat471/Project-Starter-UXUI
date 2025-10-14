@@ -57,7 +57,10 @@
     <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6" [nzXl]="6" *ngFor="let table of tables">
       <nz-card [ngClass]="getCardClass(table.status)" class="table-card">
         <div class="table-header">
-          <h3 class="table-name">{{ table.name }}</h3>
+          <h3 class="table-name">
+            <span nz-icon nzType="table" nzTheme="outline"></span>
+            {{ table.name }}
+          </h3>
           <nz-badge 
             [nzText]="getStatusText(table.status)" 
             [nzColor]="getStatusColor(table.status)"
