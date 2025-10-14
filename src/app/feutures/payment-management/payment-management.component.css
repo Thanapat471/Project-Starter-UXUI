@@ -209,10 +209,9 @@
   gap: 0.5rem;
 }
 
-.table-card h4::before {
-  content: '🍽️';
+.table-card h4 nz-icon {
+  color: #94694c;
   font-size: 1.2rem;
-  opacity: 0.8;
 }
 
 .table-card p {
@@ -258,9 +257,9 @@
   overflow: hidden;
 }
 
-.no-orders::before {
-  content: '🍽️';
+.no-orders-icon {
   font-size: 4rem;
+  color: #94694c;
   opacity: 0.3;
   display: block;
   margin-bottom: 1rem;
@@ -325,10 +324,9 @@
   gap: 0.75rem;
 }
 
-.order-summary h3::before {
-  content: '📋';
+.order-summary h3 nz-icon {
+  color: #94694c;
   font-size: 1.5rem;
-  opacity: 0.8;
 }
 
 .order-summary h3::after {
@@ -361,7 +359,7 @@
 }
 
 .order-summary .total {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: #5c3d2e;
   margin-top: 2rem;
@@ -372,16 +370,18 @@
   text-align: center;
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  line-height: 1.4;
 }
 
-.order-summary .total::before {
-  content: '💰';
-  position: absolute;
-  top: 50%;
-  left: 1rem;
-  transform: translateY(-50%);
+.order-summary .total .total-icon {
+  color: #94694c;
   font-size: 1.5rem;
-  opacity: 0.6;
+  flex-shrink: 0;
 }
 
 .order-summary .total strong {
@@ -475,6 +475,12 @@
   border: 1px solid rgba(148, 105, 76, 0.1);
   border-radius: 12px;
   animation: slideDown 0.3s ease-out;
+  text-align: center;
+}
+
+.cash-payment .btn-primary, .promptpay-payment .btn-primary {
+  display: inline-block;
+  margin: 0 auto;
 }
 
 @keyframes slideDown {
@@ -511,6 +517,7 @@
 /* Amount Input */
 .amount-input {
   margin: 1.5rem 0;
+  text-align: left;
 }
 
 .amount-input label {
@@ -521,6 +528,7 @@
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-align: left;
 }
 
 .amount-input input {
@@ -549,6 +557,7 @@
   background: linear-gradient(135deg, rgba(148, 105, 76, 0.1), rgba(92, 61, 46, 0.1));
   border-radius: 12px;
   border: 1px solid rgba(148, 105, 76, 0.2);
+  text-align: left;
 }
 
 .change-calculation p {
@@ -556,7 +565,7 @@
   font-weight: 700;
   font-size: 1.125rem;
   color: #5c3d2e;
-  text-align: center;
+  text-align: left;
 }
 
 /* QR Display */
@@ -756,6 +765,17 @@
   .order-summary, .payment-methods, .cash-payment, .promptpay-payment {
     padding: 1.5rem;
   }
+
+  .order-summary .total {
+    font-size: 1.25rem;
+    padding: 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .order-summary .total .total-icon {
+    font-size: 1.25rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -769,6 +789,15 @@
 
   .table-card {
     padding: 1rem;
+  }
+
+  .order-summary .total {
+    font-size: 1.125rem;
+    padding: 0.75rem;
+  }
+
+  .order-summary .total .total-icon {
+    font-size: 1.125rem;
   }
 
   .btn-primary, .btn-secondary, .btn-success {
