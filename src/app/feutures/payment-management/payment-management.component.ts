@@ -175,8 +175,11 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
           this.startQRCountdown();
           this.toastService.success('QR Code PromptPay สร้างสำเร็จแล้ว');
 
-          // Scroll to top to ensure modal is visible
-          this.scrollToTop();
+          // Scroll modal ให้อยู่ตรงกลาง viewport
+          this.scrollToQRModal();
+
+          // Scroll ขึ้นด้านบนแบบ smooth เพื่อให้เห็น modal
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         error: (error) => {
           console.error('Failed to generate PromptPay:', error);
@@ -618,6 +621,22 @@ export class PaymentManagementComponent implements OnInit, OnDestroy {
 
     console.log('=== Manual Test Download Started ===');
     this.autoDownloadReceipt(testReceiptId, testReceiptNumber);
+  }
+
+  private scrollToQRModal() {
+    setTimeout(() => {
+      const modal = document.querySelector('.qr-modal-overlay');
+      if (modal) {
+        const modalRect = modal.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        // เพิ่ม offset 40px เพื่อให้หัว modal โผล่ขึ้นมา
+        const optimalScrollY = window.scrollY + modalRect.top - (viewportHeight - modalRect.height) / 2 - 40;
+        window.scrollTo({
+          top: Math.max(0, optimalScrollY),
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   }
 
   ngOnDestroy() {
