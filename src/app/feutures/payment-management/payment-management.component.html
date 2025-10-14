@@ -55,41 +55,83 @@
 
     <!-- Order Summary -->
     <div class="order-summary">
-      <h3><nz-icon nzType="file-text" nzTheme="outline"></nz-icon>สรุปออเดอร์</h3>
-      <div *ngIf="currentOrder">
-        <p><strong>ออเดอร์ #{{ currentOrder.id }}</strong></p>
-        <p>สถานะ: {{ currentOrder.status }}</p>
-        <p>ประเภท: {{ currentOrder.source }}</p>
-        <p *ngIf="currentOrder.table">โต๊ะ: {{ currentOrder.table.code }}</p>
+      <div class="summary-header">
+        <nz-icon nzType="file-text" nzTheme="outline" class="summary-icon"></nz-icon>
+        <h3>สรุปออเดอร์</h3>
       </div>
-      <div *ngIf="selectedTable && !currentOrder">
-        <p><strong>{{ selectedTable.tableCode }} - {{ selectedTable.tableName }}</strong></p>
-        <p>จำนวนออเดอร์: {{ selectedTable.orderCount }} รายการ</p>
+
+      <div class="summary-content">
+        <div *ngIf="currentOrder" class="order-details">
+          <div class="detail-item">
+            <span class="label">หมายเลขออเดอร์:</span>
+            <span class="value">#{{ currentOrder.id }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">สถานะ:</span>
+            <span class="value">{{ currentOrder.status }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">ประเภท:</span>
+            <span class="value">{{ currentOrder.source }}</span>
+          </div>
+          <div *ngIf="currentOrder.table" class="detail-item">
+            <span class="label">โต๊ะ:</span>
+            <span class="value">{{ currentOrder.table.code }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="selectedTable && !currentOrder" class="order-details">
+          <div class="detail-item">
+            <span class="label">โต๊ะ:</span>
+            <span class="value">{{ selectedTable.tableCode }} - {{ selectedTable.tableName }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">จำนวนออเดอร์:</span>
+            <span class="value">{{ selectedTable.orderCount }} รายการ</span>
+          </div>
+        </div>
       </div>
-      <div class="total">
-        <nz-icon nzType="dollar" nzTheme="outline" class="total-icon"></nz-icon>
-        <strong>ยอดรวมทั้งหมด: ฿{{ currentOrder?.total || selectedTable?.totalAmount }}</strong>
+
+      <div class="total-section">
+        <div class="total-label">
+          <nz-icon nzType="dollar" nzTheme="outline" class="total-icon"></nz-icon>
+          <span>ยอดรวมทั้งหมด</span>
+        </div>
+        <div class="total-amount">
+          ฿{{ currentOrder?.total || selectedTable?.totalAmount }}
+        </div>
       </div>
     </div>
 
     <!-- Payment Methods with integrated forms -->
     <div class="payment-methods">
-      <h3>เลือกวิธีการชำระเงิน</h3>
-      <div class="method-buttons">
-        <button
-          [class.active]="paymentMethod === 'CASH'"
-          (click)="paymentMethod = 'CASH'"
-          class="method-btn"
-        >
-          <span>เงินสด</span>
-        </button>
-        <button
-          [class.active]="paymentMethod === 'E_WALLET'"
-          (click)="paymentMethod = 'E_WALLET'"
-          class="method-btn"
-        >
-          <span>PromptPay</span>
-        </button>
+      <div class="payment-header">
+        <nz-icon nzType="credit-card" nzTheme="outline" class="payment-icon"></nz-icon>
+        <h3>เลือกวิธีการชำระเงิน</h3>
+      </div>
+
+      <div class="method-selection">
+        <div class="method-grid">
+          <button
+            [class.active]="paymentMethod === 'CASH'"
+            (click)="paymentMethod = 'CASH'"
+            class="method-card"
+          >
+            <nz-icon nzType="dollar" nzTheme="outline" class="method-icon"></nz-icon>
+            <span class="method-title">เงินสด</span>
+            <span class="method-desc">ชำระด้วยเงินสดปกติ</span>
+          </button>
+
+          <button
+            [class.active]="paymentMethod === 'E_WALLET'"
+            (click)="paymentMethod = 'E_WALLET'"
+            class="method-card"
+          >
+            <nz-icon nzType="scan" nzTheme="outline" class="method-icon"></nz-icon>
+            <span class="method-title">PromptPay</span>
+            <span class="method-desc">สแกน QR Code เพื่อชำระ</span>
+          </button>
+        </div>
       </div>
 
       <!-- Cash Payment Form -->
