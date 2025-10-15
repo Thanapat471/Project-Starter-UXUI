@@ -54,7 +54,7 @@
     </ng-container>
 
     <!-- Table Cards -->
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6" [nzXl]="6" *ngFor="let table of tables">
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6" [nzXl]="6" *ngFor="let table of displayedTables">
       <nz-card [ngClass]="getCardClass(table.status)" class="table-card">
         <div class="table-header">
           <h3 class="table-name">
@@ -101,6 +101,20 @@
           </div>
         </div>
       </nz-card>
+    </div>
+
+    <!-- Load More / Collapse Button -->
+    <div nz-col [nzSpan]="24" *ngIf="!isInitialLoad && !isLoading && tables.length > CARDS_PER_PAGE" class="load-more-section">
+      <button 
+        nz-button 
+        nzType="default" 
+        nzSize="large"
+        class="load-more-btn"
+        [ngClass]="{ 'show-less': isShowingAll() }"
+        (click)="loadMoreTables()">
+        <span nz-icon [nzType]="canLoadMore() ? 'down' : 'up'" nzTheme="outline"></span>
+        {{ getLoadMoreButtonText() }}
+      </button>
     </div>
 
     <!-- Empty State -->

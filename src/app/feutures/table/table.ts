@@ -63,12 +63,17 @@ export class Table implements OnInit {
   private readonly apiUrl = 'http://localhost:8080/api/tables';
 
   tables: TableData[] = [];
+  displayedTables: TableData[] = [];
   stats: TableStats = {
     available: 0,
     inUse: 0,
     total: 0
   };
 
+  // Pagination for load more
+  readonly CARDS_PER_PAGE = 8;
+  currentDisplayCount = this.CARDS_PER_PAGE;
+  
   // Loading states
   isLoading = true;
   isInitialLoad = true;
@@ -106,6 +111,9 @@ export class Table implements OnInit {
     this.http.get<TableData[]>(this.apiUrl).subscribe({
       next: (data) => {
         this.tables = data;
+        // Reset pagination when loading new data
+        this.currentDisplayCount = this.CARDS_PER_PAGE;
+        this.updateDisplayedTables();
         this.calculateStats();
         this.isLoading = false;
         this.isInitialLoad = false;
@@ -117,6 +125,39 @@ export class Table implements OnInit {
         this.isInitialLoad = false;
       }
     });
+  }
+
+  updateDisplayedTables(): void {
+    this.displayedTables = this.tables.slice(0, this.currentDisplayCount);
+  }
+
+  loadMoreTables(): void {
+    if (this.canLoadMore()) {
+      this.currentDisplayCount += this.CARDS_PER_PAGE;
+      this.updateDisplayedTables();
+    } else {
+      // ถ้าแสดงครบแล้ว ให้รีเซ็ตกลับไปแสดงแค่ 8 การ์ดแรก
+      this.currentDisplayCount = this.CARDS_PER_PAGE;
+      this.updateDisplayedTables();
+    }
+  }
+
+  canLoadMore(): boolean {
+    return this.currentDisplayCount < this.tables.length;
+  }
+
+  isShowingAll(): boolean {
+    return this.currentDisplayCount >= this.tables.length;
+  }
+
+  getLoadMoreButtonText(): string {
+    if (this.canLoadMore()) {
+      const remaining = this.tables.length - this.currentDisplayCount;
+      const nextLoad = Math.min(remaining, this.CARDS_PER_PAGE);
+      return `โหลดเพิ่มเติม (${nextLoad} รายการ)`;
+    } else {
+      return 'ย่อ';
+    }
   }
 
   calculateStats(): void {
