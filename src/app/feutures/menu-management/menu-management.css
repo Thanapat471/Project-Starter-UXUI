@@ -413,7 +413,8 @@
   border: 1px solid rgba(148, 105, 76, 0.1);
   box-shadow: 0 2px 8px rgba(59, 28, 13, 0.06);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  gap: 2rem;
+  gap: 3rem;
+  width: 100%;
 }
 
 .category-item:hover {
@@ -423,9 +424,12 @@
 }
 
 .category-item .category-info {
-  flex: 0 1 auto;
+  flex: 1;
   min-width: 0;
   margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .category-item .category-info h4 {
@@ -444,10 +448,43 @@
 
 .category-item .category-actions {
   display: flex;
-  gap: 8px;
+  gap: 16px;
   flex-shrink: 0;
   margin-left: auto;
   justify-content: flex-end;
+  align-items: center;
+  padding-left: 24px;
+  min-width: fit-content;
+}
+
+/* Override Tailwind gap classes */
+.category-actions.flex.gap-6 {
+  gap: 20px !important;
+  margin-left: auto !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  flex-shrink: 0 !important;
+  padding-left: 24px !important;
+}
+
+.category-actions .btn-secondary,
+.category-actions .btn-danger {
+  margin-right: 0 !important;
+  flex-shrink: 0 !important;
+  white-space: nowrap !important;
+}
+
+.category-actions .btn-secondary:first-child {
+  margin-left: 0 !important;
+}
+
+/* Force right alignment for button container */
+.category-item > div.flex.items-center.justify-between {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+  gap: 24px !important;
 }
 
 .action-btn {
