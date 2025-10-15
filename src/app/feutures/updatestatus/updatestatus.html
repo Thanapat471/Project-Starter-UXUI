@@ -1,1 +1,172 @@
-<p>updatestatus works!</p>
+<div class="update-status-page">
+  <!-- Header -->
+  <header class="page-header">
+    <div>
+      <h1>อัพเดทสถานะออเดอร์</h1>
+      <p class="page-subtitle">จัดการและเปลี่ยนสถานะออเดอร์ของครัว</p>
+    </div>
+    <button type="button" class="refresh-btn" (click)="loadOrders()" [disabled]="loading()">
+      <span nz-icon [nzType]="loading() ? 'loading' : 'reload'" [nzSpin]="loading()"></span>
+      รีเฟรช
+    </button>
+  </header>
+
+  <!-- Status Filter Tabs -->
+  <div class="status-filters">
+    <button
+      type="button"
+      class="filter-btn"
+      [class.active]="selectedFilter() === 'ALL'"
+      (click)="setFilter('ALL')"
+    >
+      <span class="filter-label">ทั้งหมด</span>
+      <span class="filter-count">{{ statusCounts().ALL }}</span>
+    </button>
+
+    <button
+      type="button"
+      class="filter-btn"
+      [class.active]="selectedFilter() === 'PENDING'"
+      (click)="setFilter('PENDING')"
+    >
+      <span nz-icon nzType="clock-circle"></span>
+      <span class="filter-label">รอทำ</span>
+      <span class="filter-count">{{ statusCounts().PENDING }}</span>
+    </button>
+
+    <button
+      type="button"
+      class="filter-btn"
+      [class.active]="selectedFilter() === 'IN_PROGRESS'"
+      (click)="setFilter('IN_PROGRESS')"
+    >
+      <span nz-icon nzType="fire"></span>
+      <span class="filter-label">กำลังทำ</span>
+      <span class="filter-count">{{ statusCounts().IN_PROGRESS }}</span>
+    </button>
+
+    <button
+      type="button"
+      class="filter-btn"
+      [class.active]="selectedFilter() === 'READY'"
+      (click)="setFilter('READY')"
+    >
+      <span nz-icon nzType="check-circle"></span>
+      <span class="filter-label">พร้อมเสิร์ฟ</span>
+      <span class="filter-count">{{ statusCounts().READY }}</span>
+    </button>
+
+    <button
+      type="button"
+      class="filter-btn"
+      [class.active]="selectedFilter() === 'SERVED'"
+      (click)="setFilter('SERVED')"
+    >
+      <span nz-icon nzType="smile"></span>
+      <span class="filter-label">เสิร์ฟแล้ว</span>
+      <span class="filter-count">{{ statusCounts().SERVED }}</span>
+    </button>
+  </div>
+
+  <!-- Orders Grid -->
+  <div class="orders-container">
+    <ng-container *ngIf="!loading(); else loadingTemplate">
+      <ng-container *ngIf="filteredOrders().length > 0; else emptyTemplate">
+        <div class="orders-grid">
+          <article
+            class="order-card"
+            *ngFor="let order of filteredOrders(); trackBy: trackByOrderId"
+            [class.updating]="order.isUpdating"
+          >
+            <!-- Order Header -->
+            <div class="order-header">
+              <div class="order-info">
+                <h3 class="order-number">Order #{{ order.id }}</h3>
+                <p class="order-time">{{ formatDateTime(order.createdAt) }}</p>
+              </div>
+              <div
+                class="status-badge"
+                [style.background-color]="getStatusConfig(order.status).bgColor"
+                [style.color]="getStatusConfig(order.status).color"
+              >
+                <span nz-icon [nzType]="getStatusConfig(order.status).icon"></span>
+                {{ getStatusConfig(order.status).label }}
+              </div>
+            </div>
+
+            <!-- Order Details -->
+            <div class="order-details">
+              <div class="detail-row" *ngIf="order.table">
+                <span nz-icon nzType="table"></span>
+                <span>{{ order.table.name }}</span>
+              </div>
+              <div class="detail-row" *ngIf="order.source">
+                <span nz-icon nzType="shop"></span>
+                <span>{{ order.source === 'COUNTER' ? 'เคาน์เตอร์' : 'สั่งผ่าน QR' }}</span>
+              </div>
+              <div class="detail-row">
+                <span nz-icon nzType="shopping"></span>
+                <span>{{ order.orderItems.length }} รายการ</span>
+              </div>
+              <div class="detail-row">
+                <span nz-icon nzType="dollar"></span>
+                <span>{{ order.totalAmount.toLocaleString('th-TH') }} บาท</span>
+              </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="order-items" *ngIf="order.orderItems && order.orderItems.length > 0">
+              <div class="item" *ngFor="let item of order.orderItems">
+                <div class="item-info">
+                  <span class="item-quantity">{{ item.quantity }}x</span>
+                  <span class="item-name">{{ item.menuItem.name }}</span>
+                </div>
+                <div class="item-options" *ngIf="item.options && item.options.length > 0">
+                  <span class="option" *ngFor="let opt of item.options">
+                    {{ opt.optionName }}: {{ opt.selectedValue }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Button -->
+            <div class="order-footer">
+              <button
+                type="button"
+                class="status-action-btn"
+                [disabled]="order.isUpdating || !getStatusConfig(order.status).next"
+                (click)="updateStatus(order)"
+                [style.background]="getStatusConfig(order.status).color"
+              >
+                <span nz-icon [nzType]="order.isUpdating ? 'loading' : 'arrow-right'" [nzSpin]="order.isUpdating"></span>
+                <ng-container *ngIf="getStatusConfig(order.status).next as nextStatus; else completedTemplate">
+                  เปลี่ยนเป็น "{{ getStatusConfig(nextStatus).label }}"
+                </ng-container>
+                <ng-template #completedTemplate>
+                  เสร็จสิ้น
+                </ng-template>
+              </button>
+            </div>
+          </article>
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+</div>
+
+<!-- Loading Template -->
+<ng-template #loadingTemplate>
+  <div class="loading-state">
+    <span nz-icon nzType="loading" nzTheme="outline" [style.fontSize.px]="48"></span>
+    <p>กำลังโหลดรายการออเดอร์...</p>
+  </div>
+</ng-template>
+
+<!-- Empty Template -->
+<ng-template #emptyTemplate>
+  <div class="empty-state">
+    <span nz-icon nzType="inbox" [style.fontSize.px]="64"></span>
+    <h3>ไม่มีออเดอร์</h3>
+    <p>ยังไม่มีออเดอร์ในสถานะนี้</p>
+  </div>
+</ng-template>

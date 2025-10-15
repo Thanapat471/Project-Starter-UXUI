@@ -48,6 +48,11 @@ export class Sidebar {
       label: 'ชำระเงิน',
       icon: 'dollar',
       route: '/features/payment'
+    },
+    {
+      label: 'อัปเดตสถานะ',
+      icon: 'sync',
+      route: '/features/update-status'
     }
   ];
 

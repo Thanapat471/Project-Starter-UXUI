@@ -12,6 +12,7 @@ import { SimpleLayout } from './layouts/simple-layout/simple-layout';
 import { NotFound } from './feutures/not-found/not-found';
 import { PaymentManagementComponent } from './feutures/payment-management/payment-management.component';
 import { CounterOrderComponent } from './feutures/counter-order/counter-order';
+import { Updatestatus } from './feutures/updatestatus/updatestatus';
 
 export const routes: Routes = [
 	{ path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -27,7 +28,8 @@ export const routes: Routes = [
 			{ path: 'menu', component: MenuManagement },
 			{ path: 'table',component: Table },
 			{ path: 'payment', component: PaymentManagementComponent },
-			{ path: 'counter-order', component: CounterOrderComponent }
+			{ path: 'counter-order', component: CounterOrderComponent },
+			{ path: 'update-status', component: Updatestatus }
 		]
 	},
   {
