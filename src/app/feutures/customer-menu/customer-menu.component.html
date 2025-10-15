@@ -1,7 +1,7 @@
 <div class="menu-container bg-login-theme min-h-screen px-4 py-6 pb-8">
 
   <!-- Search Bar -->
-  <div class="search-container sticky top-0 z-40 md:static md:z-auto">
+  <div class="search-container">
     <div class="search-wrapper relative max-w-md mx-auto">
       <div class="search-input-container relative">
         <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-login-secondary text-lg"></i>
@@ -23,7 +23,7 @@
   </div>
 
   <!-- Category Filter Tabs - Horizontal Scrollable -->
-  <div class="category-tabs-container sticky top-[5.5rem] z-40 md:static md:z-auto bg-white/95 backdrop-blur-md rounded-2xl mx-4 my-8 p-6 shadow-lg border border-gray-200">
+  <div class="category-tabs-container sticky top-0 z-40 bg-white/95 backdrop-blur-md rounded-2xl mx-4 my-8 p-6 shadow-lg border border-gray-200">
     <div class="overflow-x-auto scrollbar-hide">
       <div class="flex gap-3 min-w-max pb-2 justify-center">
         <button
@@ -39,86 +39,85 @@
     </div>
   </div>
 
-  <!-- Menu Scroll Area: Only menu cards scroll, search/category stay fixed -->
-  <div class="menu-scroll-area">
-    <!-- Loading State -->
-    <div *ngIf="isLoadingMenu" class="flex justify-center items-center py-12">
-      <div class="text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#94694c] mx-auto mb-4"></div>
-        <p class="text-[#8a6b55] font-medium">กำลังโหลดเมนู...</p>
-      </div>
+  <!-- Menu Items Grid -->
+  <!-- Loading State -->
+  <div *ngIf="isLoadingMenu" class="flex justify-center items-center py-12">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#94694c] mx-auto mb-4"></div>
+      <p class="text-[#8a6b55] font-medium">กำลังโหลดเมนู...</p>
     </div>
+  </div>
 
-    <!-- Error State -->
-    <div *ngIf="menuError && !isLoadingMenu" class="bg-red-50 border border-red-200 rounded-2xl p-6 mx-4 mb-6">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
-          <div>
-            <h3 class="font-semibold text-red-800">เกิดข้อผิดพลาด</h3>
-            <p class="text-red-600 text-sm">{{ menuError }}</p>
-          </div>
-        </div>
-        <button
-          (click)="loadMenu()"
-          class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-        >
-          <i class="fas fa-redo mr-2"></i>
-          ลองใหม่
-        </button>
-      </div>
-    </div>
-
-    <!-- Skeleton Loading -->
-    <div *ngIf="isLoadingMenu" class="menu-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div *ngFor="let item of skeletonArray" class="skeleton-card">
-        <!-- Skeleton Image -->
-        <div class="skeleton-image"></div>
-
-        <!-- Skeleton Content -->
-        <div class="p-6">
-          <!-- Skeleton Title -->
-          <div class="skeleton-text title mb-3"></div>
-
-          <!-- Skeleton Description -->
-          <div class="skeleton-text mb-2" style="width: 90%;"></div>
-          <div class="skeleton-text mb-4" style="width: 70%;"></div>
-
-          <!-- Skeleton Footer -->
-          <div class="flex items-center justify-between">
-            <div class="skeleton-text price"></div>
-            <div class="skeleton-button"></div>
-          </div>
+  <!-- Error State -->
+  <div *ngIf="menuError && !isLoadingMenu" class="bg-red-50 border border-red-200 rounded-2xl p-6 mx-4 mb-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
+        <div>
+          <h3 class="font-semibold text-red-800">เกิดข้อผิดพลาด</h3>
+          <p class="text-red-600 text-sm">{{ menuError }}</p>
         </div>
       </div>
-    </div>
-
-    <!-- Menu Items Grid (only show when not loading and no error) -->
-    <div *ngIf="!isLoadingMenu && !menuError" class="menu-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div
-        *ngFor="let item of displayedItems"
-        class="menu-card card-login-theme rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
+      <button
+        (click)="loadMenu()"
+        class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
       >
-        <!-- Food Image -->
-        <div class="image-container relative overflow-hidden">
-          <img
-            [src]="item.imageUrl || item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y5ZjlmOSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0cHgiIGZpbGw9IiM5OTkiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='"
-            [alt]="item.name"
-            class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
-            (error)="$event.target.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y5ZjlmOSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0cHgiIGZpbGw9IiM5OTkiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='"
-          />
-          <div class="image-overlay absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300"></div>
+        <i class="fas fa-redo mr-2"></i>
+        ลองใหม่
+      </button>
+    </div>
+  </div>
+
+  <!-- Skeleton Loading -->
+  <div *ngIf="isLoadingMenu" class="menu-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let item of skeletonArray" class="skeleton-card">
+      <!-- Skeleton Image -->
+      <div class="skeleton-image"></div>
+      
+      <!-- Skeleton Content -->
+      <div class="p-6">
+        <!-- Skeleton Title -->
+        <div class="skeleton-text title mb-3"></div>
+        
+        <!-- Skeleton Description -->
+        <div class="skeleton-text mb-2" style="width: 90%;"></div>
+        <div class="skeleton-text mb-4" style="width: 70%;"></div>
+        
+        <!-- Skeleton Footer -->
+        <div class="flex items-center justify-between">
+          <div class="skeleton-text price"></div>
+          <div class="skeleton-button"></div>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <!-- Card Content -->
-        <div class="card-content p-6">
-          <!-- Food Name -->
-          <h3 class="food-name text-xl font-bold text-login-primary mb-2 line-clamp-1">
-            {{ item.name }}
-          </h3>
+  <!-- Menu Items Grid (only show when not loading and no error) -->
+  <div *ngIf="!isLoadingMenu && !menuError" class="menu-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div
+      *ngFor="let item of displayedItems"
+      class="menu-card card-login-theme rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
+    >
+      <!-- Food Image -->
+      <div class="image-container relative overflow-hidden">
+        <img
+          [src]="item.imageUrl || item.image || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y5ZjlmOSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0cHgiIGZpbGw9IiM5OTkiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='"
+          [alt]="item.name"
+          class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105"
+          (error)="$event.target.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2Y5ZjlmOSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0cHgiIGZpbGw9IiM5OTkiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg=='"
+        />
+        <div class="image-overlay absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300"></div>
+      </div>
 
-          <!-- Description -->
-          <p class="food-description text-login-secondary text-sm mb-4 line-clamp-2 leading-relaxed">
+      <!-- Card Content -->
+      <div class="card-content p-6">
+        <!-- Food Name -->
+        <h3 class="food-name text-xl font-bold text-login-primary mb-2 line-clamp-1">
+          {{ item.name }}
+        </h3>
+
+        <!-- Description -->
+        <p class="food-description text-login-secondary text-sm mb-4 line-clamp-2 leading-relaxed">
           {{ item.description }}
         </p>
 
@@ -168,15 +167,15 @@
 
   <!-- Show More/Less Button -->
   <div *ngIf="!isLoadingMenu && !menuError && hasMoreItems" class="show-more-container">
-    <button
+    <button 
       (click)="toggleShowMore()"
       [class]="'show-more-btn ' + (showAll ? 'show-less-btn' : '')"
     >
       <span *ngIf="!showAll">แสดงเพิ่มเติม</span>
       <span *ngIf="showAll">แสดงน้อยลง</span>
-      <i
-        nz-icon
-        [nzType]="showAll ? 'up' : 'down'"
+      <i 
+        nz-icon 
+        [nzType]="showAll ? 'up' : 'down'" 
         nzTheme="outline"
       ></i>
     </button>
@@ -206,12 +205,12 @@
   </div>
 
   <!-- Item Options Modal -->
-  <div
-    *ngIf="showItemModal"
+  <div 
+    *ngIf="showItemModal" 
     class="item-modal-overlay fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
     (click)="closeItemModal()"
   >
-    <div
+    <div 
       class="item-modal bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
       (click)="$event.stopPropagation()"
     >
@@ -221,9 +220,9 @@
           <h2 class="text-2xl font-bold text-gray-800">{{ selectedItem?.name }}</h2>
           <p class="text-gray-600 text-sm leading-relaxed mt-2">{{ selectedItem?.description }}</p>
         </div>
-
+        
         <!-- Close Button -->
-        <button
+        <button 
           (click)="closeItemModal()"
           class="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 border border-gray-300 text-gray-700 hover:text-gray-900 flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md"
         >
@@ -233,17 +232,17 @@
 
       <!-- Modal Content -->
       <div class="modal-content p-6 max-h-[60vh] overflow-y-auto">
-
+        
         <!-- Dynamic Options from API -->
         <div *ngFor="let option of selectedItem?.options" class="option-group mb-6">
           <h3 class="option-title text-lg font-semibold text-gray-800 mb-3">
             <i class="mr-2">{{ getOptionIcon(option.type) }}</i>{{ option.name }}
             <span *ngIf="option.isRequired" class="text-red-500 text-sm ml-1">*</span>
           </h3>
-
+          
           <!-- Grid layout for most option types -->
-          <div
-            *ngIf="option.type !== 'SIZE'"
+          <div 
+            *ngIf="option.type !== 'SIZE'" 
             class="option-buttons grid grid-cols-2 gap-3"
           >
             <button
@@ -256,9 +255,9 @@
               <div *ngIf="opt.price > 0" class="text-sm text-gray-600 mt-1">
                 +{{ opt.price }}฿
               </div>
-
+              
               <!-- Selected indicator -->
-              <div
+              <div 
                 *ngIf="selectedOptions[option.id.toString()] === opt.value"
                 class="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#94694c] flex items-center justify-center"
               >
@@ -268,8 +267,8 @@
           </div>
 
           <!-- Special layout for SIZE options -->
-          <div
-            *ngIf="option.type === 'SIZE'"
+          <div 
+            *ngIf="option.type === 'SIZE'" 
             class="option-buttons space-y-2"
           >
             <div
@@ -284,7 +283,7 @@
                   ({{ opt.price > 0 ? '+' : '' }}{{ opt.price }}฿)
                 </span>
               </div>
-              <div
+              <div 
                 [class]="'w-5 h-5 rounded-full border-2 flex items-center justify-center ' +
                          (selectedOptions[option.id.toString()] === opt.value ? 'border-[#94694c] bg-[#94694c]' : 'border-gray-300')"
               >
@@ -328,7 +327,7 @@
           <span class="text-lg font-semibold text-gray-800">ราคารวม:</span>
           <span class="text-2xl font-bold text-[#5c3d2e]">฿{{ calculateTotalPrice() }}</span>
         </div>
-
+        
         <button
           (click)="addToCartWithOptions()"
           class="add-to-cart-btn w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-white"

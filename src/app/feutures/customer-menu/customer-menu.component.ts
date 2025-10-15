@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CartService, CartItemOption } from '../../core/services/cart.service';
-import { ToastService } from '../../core/services/toast.service';
 import { Subject, firstValueFrom } from 'rxjs';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 interface Category {
@@ -94,13 +93,12 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
   menuItems: MenuItem[] = [];
   isLoadingMenu = false;
   menuError = '';
-
+  
   // Show More functionality
   showAll = false;
-  itemsPerPage = 3;
-  currentDisplayCount = 3;
+  itemsPerPage = 5;
 
-
+  
 
   // Item Modal properties
   showItemModal = false;
@@ -110,7 +108,6 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly cartService: CartService,
-    private readonly toastService: ToastService,
     private readonly http: HttpClient,
     private readonly route: ActivatedRoute,
     private readonly router: Router
@@ -141,11 +138,11 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
 
   get displayedItems(): MenuItem[] {
     const filtered = this.filteredItems;
-    return filtered.slice(0, this.currentDisplayCount);
+    return this.showAll ? filtered : filtered.slice(0, this.itemsPerPage);
   }
 
   get hasMoreItems(): boolean {
-    return this.filteredItems.length > this.currentDisplayCount;
+    return this.filteredItems.length > this.itemsPerPage;
   }
 
   get skeletonArray(): number[] {
@@ -159,40 +156,25 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
 
   selectCategory(category: string): void {
     this.selectedCategory = category;
-    // Reset display count when changing category
-    this.currentDisplayCount = this.itemsPerPage;
     // Don't call updateFilteredItems here to prevent loops
     // Let the getter handle filtering
   }
 
   clearSearch(): void {
     this.searchTerm = '';
-    // Reset display count when clearing search
-    this.currentDisplayCount = this.itemsPerPage;
     this.updateFilteredItems();
   }
 
   onSearchChange(): void {
-    // Reset display count when searching
-    this.currentDisplayCount = this.itemsPerPage;
     this.updateFilteredItems();
   }
 
   toggleShowMore(): void {
-    // Show 5 more items each time
-    this.currentDisplayCount += this.itemsPerPage;
-    
-    // If we're now showing all items or more, set to show all
-    if (this.currentDisplayCount >= this.filteredItems.length) {
-      this.currentDisplayCount = this.filteredItems.length;
-    }
-  }
-
-  showLess(): void {
-    // Reset to initial display count
-    this.currentDisplayCount = this.itemsPerPage;
+    this.showAll = !this.showAll;
     // Scroll to top when showing less
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!this.showAll) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   ngOnInit(): void {
@@ -317,9 +299,6 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
       price: item.price,
       image: item.imageUrl || '/assets/images/placeholder.jpg' // Fallback image
     }, []); // Empty options for simple add to cart
-
-    // Show success toast
-    this.toastService.success(`เพิ่ม ${item.name} ลงตะกร้าแล้ว`);
   }
 
   getItemQuantityInCart(itemId: string): number {
@@ -444,9 +423,6 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.modalQuantity; i++) {
       this.cartService.addToCart(itemToAdd, cartOptions);
     }
-
-    // Show success toast
-    this.toastService.success(`เพิ่ม ${this.selectedItem.name} ${this.modalQuantity} รายการลงตะกร้าแล้ว`);
 
     this.closeItemModal();
   }
