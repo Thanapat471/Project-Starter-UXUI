@@ -1418,30 +1418,38 @@
 
 .qr-modal-actions .btn-success {
   order: 1;
-  background: linear-gradient(135deg, #94694c, #5c3d2e);
+  background: linear-gradient(135deg, #059669, #047857);
   color: white;
+  border: none;
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
 }
 
+
 .qr-modal-actions .btn-success:hover:not(:disabled) {
+  background: linear-gradient(135deg, #047857, #065f46);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(148, 107, 76, 0.4);
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
 }
 
 .qr-modal-actions .btn-success:disabled {
-  opacity: 0.6;
+  background: #d1d5db;
   cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
 }
 
 .qr-modal-actions .btn-secondary {
   order: 2;
-  background: transparent;
+  background: #f3f4f6;
   color: #5c3d2e;
-  border: 2px solid #946b4c !important;
+  border: 2px solid #e6dcd1;
 }
 
 .qr-modal-actions .btn-secondary:hover {
-  background: rgba(148, 107, 76, 0.1);
+  background: #e5e7eb;
+  border-color: #94694c;
   transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(92, 61, 46, 0.2);
 }
 
 /* Modal Animation */
