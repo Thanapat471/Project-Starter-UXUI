@@ -29,15 +29,15 @@
         <div class="search-input-container">
           <div class="search-wrapper">
             <span nz-icon nzType="search" class="search-icon"></span>
-            <input 
-              type="text" 
+            <input
+              type="text"
               class="search-input"
-              placeholder="ค้นหาเมนู..." 
+              placeholder="ค้นหาเมนู..."
               [ngModel]="searchTerm()"
               (ngModelChange)="onSearch($event)" />
           </div>
         </div>
-        
+
         <!-- Category Filter -->
         <div class="category-filter">
           <button
@@ -54,18 +54,18 @@
       <div class="menu-grid-container">
         <nz-spin [nzSpinning]="loading()" nzTip="กำลังโหลดเมนู...">
           <div class="menu-grid" *ngIf="!loading()">
-            <article 
-              class="menu-item-card" 
+            <article
+              class="menu-item-card"
               *ngFor="let item of filteredMenuItems">
               <div class="menu-item-image">
-                <img 
-                  [src]="item.imageUrl || 'https://images.unsplash.com/photo-1546173159-315724a31696?w=300&h=200&fit=crop'" 
+                <img
+                  [src]="item.imageUrl || 'https://images.unsplash.com/photo-1546173159-315724a31696?w=300&h=200&fit=crop'"
                   [alt]="item.name"
                   (error)="onImageError($event)" />
                 <div class="menu-item-overlay">
-                  <button 
-                    nz-button 
-                    nzType="primary" 
+                  <button
+                    nz-button
+                    nzType="primary"
                     nzShape="circle"
                     class="add-to-cart-btn"
                     (click)="onAddToCartClick(item)">
@@ -81,8 +81,8 @@
                 <p class="menu-item-description" *ngIf="item.description">{{ item.description }}</p>
                 <div class="menu-item-meta">
                   <nz-tag class="category-tag">{{ item.category.name }}</nz-tag>
-                  <nz-tag 
-                    *ngIf="!item.isAvailable" 
+                  <nz-tag
+                    *ngIf="!item.isAvailable"
                     nzColor="red">
                     หมด
                   </nz-tag>
@@ -124,7 +124,7 @@
                     </div>
                     <div class="cart-item-total">{{ item.total | currency:'THB':'symbol':'1.0-0' }}</div>
                   </div>
-                  
+
                   <!-- Show Options -->
                   <div class="cart-item-options" *ngIf="item.options && item.options.length > 0">
                     <span nz-icon nzType="setting" class="options-icon"></span>
@@ -134,33 +134,33 @@
                       </span>
                     </div>
                   </div>
-                  
+
                   <div class="cart-item-footer">
                     <div class="quantity-section">
                       <span class="quantity-label">จำนวน:</span>
                       <div class="quantity-controls">
-                        <button 
+                        <button
                           class="quantity-btn minus-btn"
                           (click)="updateCartItemQuantity(i, item.quantity - 1)">
                           <span nz-icon nzType="minus"></span>
                         </button>
                         <span class="quantity-display">{{ item.quantity }}</span>
-                        <button 
+                        <button
                           class="quantity-btn plus-btn"
                           (click)="updateCartItemQuantity(i, item.quantity + 1)">
                           <span nz-icon nzType="plus"></span>
                         </button>
                       </div>
                     </div>
-                    
+
                     <div class="cart-item-actions">
-                      <button 
+                      <button
                         class="action-btn edit-btn"
                         (click)="openEditCartItemModal(item, i)"
                         title="แก้ไขตัวเลือก">
                         <span nz-icon nzType="edit"></span>
                       </button>
-                      <button 
+                      <button
                         class="action-btn remove-btn"
                         (click)="removeFromCart(i)"
                         title="ลบออกจากตะกร้า">
@@ -177,19 +177,19 @@
                 <span class="summary-label">รวมทั้งหมด</span>
                 <span class="summary-value">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
               </div>
-              
+
               <!-- Payment Method Selection -->
               <div class="payment-section">
                 <h4 class="payment-title">วิธีการชำระเงิน</h4>
                 <div class="payment-methods">
-                  <button 
+                  <button
                     class="payment-method-btn"
                     [class.active]="paymentMethod() === 'CASH'"
                     (click)="setPaymentMethod('CASH')">
                     <span nz-icon nzType="dollar"></span>
                     <span>เงินสด</span>
                   </button>
-                  <button 
+                  <button
                     class="payment-method-btn"
                     [class.active]="paymentMethod() === 'PROMPTPAY'"
                     (click)="setPaymentMethod('PROMPTPAY')">
@@ -216,7 +216,7 @@
                     <span class="change-label">เงินทอน:</span>
                     <span class="change-amount">{{ changeAmount | currency:'THB':'symbol':'1.0-0' }}</span>
                   </div>
-                  <button 
+                  <button
                     class="checkout-btn cash-checkout"
                     [disabled]="!validateCashAmount() || processingPayment()"
                     (click)="processCashPayment()">
@@ -228,7 +228,7 @@
                 <!-- PromptPay Payment Form -->
                 <div *ngIf="paymentMethod() === 'PROMPTPAY'" class="promptpay-payment-form">
                   <div class="qr-generate">
-                    <button 
+                    <button
                       class="checkout-btn qr-btn"
                       [disabled]="processingPayment() || cart().length === 0"
                       (click)="generatePromptPay()">
@@ -247,7 +247,7 @@
 
   <!-- Floating Cart Button (Mobile) -->
   <div class="floating-cart" *ngIf="showFloatingCart() && cartItemCount > 0">
-    <button 
+    <button
       class="floating-cart-btn"
       (click)="toggleCart()">
       <span nz-icon nzType="shopping-cart"></span>
@@ -278,13 +278,13 @@
               </div>
               <div class="mobile-cart-item-controls">
                 <div class="mobile-quantity-controls">
-                  <button 
+                  <button
                     class="mobile-quantity-btn minus-btn"
                     (click)="updateCartItemQuantity(i, item.quantity - 1)">
                     <span nz-icon nzType="minus"></span>
                   </button>
                   <span class="mobile-quantity-display">{{ item.quantity }}</span>
-                  <button 
+                  <button
                     class="mobile-quantity-btn plus-btn"
                     (click)="updateCartItemQuantity(i, item.quantity + 1)">
                     <span nz-icon nzType="plus"></span>
@@ -300,19 +300,19 @@
               <span class="mobile-summary-label">รวมทั้งหมด</span>
               <span class="mobile-summary-value">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
             </div>
-            
+
             <!-- Mobile Payment Section -->
             <div class="mobile-payment-section">
               <h4 class="mobile-payment-title">วิธีการชำระเงิน</h4>
               <div class="mobile-payment-methods">
-                <button 
+                <button
                   class="mobile-payment-method-btn"
                   [class.active]="paymentMethod() === 'CASH'"
                   (click)="setPaymentMethod('CASH')">
                   <span nz-icon nzType="dollar"></span>
                   <span>เงินสด</span>
                 </button>
-                <button 
+                <button
                   class="mobile-payment-method-btn"
                   [class.active]="paymentMethod() === 'PROMPTPAY'"
                   (click)="setPaymentMethod('PROMPTPAY')">
@@ -337,7 +337,7 @@
                 <div class="mobile-change-display" *ngIf="paidAmount() > cartTotal">
                   <span>เงินทอน: {{ changeAmount | currency:'THB':'symbol':'1.0-0' }}</span>
                 </div>
-                <button 
+                <button
                   class="mobile-checkout-btn"
                   [disabled]="!validateCashAmount() || processingPayment()"
                   (click)="processCashPayment()">
@@ -349,7 +349,7 @@
               <!-- Mobile PromptPay Payment -->
               <div *ngIf="paymentMethod() === 'PROMPTPAY'" class="mobile-promptpay-payment">
                 <div *ngIf="!showQRCode()">
-                  <button 
+                  <button
                     class="mobile-checkout-btn"
                     [disabled]="processingPayment()"
                     (click)="generatePromptPay()">
@@ -368,7 +368,7 @@
                     <p>เบอร์โทร: {{ promptPayData().promptpayPhone }}</p>
                     <p>หมดอายุ: {{ promptPayData().expiresIn }}</p>
                   </div>
-                  <button 
+                  <button
                     class="mobile-checkout-btn"
                     [disabled]="processingPayment()"
                     (click)="confirmPromptPayPayment()">
@@ -395,51 +395,87 @@
 </div>
 
 <!-- QR Code Modal -->
-<div *ngIf="showQRCode() && promptPayData()" class="qr-modal-overlay" (click)="closeQRModal()">
-  <div class="qr-modal" (click)="$event.stopPropagation()">
+<div
+  *ngIf="showQRCode()"
+  class="qr-modal-overlay"
+  (click)="closeQRModal()"
+  (keydown.escape)="closeQRModal()"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="qr-modal-title"
+>
+  <div
+    class="qr-modal bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
+    (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+  >
+    <!-- Modal Header -->
     <div class="qr-modal-header">
-      <h3>สแกน QR Code เพื่อชำระเงิน</h3>
-      <button class="qr-modal-close" (click)="closeQRModal()">
-        <span nz-icon nzType="close"></span>
+      <div class="header-content">
+        <span nz-icon nzType="scan" nzTheme="outline" class="header-icon"></span>
+        <h2 id="qr-modal-title">ชำระผ่าน PromptPay</h2>
+      </div>
+
+      <!-- Close Button -->
+      <button
+        (click)="closeQRModal()"
+        class="close-btn"
+      >
+        <span nz-icon nzType="close" nzTheme="outline"></span>
       </button>
     </div>
-    
-    <div class="qr-modal-content">
-      <div class="qr-code-display">
-        <img [src]="promptPayData().qrCode" alt="PromptPay QR Code" class="qr-code-image" />
-        <div class="qr-amount-display">{{ promptPayData().amount | currency:'THB':'symbol':'1.0-0' }}</div>
+
+    <!-- Modal Content -->
+    <div class="qr-modal-content" *ngIf="promptPayData()">
+      <div class="qr-instruction">
+        <p>สแกน QR Code เพื่อชำระเงิน</p>
       </div>
-      
-      <div class="qr-payment-info">
-        <div class="qr-info-item">
-          <span class="qr-info-label">เบอร์โทร:</span>
-          <span class="qr-info-value">{{ promptPayData().promptpayPhone }}</span>
+
+      <!-- QR Code Display -->
+      <div class="qr-code-container">
+        <img [src]="promptPayData().qrCode" alt="PromptPay QR Code">
+      </div>
+
+      <!-- Payment Details -->
+      <div class="payment-details">
+        <div class="detail-row">
+          <span class="label">จำนวนเงิน:</span>
+          <span class="value amount">฿{{ promptPayData().amount }}</span>
         </div>
-        <div class="qr-info-item">
-          <span class="qr-info-label">หมดอายุ:</span>
-          <span class="qr-info-value countdown-timer">
+        <div class="detail-row">
+          <span class="label">เบอร์โทร:</span>
+          <span class="value">{{ promptPayData().promptpayPhone }}</span>
+        </div>
+        <div class="detail-row countdown-row">
+          <span class="label">หมดอายุใน:</span>
+          <span class="value countdown">
             {{ countdownMinutes() < 10 ? '0' + countdownMinutes() : countdownMinutes() }}:{{ countdownSeconds() < 10 ? '0' + countdownSeconds() : countdownSeconds() }}
           </span>
         </div>
-        <div class="qr-info-item">
-          <span class="qr-info-label">รหัสอ้างอิง:</span>
-          <span class="qr-info-value">{{ promptPayData().transactionRef }}</span>
+        <div class="detail-row">
+          <span class="label">รหัสอ้างอิง:</span>
+          <span class="value">{{ promptPayData().transactionRef }}</span>
         </div>
       </div>
-    </div>
-    
-    <div class="qr-modal-actions">
-      <button 
-        class="qr-confirm-btn"
-        [disabled]="processingPayment()"
-        (click)="confirmPromptPayPayment()">
-        <span nz-icon nzType="check"></span>
-        <span>{{ processingPayment() ? 'กำลังยืนยัน...' : 'ยืนยันการชำระเงิน' }}</span>
-      </button>
-      <button class="qr-cancel-btn" (click)="closeQRModal()">
-        <span nz-icon nzType="close"></span>
-        <span>ยกเลิก</span>
-      </button>
+
+      <!-- Action Buttons -->
+      <div class="qr-modal-actions">
+        <button
+          (click)="confirmPromptPayPayment()"
+          [disabled]="processingPayment()"
+          class="btn-success"
+        >
+          <span nz-icon nzType="check"></span>
+          <span>{{ processingPayment() ? 'กำลังยืนยัน...' : 'ยืนยันการชำระเงิน' }}</span>
+        </button>
+        <button
+          (click)="closeQRModal()"
+          class="btn-secondary"
+        >
+          <span nz-icon nzType="close"></span>
+          <span>ยกเลิก</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -453,7 +489,7 @@
         <h2 class="modal-title">{{ selectedMenuItem()?.name }}</h2>
         <p class="modal-subtitle" *ngIf="selectedMenuItem()?.description">{{ selectedMenuItem()?.description }}</p>
       </div>
-      
+
       <!-- Close Button -->
       <button class="modal-close-btn" (click)="closeMenuOptionModal()">
         <span nz-icon nzType="close"></span>
@@ -462,7 +498,7 @@
 
     <!-- Modal Content -->
     <div class="menu-option-modal-content">
-      
+
       <!-- Dynamic Options from MenuItem -->
       <div *ngFor="let option of selectedMenuItem()?.options" class="option-group">
         <h3 class="option-title">
@@ -470,7 +506,7 @@
           {{ option.name }}
           <span *ngIf="option.isRequired" class="required-star">*</span>
         </h3>
-        
+
         <!-- Grid layout for most option types -->
         <div *ngIf="option.type !== 'SIZE'" class="option-buttons-grid">
           <button
@@ -479,7 +515,7 @@
             [class]="'option-btn ' + (selectedMenuOptions()[option.id] === opt.value ? 'selected' : '')">
             <div class="option-value">{{ opt.value }}</div>
             <div *ngIf="opt.price > 0" class="option-price">+{{ opt.price }}฿</div>
-            
+
             <!-- Selected indicator -->
             <div *ngIf="selectedMenuOptions()[option.id] === opt.value" class="selected-indicator">
               <span nz-icon nzType="check"></span>
@@ -537,7 +573,7 @@
         <span class="total-label">ราคารวม:</span>
         <span class="total-price">฿{{ calculateModalTotalPrice() }}</span>
       </div>
-      
+
       <div class="modal-actions">
         <button class="cancel-btn" (click)="closeMenuOptionModal()">
           ยกเลิก

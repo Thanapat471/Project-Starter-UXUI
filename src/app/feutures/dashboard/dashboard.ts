@@ -7,6 +7,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 
 import { OrderDto, OrderStatus, OrdersService } from '../../core/services/orders.service';
 import { Order } from '../../shared/models/menu.model';
+import { ToastService } from '../../core/services/toast.service';
 
 interface DashboardOrder {
   id: string;
@@ -42,6 +43,7 @@ export class Dashboard {
   private readonly ordersService = inject(OrdersService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly router = inject(Router);
+  private readonly toast = inject(ToastService);
 
   private readonly statusMeta: Record<OrderStatus, { label: string; className: string }> = {
     PENDING: { label: 'รอดำเนินการ', className: 'status--warning' },
@@ -53,7 +55,7 @@ export class Dashboard {
   private readonly newStatusMapping: Record<string, OrderStatus> = {
     'PENDING': 'PENDING',
     'CONFIRMED': 'IN_PROGRESS',
-    'PREPARING': 'IN_PROGRESS', 
+    'PREPARING': 'IN_PROGRESS',
     'READY': 'READY',
     'DELIVERED': 'SERVED',
     'CANCELLED': 'SERVED'
@@ -65,12 +67,12 @@ export class Dashboard {
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
   readonly orders = signal<DashboardOrder[]>([]);
-  
+
   // Pagination properties
   readonly currentPage = signal(1);
     readonly pageSize = signal(5);
   readonly total = computed(() => this.orders().length);
-  
+
   // Paginated orders
   readonly paginatedOrders = computed(() => {
     const allOrders = this.orders();
@@ -87,13 +89,13 @@ export class Dashboard {
   readonly endIndex = computed(() => Math.min(this.currentPage() * this.pageSize(), this.total()));
   readonly hasNextPage = computed(() => this.currentPage() < this.totalPages());
   readonly hasPrevPage = computed(() => this.currentPage() > 1);
-  
+
   // Page numbers for pagination display
   readonly pageNumbers = computed(() => {
     const total = this.totalPages();
     const current = this.currentPage();
     const pages: (number | string)[] = [];
-    
+
     if (total <= 7) {
       // Show all pages if total is small
       for (let i = 1; i <= total; i++) {
@@ -102,29 +104,29 @@ export class Dashboard {
     } else {
       // Show smart pagination
       pages.push(1);
-      
+
       if (current > 4) {
         pages.push('...');
       }
-      
+
       const start = Math.max(2, current - 1);
       const end = Math.min(total - 1, current + 1);
-      
+
       for (let i = start; i <= end; i++) {
         if (i !== 1 && i !== total) {
           pages.push(i);
         }
       }
-      
+
       if (current < total - 3) {
         pages.push('...');
       }
-      
+
       if (total > 1) {
         pages.push(total);
       }
     }
-    
+
     return pages;
   });
 
@@ -208,7 +210,7 @@ export class Dashboard {
     // Map new API status to existing dashboard status
     const mappedStatus = this.newStatusMapping[order.status] || 'PENDING';
     const metadata = this.statusMeta[mappedStatus];
-    
+
     // Map orderItems to items summary
     const itemsSummary = order.orderItems
       ? order.orderItems
@@ -257,7 +259,7 @@ export class Dashboard {
     this.pageSize.set(size);
     this.currentPage.set(1); // Reset to first page when page size changes
   }
-  
+
   onPageSizeSelectChange(event: Event): void {
     console.log('onPageSizeSelectChange called');
     const target = event.target as HTMLSelectElement;
@@ -265,21 +267,21 @@ export class Dashboard {
       this.onPageSizeChange(+target.value);
     }
   }
-  
+
   onPageNumberClick(page: string | number): void {
     console.log('onPageNumberClick called with page:', page);
     if (typeof page === 'number') {
       this.onPageChange(page);
     }
   }
-  
+
   goToNextPage(): void {
     console.log('goToNextPage called, current page:', this.currentPage());
     if (this.hasNextPage()) {
       this.currentPage.set(this.currentPage() + 1);
     }
   }
-  
+
   goToPrevPage(): void {
     console.log('goToPrevPage called, current page:', this.currentPage());
     if (this.hasPrevPage()) {

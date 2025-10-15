@@ -9,7 +9,6 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
-import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
@@ -18,6 +17,7 @@ import { MenuService, MenuItem, MenuCategory } from '../../core/services/menu.se
 import { PaymentService } from '../../core/services/payment.service';
 import { OrdersService } from '../../core/services/orders.service';
 import { ReceiptService } from '../../core/services/receipt.service';
+import { ToastService } from '../../core/services/toast.service';
 import { CheckoutRequest, CheckoutResponse } from '../../shared/models/payment.model';
 import { HttpClientModule } from '@angular/common/http';
 import { takeUntil } from 'rxjs/operators';
@@ -81,7 +81,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   processingPayment = signal<boolean>(false);
   showQRCode = signal<boolean>(false);
   promptPayData = signal<any>(null);
-  
+
   // Countdown timer properties
   countdownMinutes = signal<number>(0);
   countdownSeconds = signal<number>(0);
@@ -95,7 +95,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     private paymentService: PaymentService,
     private ordersService: OrdersService,
     private receiptService: ReceiptService,
-    private message: NzMessageService
+    private readonly toast: ToastService
   ) {
     this.checkScreenSize();
   }
@@ -122,7 +122,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
 
   private loadMenuData() {
     this.loading.set(true);
-    
+
     // Load categories first
     this.menuService.getMenuCategories().subscribe({
       next: (categories) => {
@@ -132,7 +132,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error loading categories:', error);
-        this.message.error('ไม่สามารถโหลดหมวดหมู่เมนูได้');
+        this.toast.error('ไม่สามารถโหลดหมวดหมู่เมนูได้');
         // Set default categories as fallback
         this.categories.set([{ id: 'all', name: 'ทั้งหมด' }]);
       }
@@ -146,7 +146,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error loading menu items:', error);
-        this.message.error('ไม่สามารถโหลดเมนูได้');
+        this.toast.error('ไม่สามารถโหลดเมนูได้');
         this.loading.set(false);
         // Set empty array as fallback
         this.menuItems.set([]);
@@ -160,7 +160,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     const selectedCat = this.selectedCategory();
 
     return items.filter(item => {
-      const matchesSearch = item.name.toLowerCase().includes(search) || 
+      const matchesSearch = item.name.toLowerCase().includes(search) ||
                            (item.description && item.description.toLowerCase().includes(search));
       const matchesCategory = selectedCat === 'ทั้งหมด' || item.category.name === selectedCat;
       return matchesSearch && matchesCategory;
@@ -208,13 +208,13 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     const currentCart = this.cart();
     // สร้าง unique key จาก menuItemId และ options เพื่อแยกรายการที่มี options ต่างกัน
     const optionsKey = options.map(opt => `${opt.type}:${opt.value}`).sort().join('|');
-    const existingItem = currentCart.find(item => 
+    const existingItem = currentCart.find(item =>
       item.menuItemId === parseInt(menuItem.id) &&
       item.options.map(opt => `${opt.type}:${opt.value}`).sort().join('|') === optionsKey
     );
 
     if (existingItem) {
-      const updatedCart = currentCart.map(item => 
+      const updatedCart = currentCart.map(item =>
         item.menuItemId === parseInt(menuItem.id) &&
         item.options.map(opt => `${opt.type}:${opt.value}`).sort().join('|') === optionsKey
           ? { ...item, quantity: item.quantity + 1, total: (item.quantity + 1) * item.price }
@@ -279,7 +279,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   openEditCartItemModal(cartItem: CartItem, index: number) {
     const menu = this.menuItems().find(m => parseInt(m.id) === cartItem.menuItemId) || null;
     if (!menu) {
-      this.message.error('ไม่พบข้อมูลเมนูสำหรับแก้ไข');
+      this.toast.error('ไม่พบข้อมูลเมนูสำหรับแก้ไข');
       return;
     }
     const mapping: Record<number, string> = {};
@@ -377,7 +377,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     const mapping = this.modalSelected();
     const missingRequired = (menu.options || []).some(g => g.isRequired && !mapping[g.id]);
     if (missingRequired) {
-      this.message.error('กรุณาเลือกตัวเลือกที่จำเป็นให้ครบถ้วน');
+      this.toast.error('กรุณาเลือกตัวเลือกที่จำเป็นให้ครบถ้วน');
       return;
     }
 
@@ -425,17 +425,17 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
 
   processCashPayment() {
     if (!this.validateCashAmount()) {
-      this.message.error('จำนวนเงินที่ได้รับต้องมากกว่าหรือเท่ากับยอดรวม');
+      this.toast.error('จำนวนเงินที่ได้รับต้องมากกว่าหรือเท่ากับยอดรวม');
       return;
     }
 
     if (this.cart().length === 0) {
-      this.message.error('กรุณาเพิ่มสินค้าในตะกร้า');
+      this.toast.error('กรุณาเพิ่มสินค้าในตะกร้า');
       return;
     }
 
     this.processingPayment.set(true);
-    
+
     const checkoutRequest: CheckoutRequest = {
       paymentMethod: 'CASH',
       paidAmount: this.paidAmount(),
@@ -451,20 +451,20 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
       next: (response: CheckoutResponse) => {
         const changeAmount = this.paidAmount() - response.order.total;
         let message = `ชำระเงินสำเร็จ\nหมายเลขใบเสร็จ: ${response.receipt.receiptNumber}\nเงินทอน: ${changeAmount} บาท`;
-        
+
         this.resetCart();
         this.processingPayment.set(false);
-        
+
         // Show success message first
-        this.message.success(message);
-        
+        this.toast.success(message);
+
         // Auto-download receipt if available with delay
         if (response.receipt?.id) {
           setTimeout(() => {
             this.autoDownloadReceipt(response.receipt!.id, response.receipt!.receiptNumber);
           }, 500);
         }
-        
+
         // Navigate back to dashboard immediately
         console.log('Navigating to dashboard after cash payment');
         this.router.navigate(['/features/dashboard']).catch(err => {
@@ -475,7 +475,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Cash payment error:', error);
-        this.message.error('เกิดข้อผิดพลาดในการชำระเงิน กรุณาลองใหม่อีกครั้ง');
+        this.toast.error('เกิดข้อผิดพลาดในการชำระเงิน กรุณาลองใหม่อีกครั้ง');
         this.processingPayment.set(false);
       }
     });
@@ -483,12 +483,12 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
 
   generatePromptPay() {
     if (this.cart().length === 0) {
-      this.message.error('กรุณาเพิ่มสินค้าในตะกร้า');
+      this.toast.error('กรุณาเพิ่มสินค้าในตะกร้า');
       return;
     }
 
     this.processingPayment.set(true);
-    
+
     const checkoutRequest: CheckoutRequest = {
       paymentMethod: 'PROMPTPAY',
       items: this.cart().map(item => ({
@@ -503,13 +503,13 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
       next: (response: CheckoutResponse) => {
         console.log('PromptPay checkout response:', response);
         console.log('PromptPay data:', response.promptpay);
-        
+
         // ตรวจสอบว่ามีข้อมูล PromptPay หรือไม่
         if (response.promptpay && response.promptpay.qrCode) {
           this.showQRCode.set(true);
           this.processingPayment.set(false);
-          this.message.success(`สร้าง QR Code สำเร็จ\nจำนวนเงิน: ${response.promptpay.amount} บาท`);
-          
+          this.toast.success(`สร้าง QR Code สำเร็จ\nจำนวนเงิน: ${response.promptpay.amount} บาท`);
+
           // ดึงข้อมูล QR Code จาก promptpay object
           this.promptPayData.set({
             paymentId: response.promptpay.paymentId,
@@ -519,21 +519,21 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
             expiresIn: response.promptpay.expiresIn,
             transactionRef: response.payment.transactionRef
           });
-          
+
           // Start countdown timer (15 minutes = 900 seconds)
           this.startCountdown(15 * 60);
-          
+
           // Start countdown timer (15 minutes = 900 seconds)
           this.startCountdown(15 * 60);
         } else {
           // Fallback ถ้าไม่มีข้อมูล PromptPay
           this.processingPayment.set(false);
-          this.message.error('ไม่สามารถสร้าง QR Code ได้ กรุณาลองใหม่อีกครั้ง');
+          this.toast.error('ไม่สามารถสร้าง QR Code ได้ กรุณาลองใหม่อีกครั้ง');
         }
       },
       error: (error) => {
         console.error('PromptPay generation error:', error);
-        this.message.error('เกิดข้อผิดพลาดในการสร้าง QR Code กรุณาลองใหม่อีกครั้ง');
+        this.toast.error('เกิดข้อผิดพลาดในการสร้าง QR Code กรุณาลองใหม่อีกครั้ง');
         this.processingPayment.set(false);
       }
     });
@@ -541,34 +541,34 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
 
   confirmPromptPayPayment() {
     if (!this.promptPayData()) {
-      this.message.error('ไม่พบข้อมูลการชำระเงิน');
+      this.toast.error('ไม่พบข้อมูลการชำระเงิน');
       return;
     }
 
     this.processingPayment.set(true);
-    
+
     // สำหรับ PromptPay ใน counter จะเป็นการยืนยันโดย staff ว่าลูกค้าชำระแล้ว
     this.paymentService.confirmPayment(this.promptPayData().paymentId).subscribe({
       next: (response) => {
         let message = `ชำระเงินผ่าน PromptPay สำเร็จ\nหมายเลขใบเสร็จ: ${response.receipt?.receiptNumber || 'N/A'}`;
-        
+
         this.resetCart();
         this.processingPayment.set(false);
         this.showQRCode.set(false);
         this.promptPayData.set(null);
         this.stopCountdown();
         this.stopCountdown();
-        
+
         // Show success message first
-        this.message.success(message);
-        
+        this.toast.success(message);
+
         // Auto-download receipt if available with delay
         if (response.receipt?.id) {
           setTimeout(() => {
             this.autoDownloadReceipt(response.receipt!.id, response.receipt!.receiptNumber);
           }, 500);
         }
-        
+
         // Navigate back to dashboard immediately
         console.log('Navigating to dashboard after PromptPay payment');
         this.router.navigate(['/features/dashboard']).catch(err => {
@@ -579,7 +579,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('PromptPay confirmation error:', error);
-        this.message.error('เกิดข้อผิดพลาดในการยืนยันการชำระเงิน');
+        this.toast.error('เกิดข้อผิดพลาดในการยืนยันการชำระเงิน');
         this.processingPayment.set(false);
       }
     });
@@ -594,24 +594,24 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
 
   private startCountdown(totalSeconds: number) {
     this.stopCountdown(); // Clear any existing interval
-    
+
     const updateCountdown = () => {
       if (totalSeconds <= 0) {
         this.stopCountdown();
         this.closeQRModal();
-        this.message.warning('QR Code หมดอายุแล้ว กรุณาสร้างใหม่');
+        this.toast.warning('QR Code หมดอายุแล้ว กรุณาสร้างใหม่');
         return;
       }
-      
+
       this.countdownMinutes.set(Math.floor(totalSeconds / 60));
       this.countdownSeconds.set(totalSeconds % 60);
       totalSeconds--;
     };
-    
+
     updateCountdown(); // Initial call
     this.countdownInterval = setInterval(updateCountdown, 1000);
   }
-  
+
   private stopCountdown() {
     if (this.countdownInterval) {
       clearInterval(this.countdownInterval);
@@ -649,7 +649,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
 
           if (blob.size === 0) {
             console.error('❌ Received empty blob');
-            this.message.error('ไฟล์ใบเสร็จว่าง กรุณาติดต่อผู้ดูแลระบบ');
+            this.toast.error('ไฟล์ใบเสร็จว่าง กรุณาติดต่อผู้ดูแลระบบ');
             return;
           }
 
@@ -715,7 +715,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
               }
             } catch (fallbackError) {
               console.error('❌ All download methods failed:', fallbackError);
-              this.message.error('ไม่สามารถดาวน์โหลดใบเสร็จได้ กรุณาลองใหม่อีกครั้ง');
+              this.toast.error('ไม่สามารถดาวน์โหลดใบเสร็จได้ กรุณาลองใหม่อีกครั้ง');
             }
           }
         },
@@ -727,15 +727,15 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
             message: error.message,
             url: error.url
           });
-          
+
           let errorMessage = 'เกิดข้อผิดพลาดในการดาวน์โหลดใบเสร็จ';
           if (error.status === 404) {
             errorMessage = 'ไม่พบไฟล์ใบเสร็จ';
           } else if (error.status === 500) {
             errorMessage = 'เซิร์ฟเวอร์มีปัญหา กรุณาลองใหม่ภายหลัง';
           }
-          
-          this.message.error(errorMessage);
+
+          this.toast.error(errorMessage);
         }
       });
   }
