@@ -9,12 +9,12 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
-import { NzMessageService } from 'ng-zorro-antd/message';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { firstValueFrom, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import { CreateMenuItemPayload, MenuItemDto, MenuService, MenuCategory, CreateCategoryPayload, UpdateCategoryPayload } from '../../core/services/menu.service';
+import { ToastService } from '../../core/services/toast.service';
 
 interface MenuOptionValue {
   value: string;
@@ -93,7 +93,7 @@ interface MenuItemWithOptions {
     NzButtonModule,
     NzCheckboxModule
   ],
-  providers: [NzMessageService, NzModalService],
+  providers: [NzModalService],
   templateUrl: './menu-management.html',
   styleUrl: './menu-management.css'
 })
@@ -101,7 +101,7 @@ export class MenuManagement {
   private readonly menuService = inject(MenuService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
-  private readonly message = inject(NzMessageService);
+  private readonly toast = inject(ToastService);
   private readonly modal = inject(NzModalService);
   private readonly maxImageSizeBytes = 5 * 1024 * 1024;
 
@@ -251,6 +251,7 @@ export class MenuManagement {
     if (currentShow) {
       // If currently showing all, reset to initial
       this.showAll.set(false);
+      this.itemsToShow.set(8); // Reset to initial 8 items
       // Scroll to top when showing less
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
@@ -398,7 +399,7 @@ export class MenuManagement {
 
     const optionPayload = hasOptions ? this.buildOptionPayload() : [];
     if (hasOptions && optionPayload.length === 0) {
-      this.message.warning('กรุณาระบุตัวเลือกอย่างน้อยหนึ่งรายการ หรือปิดตัวเลือกเพิ่มเติม');
+      this.toast.warning('กรุณาระบุตัวเลือกอย่างน้อยหนึ่งรายการ หรือปิดตัวเลือกเพิ่มเติม');
       return;
     }
 
@@ -420,7 +421,7 @@ export class MenuManagement {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.message.success(editingId ? 'บันทึกการเปลี่ยนแปลงเรียบร้อยแล้ว' : 'เพิ่มเมนูใหม่เรียบร้อยแล้ว');
+          this.toast.success(editingId ? 'บันทึกการเปลี่ยนแปลงเรียบร้อยแล้ว' : 'เพิ่มเมนูใหม่เรียบร้อยแล้ว');
           this.closeCreateModal();
           this.fetchMenuItems();
         },
@@ -432,7 +433,7 @@ export class MenuManagement {
               : editingId
                 ? 'แก้ไขเมนูไม่สำเร็จ กรุณาลองใหม่อีกครั้ง'
                 : 'เพิ่มเมนูไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
-          this.message.error(message);
+          this.toast.error(message);
         }
       });
   }
@@ -490,13 +491,13 @@ export class MenuManagement {
     }
 
     if (!file.type.startsWith('image/')) {
-      this.message.warning('กรุณาเลือกไฟล์รูปภาพเท่านั้น');
+      this.toast.warning('กรุณาเลือกไฟล์รูปภาพเท่านั้น');
       this.clearSelectedImage(input);
       return;
     }
 
     if (file.size > this.maxImageSizeBytes) {
-      this.message.warning('ไฟล์รูปภาพต้องมีขนาดไม่เกิน 5 MB');
+      this.toast.warning('ไฟล์รูปภาพต้องมีขนาดไม่เกิน 5 MB');
       this.clearSelectedImage(input);
       return;
     }
@@ -573,12 +574,12 @@ export class MenuManagement {
             error.status === 0
               ? 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'
               : 'ลบเมนูไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
-          this.message.error(message);
+          this.toast.error(message);
           return throwError(() => error);
         })
       )
     ).then(() => {
-      this.message.success(`ลบเมนู "${menu.name}" แล้ว`);
+      this.toast.success(`ลบเมนู "${menu.name}" แล้ว`);
       if (this.editingMenuId() === menu.id) {
         this.closeCreateModal();
       }
@@ -639,7 +640,7 @@ export class MenuManagement {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.message.success(editingId ? 'แก้ไขหมวดหมู่เรียบร้อยแล้ว' : 'เพิ่มหมวดหมู่ใหม่เรียบร้อยแล้ว');
+          this.toast.success(editingId ? 'แก้ไขหมวดหมู่เรียบร้อยแล้ว' : 'เพิ่มหมวดหมู่ใหม่เรียบร้อยแล้ว');
           this.closeCategoryModal();
           this.fetchCategories();
         },
@@ -657,7 +658,7 @@ export class MenuManagement {
                 : editingId
                   ? 'แก้ไขหมวดหมู่ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง'
                   : 'เพิ่มหมวดหมู่ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
-          this.message.error(message);
+          this.toast.error(message);
         }
       });
   }
@@ -687,12 +688,12 @@ export class MenuManagement {
                 error.status === 0
                   ? 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'
                   : 'ลบหมวดหมู่ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
-              this.message.error(message);
+              this.toast.error(message);
               return throwError(() => error);
             })
           )
         ).then(() => {
-          this.message.success(`ลบหมวดหมู่ "${category.name}" แล้ว`);
+          this.toast.success(`ลบหมวดหมู่ "${category.name}" แล้ว`);
           this.fetchCategories();
           this.fetchMenuItems(); // Refresh menus as their categories might have changed
         })
