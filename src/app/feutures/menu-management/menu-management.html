@@ -121,7 +121,7 @@
   (keydown.escape)="closeCreateModal()"
 >
   <div
-    class="modal-container bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
+    class="modal-container bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
     (click)="$event.stopPropagation()"
   >
     <!-- Modal Header -->
@@ -139,7 +139,7 @@
     </div>
 
     <!-- Modal Content -->
-    <div class="modal-content max-h-[60vh] overflow-y-auto">
+    <div class="modal-content max-h-[70vh] overflow-y-auto">
       <form [formGroup]="addMenuForm" (ngSubmit)="submitCreateMenu()" class="add-menu-form p-6" nz-form>
         <div class="form-field form-field--full" nz-form-item>
           <span class="form-label">ชื่อเมนู</span>
@@ -206,80 +206,102 @@
 
         <!-- Options Management Section -->
         <div class="options-section" *ngIf="hasOptions()">
-          <div class="options-header">
-            <h3>จัดการตัวเลือกเมนู</h3>
+          <div class="options-section-header">
+            <h3 class="options-title">จัดการตัวเลือกเมนู</h3>
             <button type="button" class="add-option-btn" (click)="addOptionGroup()">
               <span nz-icon nzType="plus"></span>
               เพิ่มกลุ่มตัวเลือก
             </button>
           </div>
 
-          <div class="option-groups" *ngIf="currentOptions().length > 0">
-            <div class="option-group" *ngFor="let group of currentOptions(); let groupIndex = index">
-              <div class="option-group-header">
-                <div class="group-info">
-                  <input
-                    type="text"
-                    class="group-name-input"
-                    [value]="group.name"
-                    (input)="updateOptionGroup(groupIndex, 'name', $event)"
-                    placeholder="ชื่อกลุ่ม เช่น ขนาด, ความหวาน"
-                  />
-                  <select
-                    class="group-type-select"
-                    [value]="group.type"
-                    (change)="updateOptionGroup(groupIndex, 'type', $event)"
-                  >
-                    <option value="SIZE">ขนาด</option>
-                    <option value="SWEETNESS">ความหวาน</option>
-                    <option value="TEMPERATURE">อุณหภูมิ</option>
-                    <option value="TOPPING">ท็อปปิ้ง</option>
-                    <option value="OTHER">อื่นๆ</option>
-                  </select>
+          <div class="option-groups-container" *ngIf="currentOptions().length > 0">
+            <div class="option-group-card" *ngFor="let group of currentOptions(); let groupIndex = index">
+              <!-- Group Header -->
+              <div class="option-group-top">
+                <div class="group-main-info">
+                  <div class="group-input-wrapper">
+                    <label class="input-label">ชื่อกลุ่ม</label>
+                    <input
+                      type="text"
+                      class="group-name-input"
+                      [value]="group.name"
+                      (input)="updateOptionGroup(groupIndex, 'name', $event)"
+                      placeholder="เช่น ขนาด, ความหวาน"
+                    />
+                  </div>
+                  <div class="group-input-wrapper">
+                    <label class="input-label">ประเภท</label>
+                    <select
+                      class="group-type-select"
+                      [value]="group.type"
+                      (change)="updateOptionGroup(groupIndex, 'type', $event)"
+                    >
+                      <option value="SIZE">ขนาด</option>
+                      <option value="SWEETNESS">ความหวาน</option>
+                      <option value="TEMPERATURE">อุณหภูมิ</option>
+                      <option value="TOPPING">ท็อปปิ้ง</option>
+                      <option value="OTHER">อื่นๆ</option>
+                    </select>
+                  </div>
                 </div>
-                <div class="group-controls">
+                <div class="group-config">
                   <label class="required-checkbox">
                     <input
                       type="checkbox"
                       [checked]="group.isRequired"
                       (change)="updateOptionGroup(groupIndex, 'isRequired', $event)"
                     />
-                    จำเป็น
+                    <span>จำเป็น</span>
                   </label>
-                  <input
-                    type="number"
-                    class="max-selections-input"
-                    [value]="group.maxSelections"
-                    (input)="updateOptionGroup(groupIndex, 'maxSelections', $event)"
-                    min="1"
-                    placeholder="เลือกได้สูงสุด"
-                  />
-                  <button type="button" class="remove-group-btn" (click)="removeOptionGroup(groupIndex)">
+                  <div class="group-input-wrapper">
+                    <label class="input-label">เลือกได้สูงสุด</label>
+                    <input
+                      type="number"
+                      class="max-selections-input"
+                      [value]="group.maxSelections"
+                      (input)="updateOptionGroup(groupIndex, 'maxSelections', $event)"
+                      min="1"
+                      placeholder="จำนวน"
+                    />
+                  </div>
+                  <button type="button" class="remove-group-btn" (click)="removeOptionGroup(groupIndex)" title="ลบกลุ่ม">
                     <span nz-icon nzType="delete"></span>
                   </button>
                 </div>
               </div>
 
-              <div class="option-values">
-                <div class="option-value" *ngFor="let option of group.options; let optionIndex = index">
-                  <input
-                    type="text"
-                    class="value-input"
-                    [value]="option.value"
-                    (input)="updateOptionValue(groupIndex, optionIndex, 'value', $event)"
-                    placeholder="ตัวเลือก เช่น เล็ก, กลาง, ใหญ่"
-                  />
-                  <input
-                    type="number"
-                    class="price-input"
-                    [value]="option.price"
-                    (input)="updateOptionValue(groupIndex, optionIndex, 'price', $event)"
-                    min="0"
-                    placeholder="ราคาเพิ่ม"
-                  />
-                  <button type="button" class="remove-value-btn" (click)="removeOptionValue(groupIndex, optionIndex)">
-                    <span nz-icon nzType="close"></span>
-                  </button>
+              <!-- Option Values -->
+              <div class="option-values-section">
+                <div class="values-header">
+                  <span class="values-label">รายการตัวเลือก</span>
+                </div>
+                <div class="option-values-list">
+                  <div class="option-value-row" *ngFor="let option of group.options; let optionIndex = index">
+                    <div class="value-field">
+                      <label class="field-label">ชื่อตัวเลือก</label>
+                      <input
+                        type="text"
+                        class="value-input"
+                        [value]="option.value"
+                        (input)="updateOptionValue(groupIndex, optionIndex, 'value', $event)"
+                        placeholder="เช่น เล็ก, กลาง, ใหญ่"
+                      />
+                    </div>
+                    <div class="price-field">
+                      <label class="field-label">ราคาเพิ่ม</label>
+                      <input
+                        type="number"
+                        class="price-input"
+                        [value]="option.price"
+                        (input)="updateOptionValue(groupIndex, optionIndex, 'price', $event)"
+                        min="0"
+                        placeholder="0"
+                      />
+                    </div>
+                    <button type="button" class="remove-value-btn" (click)="removeOptionValue(groupIndex, optionIndex)" title="ลบตัวเลือก">
+                      <span nz-icon nzType="close"></span>
+                    </button>
+                  </div>
                 </div>
                 <button type="button" class="add-value-btn" (click)="addOptionValue(groupIndex)">
                   <span nz-icon nzType="plus"></span>
@@ -290,7 +312,9 @@
           </div>
 
           <div class="options-empty" *ngIf="currentOptions().length === 0">
-            <p>ยังไม่มีกลุ่มตัวเลือก กดปุ่ม "เพิ่มกลุ่มตัวเลือก" เพื่อเริ่มต้น</p>
+            <span nz-icon nzType="inbox" class="empty-icon"></span>
+            <p>ยังไม่มีกลุ่มตัวเลือก</p>
+            <p class="empty-hint">กดปุ่ม "เพิ่มกลุ่มตัวเลือก" ด้านบนเพื่อเริ่มต้น</p>
           </div>
         </div>
 
