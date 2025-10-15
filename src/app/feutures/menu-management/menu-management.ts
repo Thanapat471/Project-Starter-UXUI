@@ -316,8 +316,8 @@ export class MenuManagement {
 
   addOptionGroup(): void {
     const newGroup: MenuOptionGroup = {
-      name: '',
-      type: 'OTHER',
+      name: 'ขนาด', // Default name from type
+      type: 'SIZE',
       options: [{ value: '', price: 0 }],
       isRequired: true,
       maxSelections: 1
@@ -351,6 +351,17 @@ export class MenuManagement {
       (options[groupIndex] as any)[field] = event.target?.checked || false;
     } else if (field === 'maxSelections') {
       (options[groupIndex] as any)[field] = Number(value) || 1;
+    } else if (field === 'type') {
+      // Update type and automatically set name based on type
+      (options[groupIndex] as any)[field] = value;
+      // Map type to Thai name
+      const typeNameMap: Record<string, string> = {
+        'SIZE': 'ขนาด',
+        'SWEETNESS': 'ความหวาน',
+        'TEMPERATURE': 'อุณหภูมิ',
+        'TOPPING': 'ท็อปปิ้ง'
+      };
+      options[groupIndex].name = typeNameMap[value] || value;
     } else {
       (options[groupIndex] as any)[field] = value;
     }
@@ -475,7 +486,7 @@ export class MenuManagement {
           type: this.normalizeOptionType(group?.type),
           options: values,
           isRequired: !!group?.isRequired,
-          maxSelections: Math.min(normalizedMax, values.length)
+          maxSelections: normalizedMax
         };
       })
       .filter((group): group is NonNullable<CreateMenuItemPayload['options']>[number] => group !== null);
@@ -532,7 +543,11 @@ export class MenuManagement {
     const optionGroups = Array.isArray(menu.options)
       ? menu.options.map(group => ({
           ...group,
-          options: group.options.map(option => ({ ...option }))
+          options: group.options.map(option => ({ ...option })),
+          // Ensure maxSelections is set to the actual value from backend
+          maxSelections: Number.isFinite(Number(group.maxSelections)) && Number(group.maxSelections) > 0
+            ? Number(group.maxSelections)
+            : 1
         }))
       : [];
     const hasExistingOptions = optionGroups.length > 0;

@@ -24,7 +24,6 @@
 
 .layout-content {
   flex: 1;
-  overflow-y: auto;
   backdrop-filter: blur(10px);
   transition: all 0.25s ease;
   min-height: calc(100vh - var(--navbar-height));

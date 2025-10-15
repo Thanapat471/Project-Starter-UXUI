@@ -191,14 +191,15 @@
 
         <div class="form-field" nz-form-item>
           <span class="form-label">ราคา (บาท)</span>
-          <nz-input-number
-            formControlName="price"
-            nzSize="large"
-            nzMin="0"
-            nzStep="1"
-            [nzFormatter]="priceFormatter"
-            [nzParser]="priceParser"
-          ></nz-input-number>
+          <input 
+            nz-input 
+            nzSize="large" 
+            formControlName="price" 
+            type="number"
+            min="0"
+            step="1"
+            placeholder="80" 
+          />
           <span class="form-error" *ngIf="addMenuForm.controls.price.invalid && addMenuForm.controls.price.touched">
             กรุณาระบุราคาให้ถูกต้อง
           </span>
@@ -239,16 +240,6 @@
               <div class="option-group-top">
                 <div class="group-main-info">
                   <div class="group-input-wrapper">
-                    <label class="input-label">ชื่อกลุ่ม</label>
-                    <input
-                      type="text"
-                      class="group-name-input"
-                      [value]="group.name"
-                      (input)="updateOptionGroup(groupIndex, 'name', $event)"
-                      placeholder="เช่น ขนาด, ความหวาน"
-                    />
-                  </div>
-                  <div class="group-input-wrapper">
                     <label class="input-label">ประเภท</label>
                     <select
                       class="group-type-select"
@@ -259,7 +250,6 @@
                       <option value="SWEETNESS">ความหวาน</option>
                       <option value="TEMPERATURE">อุณหภูมิ</option>
                       <option value="TOPPING">ท็อปปิ้ง</option>
-                      <option value="OTHER">อื่นๆ</option>
                     </select>
                   </div>
                 </div>
