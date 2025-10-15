@@ -63,12 +63,17 @@ export class Table implements OnInit {
   private readonly apiUrl = 'http://localhost:8080/api/tables';
 
   tables: TableData[] = [];
+  displayedTables: TableData[] = [];
   stats: TableStats = {
     available: 0,
     inUse: 0,
     total: 0
   };
 
+  // Pagination for load more
+  readonly CARDS_PER_PAGE = 8;
+  currentDisplayCount = this.CARDS_PER_PAGE;
+  
   // Loading states
   isLoading = true;
   isInitialLoad = true;
@@ -76,8 +81,11 @@ export class Table implements OnInit {
   // Modal state
   isAddModalVisible = false;
   isEditModalVisible = false;
+  isDeleteModalVisible = false;
   isSubmitting = false;
+  isDeleteSubmitting = false;
   selectedTable: TableData | null = null;
+  deleteTarget: TableData | null = null;
 
   // Add table form
   addTableForm = this.fb.group({
@@ -103,6 +111,9 @@ export class Table implements OnInit {
     this.http.get<TableData[]>(this.apiUrl).subscribe({
       next: (data) => {
         this.tables = data;
+        // Reset pagination when loading new data
+        this.currentDisplayCount = this.CARDS_PER_PAGE;
+        this.updateDisplayedTables();
         this.calculateStats();
         this.isLoading = false;
         this.isInitialLoad = false;
@@ -114,6 +125,39 @@ export class Table implements OnInit {
         this.isInitialLoad = false;
       }
     });
+  }
+
+  updateDisplayedTables(): void {
+    this.displayedTables = this.tables.slice(0, this.currentDisplayCount);
+  }
+
+  loadMoreTables(): void {
+    if (this.canLoadMore()) {
+      this.currentDisplayCount += this.CARDS_PER_PAGE;
+      this.updateDisplayedTables();
+    } else {
+      // ถ้าแสดงครบแล้ว ให้รีเซ็ตกลับไปแสดงแค่ 8 การ์ดแรก
+      this.currentDisplayCount = this.CARDS_PER_PAGE;
+      this.updateDisplayedTables();
+    }
+  }
+
+  canLoadMore(): boolean {
+    return this.currentDisplayCount < this.tables.length;
+  }
+
+  isShowingAll(): boolean {
+    return this.currentDisplayCount >= this.tables.length;
+  }
+
+  getLoadMoreButtonText(): string {
+    if (this.canLoadMore()) {
+      const remaining = this.tables.length - this.currentDisplayCount;
+      const nextLoad = Math.min(remaining, this.CARDS_PER_PAGE);
+      return `แสดงเพิ่มเติม`;
+    } else {
+      return 'แสดงน้อยลง';
+    }
   }
 
   calculateStats(): void {
@@ -282,33 +326,33 @@ export class Table implements OnInit {
 
   // Delete function
   deleteTable(table: TableData): void {
-    this.modal.confirm({
-      nzTitle: 'ยืนยันการลบโต๊ะ',
-      nzContent: `คุณต้องการลบโต๊ะ "${table.name}" (${table.code}) ใช่หรือไม่?\n\nการดำเนินการนี้ไม่สามารถยกเลิกได้`,
-      nzOkText: 'ลบโต๊ะ',
-      nzOkType: 'primary',
-      nzOkDanger: true,
-      nzCancelText: 'ยกเลิก',
-      nzWidth: 420,
-      nzCentered: true,
-      nzOnOk: () => {
-        return new Promise((resolve, reject) => {
-          const deleteUrl = `${this.apiUrl}/${table.id}`;
-          
-          this.http.delete(deleteUrl).subscribe({
-            next: (response: any) => {
-              this.toastService.success('ลบโต๊ะสำเร็จ');
-              this.loadTables();
-              resolve();
-            },
-            error: (error) => {
-              console.error('Error deleting table:', error);
-              const errorMsg = error.error?.message || 'เกิดข้อผิดพลาดในการลบโต๊ะ';
-              this.toastService.error(errorMsg);
-              reject(error);
-            }
-          });
-        });
+    this.deleteTarget = table;
+    this.isDeleteModalVisible = true;
+  }
+
+  handleDeleteCancel(): void {
+    this.isDeleteModalVisible = false;
+    this.deleteTarget = null;
+    this.isDeleteSubmitting = false;
+  }
+
+  executeDelete(): void {
+    if (!this.deleteTarget) return;
+    
+    this.isDeleteSubmitting = true;
+    const deleteUrl = `${this.apiUrl}/${this.deleteTarget.id}`;
+    
+    this.http.delete(deleteUrl).subscribe({
+      next: (response: any) => {
+        this.toastService.success('ลบโต๊ะสำเร็จ');
+        this.loadTables();
+        this.handleDeleteCancel();
+      },
+      error: (error) => {
+        console.error('Error deleting table:', error);
+        const errorMsg = error.error?.message || 'เกิดข้อผิดพลาดในการลบโต๊ะ';
+        this.toastService.error(errorMsg);
+        this.isDeleteSubmitting = false;
       }
     });
   }

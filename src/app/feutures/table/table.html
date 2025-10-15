@@ -54,7 +54,7 @@
     </ng-container>
 
     <!-- Table Cards -->
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6" [nzXl]="6" *ngFor="let table of tables">
+    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6" [nzXl]="6" *ngFor="let table of displayedTables">
       <nz-card [ngClass]="getCardClass(table.status)" class="table-card">
         <div class="table-header">
           <h3 class="table-name">
@@ -103,6 +103,18 @@
       </nz-card>
     </div>
 
+    <!-- Load More / Collapse Button -->
+    <div nz-col [nzSpan]="24" *ngIf="!isInitialLoad && !isLoading && tables.length > CARDS_PER_PAGE" class="load-more-section">
+      <button 
+        type="button"
+        class="show-more-btn"
+        [ngClass]="{ 'show-less-btn': isShowingAll() }"
+        (click)="loadMoreTables()">
+        <span class="ng-star-inserted">{{ getLoadMoreButtonText() }}</span>
+        <span nz-icon [nzType]="canLoadMore() ? 'down' : 'up'" nzTheme="outline"></span>
+      </button>
+    </div>
+
     <!-- Empty State -->
     <div *ngIf="!isInitialLoad && !isLoading && tables.length === 0" class="empty-state">
       <div class="empty-icon">
@@ -123,132 +135,287 @@
   </div>
 </div>
 
-<!-- Add Table Modal -->
-<nz-modal
-  [(nzVisible)]="isAddModalVisible"
-  nzTitle="เพิ่มโต๊ะใหม่"
-  [nzFooter]="modalFooter"
-  (nzOnCancel)="handleAddCancel()"
-  nzWidth="500px">
-  <ng-container *nzModalContent>
-    <form nz-form [formGroup]="addTableForm" nzLayout="vertical">
-      <nz-form-item>
-        <nz-form-label nzRequired>รหัสโต๊ะ</nz-form-label>
-        <nz-form-control nzErrorTip="กรุณากรอกรหัสโต๊ะ">
+<!-- Custom Add Table Modal -->
+<div
+  *ngIf="isAddModalVisible"
+  class="modal-overlay fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+  (click)="handleAddCancel()"
+  (keydown.escape)="handleAddCancel()"
+>
+  <div
+    class="modal-container bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Modal Header -->
+    <div class="modal-header p-6 border-b border-gray-200 relative">
+      <h2 class="text-2xl font-bold text-gray-800">เพิ่มโต๊ะใหม่</h2>
+
+      <!-- Close Button -->
+      <button
+        (click)="handleAddCancel()"
+        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 border border-gray-300 text-gray-700 hover:text-gray-900 flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md"
+        [disabled]="isSubmitting"
+      >
+        <span nz-icon nzType="close"></span>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="modal-content max-h-[60vh] overflow-y-auto">
+      <form [formGroup]="addTableForm" (ngSubmit)="handleAddSubmit()" class="p-6" nz-form>
+        <div class="form-field mb-6" nz-form-item>
+          <label class="form-label block text-sm font-semibold text-gray-700 mb-2">รหัสโต๊ะ *</label>
           <input 
             nz-input 
+            nzSize="large"
             formControlName="code" 
             placeholder="เช่น T-001"
-            [disabled]="isSubmitting" />
-        </nz-form-control>
-      </nz-form-item>
+            [disabled]="isSubmitting"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <span class="form-error text-red-500 text-sm mt-1" *ngIf="addTableForm.controls['code'].invalid && addTableForm.controls['code'].touched">
+            กรุณากรอกรหัสโต๊ะ
+          </span>
+        </div>
 
-      <nz-form-item>
-        <nz-form-label nzRequired>ชื่อโต๊ะ</nz-form-label>
-        <nz-form-control nzErrorTip="กรุณากรอกชื่อโต๊ะ">
+        <div class="form-field mb-6" nz-form-item>
+          <label class="form-label block text-sm font-semibold text-gray-700 mb-2">ที่ตั้งของโต๊ะ *</label>
           <input 
             nz-input 
+            nzSize="large"
             formControlName="name" 
             placeholder="เช่น หน้าต่าง"
-            [disabled]="isSubmitting" />
-        </nz-form-control>
-      </nz-form-item>
-
-      <nz-form-item>
-        <nz-form-label nzRequired>จำนวนที่นั่ง</nz-form-label>
-        <nz-form-control nzErrorTip="กรุณากรอกจำนวนที่นั่ง">
-          <nz-input-number
-            formControlName="seats"
-            [nzMin]="1"
-            [nzMax]="20"
-            [nzStep]="1"
             [disabled]="isSubmitting"
-            style="width: 100%">
-          </nz-input-number>
-        </nz-form-control>
-      </nz-form-item>
-    </form>
-  </ng-container>
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <span class="form-error text-red-500 text-sm mt-1" *ngIf="addTableForm.controls['name'].invalid && addTableForm.controls['name'].touched">
+            กรุณากรอกที่ตั้งของโต๊ะ
+          </span>
+        </div>
 
-  <ng-template #modalFooter>
-    <button 
-      nz-button 
-      nzType="default" 
-      (click)="handleAddCancel()"
-      [disabled]="isSubmitting">
-      ยกเลิก
-    </button>
-    <button 
-      nz-button 
-      nzType="primary" 
-      (click)="handleAddSubmit()"
-      [nzLoading]="isSubmitting">
-      เพิ่มโต๊ะ
-    </button>
-  </ng-template>
-</nz-modal>
+        <div class="form-field mb-6" nz-form-item>
+          <label class="form-label block text-sm font-semibold text-gray-700 mb-2">จำนวนที่นั่ง *</label>
+          <input
+            nz-input
+            nzSize="large"
+            formControlName="seats"
+            type="number"
+            min="1"
+            max="20"
+            step="1"
+            placeholder="4"
+            [disabled]="isSubmitting"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <span class="form-error text-red-500 text-sm mt-1" *ngIf="addTableForm.controls['seats'].invalid && addTableForm.controls['seats'].touched">
+            กรุณากรอกจำนวนที่นั่ง
+          </span>
+        </div>
+      </form>
+    </div>
 
-<!-- Edit Table Modal -->
-<nz-modal
-  [(nzVisible)]="isEditModalVisible"
-  nzTitle="แก้ไขข้อมูลโต๊ะ"
-  [nzFooter]="editModalFooter"
-  (nzOnCancel)="handleEditCancel()"
-  nzWidth="500px">
-  <ng-container *nzModalContent>
-    <form nz-form [formGroup]="editTableForm" nzLayout="vertical">
-      <nz-form-item>
-        <nz-form-label nzRequired>รหัสโต๊ะ</nz-form-label>
-        <nz-form-control nzErrorTip="กรุณากรอกรหัสโต๊ะ">
+    <!-- Modal Footer -->
+    <div class="modal-footer p-6 border-t border-gray-200 bg-gray-50">
+      <div class="flex justify-end gap-3">
+        <button
+          type="button"
+          class="btn-secondary px-6 py-3 rounded-xl font-medium transition-all duration-300"
+          (click)="handleAddCancel()"
+          [disabled]="isSubmitting"
+        >
+          ยกเลิก
+        </button>
+        <button
+          type="submit"
+          class="btn-primary px-6 py-3 rounded-xl font-medium transition-all duration-300 text-white"
+          style="background: linear-gradient(135deg, #94694c, #5c3d2e);"
+          [disabled]="isSubmitting || addTableForm.invalid"
+          [class.loading]="isSubmitting"
+          (click)="handleAddSubmit()"
+        >
+          <span *ngIf="!isSubmitting">เพิ่มโต๊ะ</span>
+          <span *ngIf="isSubmitting" class="flex items-center gap-2">
+            <span class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+            กำลังบันทึก...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Edit Table Modal -->
+<div
+  *ngIf="isEditModalVisible"
+  class="modal-overlay fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+  (click)="handleEditCancel()"
+  (keydown.escape)="handleEditCancel()"
+>
+  <div
+    class="modal-container bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Modal Header -->
+    <div class="modal-header p-6 border-b border-gray-200 relative">
+      <h2 class="text-2xl font-bold text-gray-800">แก้ไขข้อมูลโต๊ะ</h2>
+
+      <!-- Close Button -->
+      <button
+        (click)="handleEditCancel()"
+        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 border border-gray-300 text-gray-700 hover:text-gray-900 flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md"
+        [disabled]="isSubmitting"
+      >
+        <span nz-icon nzType="close"></span>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="modal-content max-h-[60vh] overflow-y-auto">
+      <form [formGroup]="editTableForm" (ngSubmit)="handleEditSubmit()" class="p-6" nz-form>
+        <div class="form-field mb-6" nz-form-item>
+          <label class="form-label block text-sm font-semibold text-gray-700 mb-2">รหัสโต๊ะ *</label>
           <input 
             nz-input 
+            nzSize="large"
             formControlName="code" 
             placeholder="เช่น T-001"
-            [disabled]="isSubmitting" />
-        </nz-form-control>
-      </nz-form-item>
+            [disabled]="isSubmitting"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <span class="form-error text-red-500 text-sm mt-1" *ngIf="editTableForm.controls['code'].invalid && editTableForm.controls['code'].touched">
+            กรุณากรอกรหัสโต๊ะ
+          </span>
+        </div>
 
-      <nz-form-item>
-        <nz-form-label nzRequired>ชื่อโต๊ะ</nz-form-label>
-        <nz-form-control nzErrorTip="กรุณากรอกชื่อโต๊ะ">
+        <div class="form-field mb-6" nz-form-item>
+          <label class="form-label block text-sm font-semibold text-gray-700 mb-2">ชื่อโต๊ะ *</label>
           <input 
             nz-input 
+            nzSize="large"
             formControlName="name" 
             placeholder="เช่น หน้าต่าง"
-            [disabled]="isSubmitting" />
-        </nz-form-control>
-      </nz-form-item>
-
-      <nz-form-item>
-        <nz-form-label nzRequired>จำนวนที่นั่ง</nz-form-label>
-        <nz-form-control nzErrorTip="กรุณากรอกจำนวนที่นั่ง">
-          <nz-input-number
-            formControlName="seats"
-            [nzMin]="1"
-            [nzMax]="20"
-            [nzStep]="1"
             [disabled]="isSubmitting"
-            style="width: 100%">
-          </nz-input-number>
-        </nz-form-control>
-      </nz-form-item>
-    </form>
-  </ng-container>
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <span class="form-error text-red-500 text-sm mt-1" *ngIf="editTableForm.controls['name'].invalid && editTableForm.controls['name'].touched">
+            กรุณากรอกชื่อโต๊ะ
+          </span>
+        </div>
 
-  <ng-template #editModalFooter>
-    <button 
-      nz-button 
-      nzType="default" 
-      (click)="handleEditCancel()"
-      [disabled]="isSubmitting">
-      ยกเลิก
-    </button>
-    <button 
-      nz-button 
-      nzType="primary" 
-      (click)="handleEditSubmit()"
-      [nzLoading]="isSubmitting">
-      บันทึก
-    </button>
-  </ng-template>
-</nz-modal>
+        <div class="form-field mb-6" nz-form-item>
+          <label class="form-label block text-sm font-semibold text-gray-700 mb-2">จำนวนที่นั่ง *</label>
+          <input
+            nz-input
+            nzSize="large"
+            formControlName="seats"
+            type="number"
+            min="1"
+            max="20"
+            step="1"
+            placeholder="4"
+            [disabled]="isSubmitting"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          <span class="form-error text-red-500 text-sm mt-1" *ngIf="editTableForm.controls['seats'].invalid && editTableForm.controls['seats'].touched">
+            กรุณากรอกจำนวนที่นั่ง
+          </span>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer p-6 border-t border-gray-200 bg-gray-50">
+      <div class="flex justify-end gap-3">
+        <button
+          type="button"
+          class="btn-secondary px-6 py-3 rounded-xl font-medium transition-all duration-300"
+          (click)="handleEditCancel()"
+          [disabled]="isSubmitting"
+        >
+          ยกเลิก
+        </button>
+        <button
+          type="submit"
+          class="btn-primary px-6 py-3 rounded-xl font-medium transition-all duration-300 text-white"
+          style="background: linear-gradient(135deg, #94694c, #5c3d2e);"
+          [disabled]="isSubmitting || editTableForm.invalid"
+          [class.loading]="isSubmitting"
+          (click)="handleEditSubmit()"
+        >
+          <span *ngIf="!isSubmitting">บันทึก</span>
+          <span *ngIf="isSubmitting" class="flex items-center gap-2">
+            <span class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+            กำลังบันทึก...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Delete Confirmation Modal -->
+<div
+  *ngIf="isDeleteModalVisible"
+  class="modal-overlay fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+  (click)="handleDeleteCancel()"
+  (keydown.escape)="handleDeleteCancel()"
+>
+  <div
+    class="modal-container bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Modal Header -->
+    <div class="modal-header p-6 border-b border-gray-200 relative">
+      <h2 class="text-xl font-bold text-red-600 flex items-center gap-3">
+        <span nz-icon nzType="exclamation-circle" nzTheme="outline" class="text-2xl"></span>
+        ยืนยันการลบโต๊ะ
+      </h2>
+
+      <!-- Close Button -->
+      <button
+        (click)="handleDeleteCancel()"
+        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 border border-gray-300 text-gray-700 hover:text-gray-900 flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md"
+        [disabled]="isDeleteSubmitting"
+      >
+        <span nz-icon nzType="close"></span>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="modal-content p-6">
+      <p class="text-gray-700 mb-4">
+        คุณต้องการลบโต๊ะ <strong>"{{ deleteTarget?.name }}"</strong> ({{ deleteTarget?.code }}) หรือไม่?
+      </p>
+      <p class="text-sm text-gray-500">
+        การลบนี้ไม่สามารถย้อนกลับได้
+      </p>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="modal-footer p-6 border-t border-gray-200 bg-gray-50">
+      <div class="flex justify-end gap-3">
+        <button
+          type="button"
+          class="btn-secondary px-6 py-3 rounded-xl font-medium transition-all duration-300"
+          (click)="handleDeleteCancel()"
+          [disabled]="isDeleteSubmitting"
+        >
+          ยกเลิก
+        </button>
+        <button
+          type="button"
+          class="btn-danger px-6 py-3 rounded-xl font-medium transition-all duration-300 text-white bg-red-500 hover:bg-red-600"
+          [disabled]="isDeleteSubmitting"
+          [class.loading]="isDeleteSubmitting"
+          (click)="executeDelete()"
+        >
+          <span *ngIf="!isDeleteSubmitting">ลบโต๊ะ</span>
+          <span *ngIf="isDeleteSubmitting" class="flex items-center gap-2">
+            <span class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+            กำลังลบ...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
