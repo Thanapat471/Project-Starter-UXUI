@@ -163,9 +163,9 @@ export class MenuManagement {
   readonly isEditing = computed(() => this.editingMenuId() !== null);
   readonly isEditingCategory = computed(() => this.editingCategoryId() !== null);
 
-  // Pagination properties
-  readonly currentPage = signal(1);
-  readonly pageSize = signal(8); // 2 rows × 4 columns = 8 items per page
+  // Show More functionality instead of pagination
+  readonly showAll = signal(false);
+  readonly itemsToShow = signal(8);
   readonly total = computed(() => this.filteredMenuItems().length);
 
   readonly filteredMenuItems = computed(() => {
@@ -182,62 +182,18 @@ export class MenuManagement {
     });
   });
 
-  // Paginated menu items
-  readonly paginatedMenuItems = computed(() => {
+  // Displayed menu items with "Show More" logic
+  readonly displayedMenuItems = computed(() => {
     const allItems = this.filteredMenuItems();
-    const page = this.currentPage();
-    const size = this.pageSize();
-    const startIndex = (page - 1) * size;
-    const endIndex = startIndex + size;
-    return allItems.slice(startIndex, endIndex);
+    const show = this.showAll();
+    const itemsCount = this.itemsToShow();
+
+    return show ? allItems : allItems.slice(0, itemsCount);
   });
 
-  // Pagination helpers
-  readonly totalPages = computed(() => Math.ceil(this.total() / this.pageSize()));
-  readonly startIndex = computed(() => {
-    if (this.total() === 0) return 0;
-    return (this.currentPage() - 1) * this.pageSize() + 1;
-  });
-  readonly endIndex = computed(() => Math.min(this.currentPage() * this.pageSize(), this.total()));
-  readonly hasNextPage = computed(() => this.currentPage() < this.totalPages());
-  readonly hasPrevPage = computed(() => this.currentPage() > 1);
-
-  // Page numbers for pagination display
-  readonly pageNumbers = computed(() => {
-    const total = this.totalPages();
-    const current = this.currentPage();
-    const pages: (number | string)[] = [];
-
-    if (total <= 7) {
-      for (let i = 1; i <= total; i++) {
-        pages.push(i);
-      }
-    } else {
-      pages.push(1);
-
-      if (current > 4) {
-        pages.push('...');
-      }
-
-      const start = Math.max(2, current - 1);
-      const end = Math.min(total - 1, current + 1);
-
-      for (let i = start; i <= end; i++) {
-        if (i !== 1 && i !== total) {
-          pages.push(i);
-        }
-      }
-
-      if (current < total - 3) {
-        pages.push('...');
-      }
-
-      if (total > 1) {
-        pages.push(total);
-      }
-    }
-
-    return pages;
+  // Check if there are more items to show
+  readonly hasMoreItems = computed(() => {
+    return this.filteredMenuItems().length > this.itemsToShow();
   });
 
   readonly filteredCategoriesForModal = computed(() => {
@@ -277,7 +233,7 @@ export class MenuManagement {
 
   onSearch(term: string): void {
     this.searchTerm.set(term);
-    this.currentPage.set(1); // Reset to first page on search
+    this.showAll.set(false); // Reset when searching
   }
 
   onCategorySearch(term: string): void {
@@ -286,33 +242,30 @@ export class MenuManagement {
 
   onSelectCategory(category: string): void {
     this.selectedCategory.set(category);
-    this.currentPage.set(1); // Reset to first page on category change
+    this.showAll.set(false); // Reset when changing category
   }
 
-  // Pagination methods
-  goToNextPage(): void {
-    if (this.hasNextPage()) {
-      this.currentPage.update(page => page + 1);
+  // Show More functionality
+  toggleShowMore(): void {
+    const currentShow = this.showAll();
+    if (currentShow) {
+      // If currently showing all, reset to initial
+      this.showAll.set(false);
+      // Scroll to top when showing less
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // If currently showing limited, load 8 more items
+      const currentItems = this.itemsToShow();
+      const totalItems = this.filteredMenuItems().length;
+      const newItemsCount = Math.min(currentItems + 8, totalItems);
+
+      this.itemsToShow.set(newItemsCount);
+
+      // If we've loaded all items, set showAll to true
+      if (newItemsCount >= totalItems) {
+        this.showAll.set(true);
+      }
     }
-  }
-
-  goToPrevPage(): void {
-    if (this.hasPrevPage()) {
-      this.currentPage.update(page => page - 1);
-    }
-  }
-
-  onPageNumberClick(page: number | string): void {
-    if (typeof page === 'number') {
-      this.currentPage.set(page);
-    }
-  }
-
-  onPageSizeSelectChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    const newSize = Number(select.value);
-    this.pageSize.set(newSize);
-    this.currentPage.set(1); // Reset to first page when changing page size
   }
 
   reload(): void {

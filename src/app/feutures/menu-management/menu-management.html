@@ -45,7 +45,7 @@
       <ng-container *ngIf="!error(); else errorTemplate">
         <ng-container *ngIf="filteredMenuItems().length; else emptyTemplate">
           <div class="menu-grid">
-            <article class="menu-card" *ngFor="let item of paginatedMenuItems(); let i = index; trackBy: trackByMenuId">
+            <article class="menu-card" *ngFor="let item of displayedMenuItems(); let i = index; trackBy: trackByMenuId">
               <div class="menu-card__header">
                 <h3>{{ item.name }}</h3>
                 <span class="status-badge" [ngClass]="item.statusClass">{{ item.statusLabel }}</span>
@@ -108,58 +108,16 @@
             </article>
           </div>
 
-          <!-- Custom Pagination Component -->
-          <div class="custom-pagination" *ngIf="filteredMenuItems().length > 0">
-            <div class="pagination-info">
-              <span>แสดง {{ startIndex() }}-{{ endIndex() }} จาก {{ total() }} รายการ</span>
-            </div>
-
-            <div class="pagination-controls">
-              <!-- Page Size Selector -->
-              <div class="page-size-selector">
-                <span>แสดง:</span>
-                <select
-                  class="page-size-select"
-                  [value]="pageSize()"
-                  (change)="onPageSizeSelectChange($event)">
-                  <option value="8">8</option>
-                  <option value="12">12</option>
-                  <option value="16">16</option>
-                  <option value="24">24</option>
-                </select>
-                <span>รายการ</span>
-              </div>
-
-              <!-- Page Navigation -->
-              <div class="page-navigation">
-                <button
-                  class="page-btn page-btn--prev"
-                  [disabled]="!hasPrevPage()"
-                  (click)="goToPrevPage()">
-                  <span nz-icon nzType="left"></span>
-                </button>
-
-                <div class="page-numbers">
-                  <ng-container *ngFor="let page of pageNumbers()">
-                    <button
-                      *ngIf="page !== '...'"
-                      class="page-number"
-                      [class.active]="page === currentPage()"
-                      (click)="onPageNumberClick(page)">
-                      {{ page }}
-                    </button>
-                    <span *ngIf="page === '...'" class="page-dots">...</span>
-                  </ng-container>
-                </div>
-
-                <button
-                  class="page-btn page-btn--next"
-                  [disabled]="!hasNextPage()"
-                  (click)="goToNextPage()">
-                  <span nz-icon nzType="right"></span>
-                </button>
-              </div>
-            </div>
+          <!-- Show More Button -->
+          <div *ngIf="hasMoreItems() || showAll()" class="show-more-container">
+            <button
+              (click)="toggleShowMore()"
+              [class]="'show-more-btn ' + (showAll() ? 'show-less-btn' : '')"
+            >
+              <span *ngIf="!showAll()">แสดงเพิ่มเติม</span>
+              <span *ngIf="showAll()">แสดงน้อยลง</span>
+              <span nz-icon [nzType]="showAll() ? 'up' : 'down'" nzTheme="outline"></span>
+            </button>
           </div>
         </ng-container>
       </ng-container>
