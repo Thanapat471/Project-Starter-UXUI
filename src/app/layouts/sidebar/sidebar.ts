@@ -44,16 +44,17 @@ export class Sidebar {
       icon: 'table',
       route: '/features/table'
     },
+     {
+      label: 'อัปเดตสถานะ',
+      icon: 'reload',
+      route: '/features/update-status'
+    },
     {
       label: 'ชำระเงิน',
       icon: 'dollar',
       route: '/features/payment'
-    },
-    {
-      label: 'อัปเดตสถานะ',
-      icon: 'reload',
-      route: '/features/update-status'
     }
+
   ];
 
   logout(): void {
