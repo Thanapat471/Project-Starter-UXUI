@@ -57,7 +57,7 @@
             <article
               class="menu-item-card"
               *ngFor="let item of filteredMenuItems">
-              <div class="menu-item-image">
+              <div class="menu-item-image clickable-image" (click)="onAddToCartClick(item)">
                 <img
                   [src]="item.imageUrl || 'https://images.unsplash.com/photo-1546173159-315724a31696?w=300&h=200&fit=crop'"
                   [alt]="item.name"
@@ -68,7 +68,7 @@
                     nzType="primary"
                     nzShape="circle"
                     class="add-to-cart-btn"
-                    (click)="onAddToCartClick(item)">
+                    (click)="$event.stopPropagation(); onAddToCartClick(item)">
                     <span nz-icon nzType="plus"></span>
                   </button>
                 </div>
