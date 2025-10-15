@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, ElementRef, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, ViewChild, computed, inject, signal, OnDestroy } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
@@ -97,7 +97,7 @@ interface MenuItemWithOptions {
   templateUrl: './menu-management.html',
   styleUrl: './menu-management.css'
 })
-export class MenuManagement {
+export class MenuManagement implements OnDestroy {
   private readonly menuService = inject(MenuService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
@@ -111,12 +111,15 @@ export class MenuManagement {
   readonly error = signal<string | null>(null);
   readonly addModalOpen = signal(false);
   readonly categoryModalOpen = signal(false);
+  readonly deleteModalOpen = signal(false);
   readonly submitting = signal(false);
   readonly categorySubmitting = signal(false);
+  readonly deleteSubmitting = signal(false);
   readonly editingMenuId = signal<string | null>(null);
   readonly editingCategoryId = signal<string | null>(null);
   readonly editingMenu = signal<MenuCard | null>(null);
   readonly editingImageUrl = signal<string | null>(null);
+  readonly deleteTarget = signal<MenuCard | null>(null);
   readonly categoriesLoading = signal(false);
   readonly categoriesError = signal<string | null>(null);
   readonly priceFormatter = (value: number | string | null): string => {
@@ -238,15 +241,28 @@ export class MenuManagement {
     return this.menuItems().filter(item => item.categoryId === categoryId).length;
   }
 
+  // Modal scroll management
+  private preventBodyScroll(): void {
+    document.body.style.overflow = 'hidden';
+    document.body.style.paddingRight = '0px';
+  }
+
+  private restoreBodyScroll(): void {
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  }
+
   openCreateModal(): void {
     this.prepareCreateForm();
     this.addModalOpen.set(true);
+    this.preventBodyScroll();
   }
 
   closeCreateModal(): void {
     this.addModalOpen.set(false);
     this.clearSelectedImage();
     this.resetMenuForm();
+    this.restoreBodyScroll();
   }
 
   // Options management methods
@@ -495,31 +511,41 @@ export class MenuManagement {
   }
 
   confirmDeleteMenu(menu: MenuCard): void {
-    this.modal.confirm({
-      nzTitle: 'ยืนยันการลบเมนู',
-      nzContent: `คุณต้องการลบเมนู "${menu.name}" หรือไม่?`,
-      nzOkText: 'ลบ',
-      nzCancelText: 'ยกเลิก',
-      nzOkDanger: true,
-      nzOnOk: () =>
-        firstValueFrom(
-          this.menuService.deleteMenuItem(menu.id).pipe(
-            catchError(error => {
-              const message =
-                error.status === 0
-                  ? 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'
-                  : 'ลบเมนูไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
-              this.message.error(message);
-              return throwError(() => error);
-            })
-          )
-        ).then(() => {
-          this.message.success(`ลบเมนู "${menu.name}" แล้ว`);
-          if (this.editingMenuId() === menu.id) {
-            this.closeCreateModal();
-          }
-          this.fetchMenuItems();
+    this.deleteTarget.set(menu);
+    this.deleteModalOpen.set(true);
+  }
+
+  closeDeleteModal(): void {
+    this.deleteModalOpen.set(false);
+    this.deleteTarget.set(null);
+  }
+
+  executeDelete(): void {
+    const menu = this.deleteTarget();
+    if (!menu) return;
+
+    this.deleteSubmitting.set(true);
+
+    firstValueFrom(
+      this.menuService.deleteMenuItem(menu.id).pipe(
+        catchError(error => {
+          const message =
+            error.status === 0
+              ? 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้'
+              : 'ลบเมนูไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
+          this.message.error(message);
+          return throwError(() => error);
         })
+      )
+    ).then(() => {
+      this.message.success(`ลบเมนู "${menu.name}" แล้ว`);
+      if (this.editingMenuId() === menu.id) {
+        this.closeCreateModal();
+      }
+      this.fetchMenuItems();
+      this.closeDeleteModal();
+    }).finally(() => {
+      this.deleteSubmitting.set(false);
     });
   }
 
@@ -527,6 +553,7 @@ export class MenuManagement {
   openCategoryModal(): void {
     this.prepareCategoryForm();
     this.categoryModalOpen.set(true);
+    this.preventBodyScroll();
   }
 
   closeCategoryModal(): void {
@@ -537,6 +564,7 @@ export class MenuManagement {
     this.categorySubmitting.set(false);
     this.editingCategoryId.set(null);
     this.categorySearchTerm.set('');
+    this.restoreBodyScroll();
   }
 
   cancelEditCategory(): void {
@@ -848,5 +876,9 @@ export class MenuManagement {
     }
 
     return text;
+  }
+
+  ngOnDestroy(): void {
+    this.restoreBodyScroll();
   }
 }
