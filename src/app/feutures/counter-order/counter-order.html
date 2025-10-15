@@ -136,17 +136,18 @@
                   </div>
 
                   <div class="cart-item-footer">
-                    <div class="quantity-section">
+                    <div class="cart-quantity-section">
                       <span class="quantity-label">จำนวน:</span>
-                      <div class="quantity-controls">
+                      <div class="cart-quantity-controls">
                         <button
-                          class="quantity-btn minus-btn"
-                          (click)="updateCartItemQuantity(i, item.quantity - 1)">
+                          class="cart-qty-btn minus"
+                          (click)="updateCartItemQuantity(i, item.quantity - 1)"
+                          [disabled]="item.quantity <= 1">
                           <span nz-icon nzType="minus"></span>
                         </button>
-                        <span class="quantity-display">{{ item.quantity }}</span>
+                        <span class="cart-quantity-display">{{ item.quantity }}</span>
                         <button
-                          class="quantity-btn plus-btn"
+                          class="cart-qty-btn plus"
                           (click)="updateCartItemQuantity(i, item.quantity + 1)">
                           <span nz-icon nzType="plus"></span>
                         </button>
@@ -394,86 +395,7 @@
   </ng-template>
 </div>
 
-<!-- QR Code Modal -->
-<div
-  *ngIf="showQRCode()"
-  class="qr-modal-overlay"
-  (click)="closeQRModal()"
-  (keydown.escape)="closeQRModal()"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="qr-modal-title"
->
-  <div
-    class="qr-modal bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
-    (click)="$event.stopPropagation()"
-    (keydown)="$event.stopPropagation()"
-  >
-    <!-- Modal Header -->
-    <div class="qr-modal-header">
-      <div class="header-content">
-        <span nz-icon nzType="scan" nzTheme="outline" class="header-icon"></span>
-        <h2 id="qr-modal-title">ชำระผ่าน PromptPay</h2>
-      </div>
-
-      <!-- Close Button -->
-      <button
-        (click)="closeQRModal()"
-        class="close-btn"
-      >
-        <span nz-icon nzType="close" nzTheme="outline"></span>
-      </button>
-    </div>
-
-    <!-- Modal Content -->
-    <div class="qr-modal-content" *ngIf="promptPayData()">
-      <div class="qr-instruction">
-        <p>สแกน QR Code เพื่อชำระเงิน</p>
-      </div>
-
-      <!-- QR Code Display -->
-      <div class="qr-code-container">
-        <img [src]="promptPayData().qrCode" alt="PromptPay QR Code">
-      </div>
-
-      <!-- Payment Details -->
-      <div class="payment-details">
-        <div class="detail-row">
-          <span class="label">จำนวนเงิน:</span>
-          <span class="value amount">฿{{ promptPayData().amount }}</span>
-        </div>
-        <div class="detail-row">
-          <span class="label">เบอร์โทร:</span>
-          <span class="value">{{ promptPayData().promptpayPhone }}</span>
-        </div>
-        <div class="detail-row countdown-row">
-          <span class="label">หมดอายุใน:</span>
-          <span class="value countdown">
-            {{ countdownMinutes() < 10 ? '0' + countdownMinutes() : countdownMinutes() }}:{{ countdownSeconds() < 10 ? '0' + countdownSeconds() : countdownSeconds() }}
-          </span>
-        </div>
-        <div class="detail-row">
-          <span class="label">รหัสอ้างอิง:</span>
-          <span class="value">{{ promptPayData().transactionRef }}</span>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="qr-modal-actions">
-        <button
-          (click)="confirmPromptPayPayment()"
-          [disabled]="processingPayment()"
-          class="btn-success"
-        >
-          <span nz-icon nzType="check"></span>
-          <span>{{ processingPayment() ? 'กำลังยืนยัน...' : 'ยืนยันการชำระเงิน' }}</span>
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Menu Option Modal -->
+<!-- Menu Option Modal - ✅ ย้ายออกมาข้างนอก counter-order-page -->
 <div *ngIf="showMenuOptionModal()" class="menu-option-modal-overlay" (click)="closeMenuOptionModal()">
   <div class="menu-option-modal" (click)="$event.stopPropagation()">
     <!-- Modal Header -->
@@ -570,6 +492,85 @@
         <span nz-icon nzType="shopping-cart"></span>
         {{ isEditingCartItem() ? 'อัปเดต' : 'เพิ่มลงตะกร้า' }} {{ modalQuantity() }} รายการ
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- QR Code Modal -->
+<div
+  *ngIf="showQRCode()"
+  class="qr-modal-overlay"
+  (click)="closeQRModal()"
+  (keydown.escape)="closeQRModal()"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="qr-modal-title"
+>
+  <div
+    class="qr-modal bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
+    (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+  >
+    <!-- Modal Header -->
+    <div class="qr-modal-header">
+      <div class="header-content">
+        <span nz-icon nzType="scan" nzTheme="outline" class="header-icon"></span>
+        <h2 id="qr-modal-title">ชำระผ่าน PromptPay</h2>
+      </div>
+
+      <!-- Close Button -->
+      <button
+        (click)="closeQRModal()"
+        class="close-btn"
+      >
+        <span nz-icon nzType="close" nzTheme="outline"></span>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="qr-modal-content" *ngIf="promptPayData()">
+      <div class="qr-instruction">
+        <p>สแกน QR Code เพื่อชำระเงิน</p>
+      </div>
+
+      <!-- QR Code Display -->
+      <div class="qr-code-container">
+        <img [src]="promptPayData().qrCode" alt="PromptPay QR Code">
+      </div>
+
+      <!-- Payment Details -->
+      <div class="payment-details">
+        <div class="detail-row">
+          <span class="label">จำนวนเงิน:</span>
+          <span class="value amount">฿{{ promptPayData().amount }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">เบอร์โทร:</span>
+          <span class="value">{{ promptPayData().promptpayPhone }}</span>
+        </div>
+        <div class="detail-row countdown-row">
+          <span class="label">หมดอายุใน:</span>
+          <span class="value countdown">
+            {{ countdownMinutes() < 10 ? '0' + countdownMinutes() : countdownMinutes() }}:{{ countdownSeconds() < 10 ? '0' + countdownSeconds() : countdownSeconds() }}
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="label">รหัสอ้างอิง:</span>
+          <span class="value">{{ promptPayData().transactionRef }}</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="qr-modal-actions">
+        <button
+          (click)="confirmPromptPayPayment()"
+          [disabled]="processingPayment()"
+          class="btn-success"
+        >
+          <span nz-icon nzType="check"></span>
+          <span>{{ processingPayment() ? 'กำลังยืนยัน...' : 'ยืนยันการชำระเงิน' }}</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>

@@ -256,24 +256,22 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
 
   // ============ Menu Option Modal & Selection ============
   onAddToCartClick(item: MenuItem) {
+    // Always open modal (even if no options)
+    const defaults: Record<number, string> = {};
     if (item.options && item.options.length > 0) {
       // Prepare modal with defaults (preselect first value for required groups)
-      const defaults: Record<number, string> = {};
       for (const group of item.options) {
         if (group.isRequired && group.options.length > 0) {
           defaults[group.id] = group.options[0].value;
         }
       }
-      this.modalItem.set(item);
-      this.modalSelected.set(defaults);
-      this.modalQty.set(1);
-      this.editing.set(false);
-      this.editingIndex = null;
-      this.optionModalVisible.set(true);
-    } else {
-      // No options -> add directly
-      this.addToCart(item);
     }
+    this.modalItem.set(item);
+    this.modalSelected.set(defaults);
+    this.modalQty.set(1);
+    this.editing.set(false);
+    this.editingIndex = null;
+    this.optionModalVisible.set(true);
   }
 
   openEditCartItemModal(cartItem: CartItem, index: number) {
