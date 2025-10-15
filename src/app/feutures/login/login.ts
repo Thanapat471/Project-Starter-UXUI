@@ -10,7 +10,7 @@ import { NzTypographyModule } from 'ng-zorro-antd/typography';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
-
+import { ToastService } from '../../core/services/toast.service';
 import { AuthService } from '../../core/services/auth.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
@@ -36,7 +36,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 export class Login {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
-  private readonly message = inject(NzMessageService);
+  private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   readonly submitting = signal(false);
@@ -62,7 +62,7 @@ export class Login {
       .subscribe({
         next: response => {
           this.authService.persistSession(response, !!remember);
-          this.message.success('เข้าสู่ระบบสำเร็จ');
+          this.toastService.success('เข้าสู่ระบบสำเร็จ');
           const redirectUrl = this.route.snapshot.queryParamMap.get('redirect');
           if (redirectUrl) {
             this.router.navigateByUrl(redirectUrl);
