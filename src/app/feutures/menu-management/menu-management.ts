@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, ElementRef, ViewChild, computed, inject, signal, OnDestroy } from '@angular/core';
+import { Component, DestroyRef, ElementRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
@@ -97,7 +97,7 @@ interface MenuItemWithOptions {
   templateUrl: './menu-management.html',
   styleUrl: './menu-management.css'
 })
-export class MenuManagement implements OnDestroy {
+export class MenuManagement {
   private readonly menuService = inject(MenuService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
@@ -241,28 +241,24 @@ export class MenuManagement implements OnDestroy {
     return this.menuItems().filter(item => item.categoryId === categoryId).length;
   }
 
-  // Modal scroll management
+  // Modal scroll management - disabled to allow browser scrolling
   private preventBodyScroll(): void {
-    document.body.style.overflow = 'hidden';
-    document.body.style.paddingRight = '0px';
+    // No-op: allow browser scroll
   }
 
   private restoreBodyScroll(): void {
-    document.body.style.overflow = '';
-    document.body.style.paddingRight = '';
+    // No-op: allow browser scroll
   }
 
   openCreateModal(): void {
     this.prepareCreateForm();
     this.addModalOpen.set(true);
-    this.preventBodyScroll();
   }
 
   closeCreateModal(): void {
     this.addModalOpen.set(false);
     this.clearSelectedImage();
     this.resetMenuForm();
-    this.restoreBodyScroll();
   }
 
   // Options management methods
@@ -553,7 +549,6 @@ export class MenuManagement implements OnDestroy {
   openCategoryModal(): void {
     this.prepareCategoryForm();
     this.categoryModalOpen.set(true);
-    this.preventBodyScroll();
   }
 
   closeCategoryModal(): void {
@@ -564,7 +559,6 @@ export class MenuManagement implements OnDestroy {
     this.categorySubmitting.set(false);
     this.editingCategoryId.set(null);
     this.categorySearchTerm.set('');
-    this.restoreBodyScroll();
   }
 
   cancelEditCategory(): void {
@@ -876,9 +870,5 @@ export class MenuManagement implements OnDestroy {
     }
 
     return text;
-  }
-
-  ngOnDestroy(): void {
-    this.restoreBodyScroll();
   }
 }
