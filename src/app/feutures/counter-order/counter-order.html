@@ -536,12 +536,9 @@
       </div>
 
       <!-- Quantity Section -->
-      <div class="quantity-section">
-        <h3 class="quantity-title">
-          <span nz-icon nzType="calculator" class="quantity-icon"></span>
-          จำนวน
-        </h3>
-        <div class="quantity-controls">
+      <div class="option-group">
+        <h3 class="option-title">จำนวน</h3>
+        <div class="quantity-selector">
           <button
             (click)="decreaseModalQuantity()"
             [disabled]="modalQuantity() <= 1"
@@ -567,17 +564,12 @@
         <span class="total-price">฿{{ calculateModalTotalPrice() }}</span>
       </div>
 
-      <div class="modal-actions">
-        <button class="cancel-btn" (click)="closeMenuOptionModal()">
-          ยกเลิก
-        </button>
-        <button
-          (click)="confirmMenuOptionSelection()"
-          class="confirm-btn">
-          <span nz-icon nzType="shopping-cart"></span>
-          {{ isEditingCartItem() ? 'อัปเดต' : 'เพิ่มลงตะกร้า' }} {{ modalQuantity() }} รายการ
-        </button>
-      </div>
+      <button
+        (click)="confirmMenuOptionSelection()"
+        class="confirm-btn">
+        <span nz-icon nzType="shopping-cart"></span>
+        {{ isEditingCartItem() ? 'อัปเดต' : 'เพิ่มลงตะกร้า' }} {{ modalQuantity() }} รายการ
+      </button>
     </div>
   </div>
 </div>
