@@ -154,9 +154,9 @@ export class Table implements OnInit {
     if (this.canLoadMore()) {
       const remaining = this.tables.length - this.currentDisplayCount;
       const nextLoad = Math.min(remaining, this.CARDS_PER_PAGE);
-      return `โหลดเพิ่มเติม (${nextLoad} รายการ)`;
+      return `แสดงเพิ่มเติม`;
     } else {
-      return 'ย่อ';
+      return 'แสดงน้อยลง';
     }
   }
 

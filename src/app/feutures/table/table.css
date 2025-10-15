@@ -922,23 +922,22 @@
   background: white;
 }
 
-/* Load More Button */
+/* Show More/Less Button Styles */
 .load-more-section {
   display: flex;
   justify-content: center;
-  align-items: center;
   padding: 2rem 0 1rem;
   margin-top: 1rem;
 }
 
-.load-more-btn {
+.show-more-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 2.5rem;
-  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
-  color: white !important;
-  border: none !important;
+  background: linear-gradient(135deg, #94694c, #5c3d2e);
+  color: white;
+  border: none;
   border-radius: 50px;
   font-size: 1rem;
   font-weight: 600;
@@ -947,10 +946,9 @@
   box-shadow: 0 8px 24px rgba(92, 61, 46, 0.3);
   position: relative;
   overflow: hidden;
-  min-width: 200px;
 }
 
-.load-more-btn::before {
+.show-more-btn::before {
   content: '';
   position: absolute;
   top: 0;
@@ -961,58 +959,63 @@
   transition: left 0.5s;
 }
 
-.load-more-btn:hover {
-  transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 0 12px 32px rgba(92, 61, 46, 0.4) !important;
-  background: linear-gradient(135deg, #a5765a, #6d4934) !important;
-  color: white !important;
+.show-more-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(92, 61, 46, 0.4);
+  background: linear-gradient(135deg, #a5765a, #6d4934);
 }
 
-.load-more-btn:hover::before {
+.show-more-btn:hover::before {
   left: 100%;
 }
 
-.load-more-btn:active {
-  transform: translateY(0) scale(0.98) !important;
+.show-more-btn:active {
+  transform: translateY(0) scale(0.98);
   transition: all 0.1s ease;
 }
 
-.load-more-btn:focus {
-  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
-  color: white !important;
+.show-less-btn {
+  background: linear-gradient(135deg, rgba(148, 105, 76, 0.15), rgba(92, 61, 46, 0.1));
+  color: #5c3d2e;
+  border: 2px solid rgba(148, 105, 76, 0.3);
 }
 
-/* Show Less (Collapse) Button Style */
-.load-more-btn.show-less {
-  background: linear-gradient(135deg, rgba(148, 105, 76, 0.15), rgba(92, 61, 46, 0.1)) !important;
-  color: #5c3d2e !important;
-  border: 2px solid rgba(148, 105, 76, 0.3) !important;
+.show-less-btn:hover {
+  background: linear-gradient(135deg, rgba(148, 105, 76, 0.25), rgba(92, 61, 46, 0.15));
+  border-color: rgba(148, 105, 76, 0.4);
 }
 
-.load-more-btn.show-less:hover {
-  background: linear-gradient(135deg, rgba(148, 105, 76, 0.25), rgba(92, 61, 46, 0.15)) !important;
-  border-color: rgba(148, 105, 76, 0.4) !important;
-  color: #5c3d2e !important;
+@media (min-width: 1920px) {
+  .show-more-btn {
+    padding: 1.125rem 3rem;
+    font-size: 1.125rem;
+    gap: 18px;
+  }
 }
 
-.load-more-btn.show-less:focus {
-  background: linear-gradient(135deg, rgba(148, 105, 76, 0.15), rgba(92, 61, 46, 0.1)) !important;
-  color: #5c3d2e !important;
+@media (max-width: 1400px) {
+  .show-more-btn {
+    padding: 0.9rem 2.25rem;
+    font-size: 0.975rem;
+  }
 }
 
-/* Icon styling */
-.load-more-btn span[nz-icon] {
-  font-size: 1rem;
-  transition: transform 0.3s ease;
+@media (max-width: 1024px) {
+  .show-more-btn {
+    padding: 0.875rem 2rem;
+    font-size: 0.95rem;
+  }
 }
 
-.load-more-btn:hover span[nz-icon] {
-  transform: scale(1.1);
+@media (max-width: 768px) {
+  .show-more-btn {
+    padding: 0.875rem 2rem;
+    font-size: 0.95rem;
+  }
 }
 
-/* Responsive load more button */
 @media (max-width: 520px) {
-  .load-more-btn {
+  .show-more-btn {
     padding: 0.75rem 1.75rem;
     font-size: 0.9rem;
     width: 100%;
@@ -1021,13 +1024,6 @@
   
   .load-more-section {
     padding: 1.5rem 1rem;
-  }
-}
-
-@media (min-width: 521px) and (max-width: 768px) {
-  .load-more-btn {
-    padding: 0.875rem 2rem;
-    font-size: 0.95rem;
   }
 }
 

@@ -106,14 +106,12 @@
     <!-- Load More / Collapse Button -->
     <div nz-col [nzSpan]="24" *ngIf="!isInitialLoad && !isLoading && tables.length > CARDS_PER_PAGE" class="load-more-section">
       <button 
-        nz-button 
-        nzType="default" 
-        nzSize="large"
-        class="load-more-btn"
-        [ngClass]="{ 'show-less': isShowingAll() }"
+        type="button"
+        class="show-more-btn"
+        [ngClass]="{ 'show-less-btn': isShowingAll() }"
         (click)="loadMoreTables()">
+        <span class="ng-star-inserted">{{ getLoadMoreButtonText() }}</span>
         <span nz-icon [nzType]="canLoadMore() ? 'down' : 'up'" nzTheme="outline"></span>
-        {{ getLoadMoreButtonText() }}
       </button>
     </div>
 
