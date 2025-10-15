@@ -44,7 +44,7 @@ interface OrderResponse {
     name: string;
   } | null;
   sessionId?: string;
-  orderItems: OrderItem[];
+  orderItems?: OrderItem[];
   createdAt: string;
   updatedAt: string;
   isUpdating?: boolean;
@@ -190,24 +190,9 @@ export class Updatestatus implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (updatedOrder: any) => {
-          // Update the order in the list
-          const newOrders = this.orders().map(o =>
-            o.id === String(updatedOrder.id) ? {
-              id: String(updatedOrder.id),
-              status: updatedOrder.status,
-              totalAmount: updatedOrder.totalAmount,
-              source: updatedOrder.source,
-              notes: updatedOrder.notes,
-              table: updatedOrder.table,
-              sessionId: updatedOrder.sessionId,
-              orderItems: updatedOrder.orderItems,
-              createdAt: updatedOrder.createdAt,
-              updatedAt: updatedOrder.updatedAt,
-              isUpdating: false
-            } : o
-          );
-          this.orders.set(newOrders);
-
+          // Reload orders to get fresh data
+          this.loadOrders(true);
+          
           const nextStatus = config.next;
           if (nextStatus) {
             const nextLabel = this.statusConfig[nextStatus].label;

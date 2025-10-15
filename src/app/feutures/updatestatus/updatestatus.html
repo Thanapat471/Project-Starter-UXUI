@@ -106,7 +106,7 @@
               </div>
               <div class="detail-row">
                 <span nz-icon nzType="shopping-cart"></span>
-                <span>{{ order.orderItems.length }} รายการ</span>
+                <span>{{ order.orderItems?.length || 0 }} รายการ</span>
               </div>
               <div class="detail-row">
                 <span nz-icon nzType="dollar"></span>
