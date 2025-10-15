@@ -167,18 +167,15 @@
   </div>
 
   <!-- Show More/Less Button -->
-  <div *ngIf="!isLoadingMenu && !menuError && hasMoreItems" class="show-more-container">
+  <div *ngIf="!isLoadingMenu && !menuError && (hasMoreItems || showAll)" class="show-more-container flex justify-center mt-8 mb-6">
     <button
       (click)="toggleShowMore()"
-      [class]="'show-more-btn ' + (showAll ? 'show-less-btn' : '')"
+      [class]="'show-more-btn px-8 py-3 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl flex items-center gap-3 ' + (showAll ? 'show-less-btn' : '')"
+      [style]="showAll ? 'background: rgba(148, 105, 76, 0.1); color: #5c3d2e; border: 2px solid #94694c;' : 'background: linear-gradient(135deg, #94694c, #5c3d2e); color: white;'"
     >
-      <span *ngIf="!showAll">แสดงเพิ่มเติม</span>
+      <i class="fas" [class.fa-chevron-down]="!showAll" [class.fa-chevron-up]="showAll"></i>
+      <span *ngIf="!showAll">แสดงเพิ่มเติม ({{ filteredItems.length - currentDisplayCount }} รายการ)</span>
       <span *ngIf="showAll">แสดงน้อยลง</span>
-      <i
-        nz-icon
-        [nzType]="showAll ? 'up' : 'down'"
-        nzTheme="outline"
-      ></i>
     </button>
   </div>
 

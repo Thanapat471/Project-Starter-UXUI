@@ -97,7 +97,8 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
 
   // Show More functionality
   showAll = false;
-  itemsPerPage = 5;
+  itemsPerPage = 3;
+  currentDisplayCount = 3;
 
 
 
@@ -140,11 +141,11 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
 
   get displayedItems(): MenuItem[] {
     const filtered = this.filteredItems;
-    return this.showAll ? filtered : filtered.slice(0, this.itemsPerPage);
+    return filtered.slice(0, this.currentDisplayCount);
   }
 
   get hasMoreItems(): boolean {
-    return this.filteredItems.length > this.itemsPerPage;
+    return this.filteredItems.length > this.currentDisplayCount;
   }
 
   get skeletonArray(): number[] {
@@ -158,24 +159,39 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
 
   selectCategory(category: string): void {
     this.selectedCategory = category;
+    // Reset display count when changing category
+    this.currentDisplayCount = this.itemsPerPage;
     // Don't call updateFilteredItems here to prevent loops
     // Let the getter handle filtering
   }
 
   clearSearch(): void {
     this.searchTerm = '';
+    // Reset display count when clearing search
+    this.currentDisplayCount = this.itemsPerPage;
     this.updateFilteredItems();
   }
 
   onSearchChange(): void {
+    // Reset display count when searching
+    this.currentDisplayCount = this.itemsPerPage;
     this.updateFilteredItems();
   }
 
   toggleShowMore(): void {
-    this.showAll = !this.showAll;
-    // Scroll to top when showing less
-    if (!this.showAll) {
+    if (this.showAll) {
+      // Show less - reset to initial count
+      this.showAll = false;
+      this.currentDisplayCount = this.itemsPerPage;
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      // Show more - add 5 more items
+      this.currentDisplayCount += this.itemsPerPage;
+      // If we're now showing all items, set showAll to true
+      if (this.currentDisplayCount >= this.filteredItems.length) {
+        this.currentDisplayCount = this.filteredItems.length;
+        this.showAll = true;
+      }
     }
   }
 
