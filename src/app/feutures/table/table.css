@@ -450,12 +450,12 @@
 
 .qr-btn {
   position: relative;
-  background: linear-gradient(135deg, #94694c, #5c3d2e);
+  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
   color: #ffffff !important;
   border: none;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(92, 61, 46, 0.3);
+  box-shadow: 0 4px 15px rgba(92, 61, 46, 0.4) !important;
   overflow: hidden;
   font-weight: 600;
   font-size: 0.875rem;
@@ -482,15 +482,15 @@
 
 .qr-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(92, 61, 46, 0.4);
-  background: linear-gradient(135deg, #a0755c, #6d4934) !important;
+  box-shadow: 0 8px 25px rgba(92, 61, 46, 0.5) !important;
+  background: linear-gradient(135deg, #a5765a, #6d4934) !important;
   color: #ffffff !important;
 }
 
 .qr-btn:active {
   transform: translateY(-1px);
-  box-shadow: 0 3px 12px rgba(92, 61, 46, 0.3);
-  background: linear-gradient(135deg, #94694c, #5c3d2e);
+  box-shadow: 0 3px 12px rgba(92, 61, 46, 0.4) !important;
+  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
   color: #ffffff !important;
 }
 
@@ -516,16 +516,16 @@
 .qr-btn:hover,
 .qr-btn:focus,
 .qr-btn:active {
-  background: linear-gradient(135deg, #a0755c, #6d4934) !important;
-  background-color: #a0755c !important;
+  background: linear-gradient(135deg, #a5765a, #6d4934) !important;
+  background-color: #a5765a !important;
 }
 
 /* Override any external CSS that might change background */
 .action-btn.qr-btn:hover,
 .action-btn.qr-btn:focus,
 .action-btn.qr-btn:active {
-  background: linear-gradient(135deg, #a0755c, #6d4934) !important;
-  background-color: #a0755c !important;
+  background: linear-gradient(135deg, #a5765a, #6d4934) !important;
+  background-color: #a5765a !important;
   color: #ffffff !important;
 }
 
@@ -723,37 +723,24 @@
   background-color: #94694c;
 }
 
-/* Modal Customization */
-:host ::ng-deep .ant-modal .ant-modal-content {
-  border-radius: 16px;
-  overflow: hidden;
+/* Modern Button Styles - For remaining Ant Design components */
+:host ::ng-deep .ant-btn {
+  border-radius: 0.75rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  height: auto;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
-:host ::ng-deep .ant-modal .ant-modal-header {
-  border-radius: 16px 16px 0 0;
-  background: linear-gradient(135deg, #fdf9f4 0%, #f4e6d6 100%);
-  border-bottom: 1px solid rgba(148, 105, 76, 0.1);
-}
-
-:host ::ng-deep .ant-modal .ant-modal-body {
-  background: #fefdfb;
-}
-
-:host ::ng-deep .ant-modal .ant-modal-footer {
-  background: #fefdfb;
-  border-top: 1px solid rgba(148, 105, 76, 0.1);
-  border-radius: 0 0 16px 16px;
-}
-
-/* Primary Button Customization */
 :host ::ng-deep .ant-btn-primary {
   background: linear-gradient(135deg, #94694c, #5c3d2e);
   border: none;
-  border-radius: 12px;
   color: white;
-  font-weight: 600;
-  box-shadow: 0 4px 15px rgba(92, 61, 46, 0.3);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(92, 61, 46, 0.3);
 }
 
 :host ::ng-deep .ant-btn-primary:hover,
@@ -761,6 +748,7 @@
   background: linear-gradient(135deg, #a5765a, #6d4934);
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(92, 61, 46, 0.4);
+  color: white;
 }
 
 :host ::ng-deep .ant-btn-primary:active {
@@ -768,260 +756,269 @@
   box-shadow: 0 2px 10px rgba(92, 61, 46, 0.3);
 }
 
-/* Default Button Customization */
+:host ::ng-deep .ant-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  background: linear-gradient(135deg, #94694c, #5c3d2e);
+}
+
 :host ::ng-deep .ant-btn-default {
-  border-radius: 12px;
-  border-color: rgba(148, 105, 76, 0.3);
-  color: #5c3d2e;
-  transition: all 0.3s ease;
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 :host ::ng-deep .ant-btn-default:hover,
 :host ::ng-deep .ant-btn-default:focus {
-  border-color: #94694c;
-  color: #94694c;
-  background: rgba(148, 105, 76, 0.05);
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  color: #1f2937;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* All Modal Buttons Rounded Corners */
-:host ::ng-deep .ant-modal .ant-btn,
-:host ::ng-deep .ant-modal button[nz-button],
-:host ::ng-deep .ant-modal-footer .ant-btn,
-:host ::ng-deep .ant-modal-footer button[nz-button] {
-  border-radius: 12px !important;
-  font-weight: 600 !important;
-  transition: all 0.3s ease !important;
+:host ::ng-deep .ant-btn-default:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-/* Cancel/Default buttons in modal */
-:host ::ng-deep .ant-modal .ant-btn-default,
-:host ::ng-deep .ant-modal button[nz-button][nzType="default"],
-:host ::ng-deep .ant-modal-footer .ant-btn-default,
-:host ::ng-deep .ant-modal-footer button[nz-button][nzType="default"] {
-  border-radius: 12px !important;
-  border-color: rgba(148, 105, 76, 0.3) !important;
-  color: #5c3d2e !important;
-  background: #ffffff !important;
+:host ::ng-deep .ant-btn-default:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
-:host ::ng-deep .ant-modal .ant-btn-default:hover,
-:host ::ng-deep .ant-modal button[nz-button][nzType="default"]:hover,
-:host ::ng-deep .ant-modal-footer .ant-btn-default:hover,
-:host ::ng-deep .ant-modal-footer button[nz-button][nzType="default"]:hover {
-  border-color: #94694c !important;
-  color: #94694c !important;
-  background: rgba(148, 105, 76, 0.05) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 4px 12px rgba(92, 61, 46, 0.15) !important;
-}
-
-/* Input Field Customization */
-:host ::ng-deep .ant-input {
-  border-radius: 8px;
-  border-color: rgba(148, 105, 76, 0.2);
-  transition: all 0.3s ease;
+/* Modern Input Field Customization - For remaining Ant Design components */
+:host ::ng-deep .ant-input,
+:host ::ng-deep .ant-input-number input {
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  background: white;
 }
 
 :host ::ng-deep .ant-input:focus,
-:host ::ng-deep .ant-input-focused {
+:host ::ng-deep .ant-input-focused,
+:host ::ng-deep .ant-input-number-focused input {
   border-color: #94694c;
-  box-shadow: 0 0 0 2px rgba(148, 105, 76, 0.1);
+  box-shadow: 0 0 0 3px rgba(148, 105, 76, 0.1);
+  outline: none;
+}
+
+:host ::ng-deep .ant-input:hover,
+:host ::ng-deep .ant-input-number:hover input {
+  border-color: #9ca3af;
 }
 
 :host ::ng-deep .ant-input-number {
-  border-radius: 8px;
-  border-color: rgba(148, 105, 76, 0.2);
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  transition: all 0.2s ease;
+  width: 100%;
 }
 
 :host ::ng-deep .ant-input-number:focus,
 :host ::ng-deep .ant-input-number-focused {
   border-color: #94694c;
-  box-shadow: 0 0 0 2px rgba(148, 105, 76, 0.1);
+  box-shadow: 0 0 0 3px rgba(148, 105, 76, 0.1);
 }
 
-/* Force override all primary buttons */
-:host ::ng-deep .ant-btn-primary,
-:host ::ng-deep button[nz-button][nzType="primary"],
-:host ::ng-deep .ant-btn[nz-button="primary"] {
-  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
-  border-color: #94694c !important;
-  color: white !important;
-  border-radius: 12px !important;
-  font-weight: 600 !important;
-  box-shadow: 0 4px 15px rgba(92, 61, 46, 0.3) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+:host ::ng-deep .ant-input-number:hover {
+  border-color: #9ca3af;
 }
 
-:host ::ng-deep .ant-btn-primary:hover,
-:host ::ng-deep .ant-btn-primary:focus,
-:host ::ng-deep button[nz-button][nzType="primary"]:hover,
-:host ::ng-deep button[nz-button][nzType="primary"]:focus,
-:host ::ng-deep .ant-btn[nz-button="primary"]:hover,
-:host ::ng-deep .ant-btn[nz-button="primary"]:focus {
-  background: linear-gradient(135deg, #a5765a, #6d4934) !important;
-  border-color: #a5765a !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 6px 20px rgba(92, 61, 46, 0.4) !important;
-  color: white !important;
+/* Custom Modal Styles - Same as Menu Management */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
 }
 
-:host ::ng-deep .ant-btn-primary:active,
-:host ::ng-deep button[nz-button][nzType="primary"]:active,
-:host ::ng-deep .ant-btn[nz-button="primary"]:active {
-  transform: translateY(0) !important;
-  box-shadow: 0 2px 10px rgba(92, 61, 46, 0.3) !important;
+.modal-container {
+  background: white;
+  border-radius: 1rem;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: slideIn 0.3s ease-out;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Loading state for primary buttons */
-:host ::ng-deep .ant-btn-primary.ant-btn-loading,
-:host ::ng-deep button[nz-button][nzType="primary"].ant-btn-loading {
-  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
-  border-color: #94694c !important;
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  position: relative;
+  flex-shrink: 0;
 }
 
-/* Modal footer buttons specific override */
-:host ::ng-deep .ant-modal-footer .ant-btn-primary,
-:host ::ng-deep .ant-modal-footer button[nz-button][nzType="primary"] {
-  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
-  border-color: #94694c !important;
-  color: white !important;
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
 }
 
-/* Global Modal Styles with highest specificity */
-:host ::ng-deep .ant-modal-wrap .ant-modal .ant-modal-content {
-  border-radius: 16px !important;
-  overflow: hidden !important;
-  box-shadow: 0 8px 32px rgba(92, 61, 46, 0.15) !important;
+.modal-content {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #f9fafb;
+  scroll-behavior: smooth;
 }
 
-:host ::ng-deep .ant-modal-wrap .ant-modal .ant-modal-header {
-  border-radius: 16px 16px 0 0 !important;
-  background: linear-gradient(135deg, #fdf9f4 0%, #f4e6d6 100%) !important;
-  border-bottom: 1px solid rgba(148, 105, 76, 0.1) !important;
+.modal-content::-webkit-scrollbar {
+  width: 8px;
 }
 
-:host ::ng-deep .ant-modal-wrap .ant-modal .ant-modal-body {
-  background: #fefdfb !important;
-  padding: 24px !important;
+.modal-content::-webkit-scrollbar-track {
+  background: #f9fafb;
+  border-radius: 10px;
 }
 
-:host ::ng-deep .ant-modal-wrap .ant-modal .ant-modal-footer {
-  background: #fefdfb !important;
-  border-top: 1px solid rgba(148, 105, 76, 0.1) !important;
-  border-radius: 0 0 16px 16px !important;
-  padding: 16px 24px !important;
+.modal-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #d1d5db, #9ca3af);
+  border-radius: 10px;
+  border: 2px solid #f9fafb;
 }
 
-/* Super specific button overrides */
-:host ::ng-deep .ant-modal-wrap .ant-modal .ant-modal-footer .ant-btn-primary,
-:host ::ng-deep .ant-modal-wrap .ant-btn-primary,
-:host ::ng-deep .ant-modal .ant-btn-primary,
-:host ::ng-deep button.ant-btn-primary,
-:host ::ng-deep .ant-btn.ant-btn-primary {
-  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
-  background-color: #94694c !important;
-  border-color: #94694c !important;
-  color: white !important;
-  border-radius: 12px !important;
-  font-weight: 600 !important;
-  box-shadow: 0 4px 15px rgba(92, 61, 46, 0.3) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #9ca3af, #6b7280);
 }
 
-:host ::ng-deep .ant-modal-wrap .ant-modal .ant-modal-footer .ant-btn-primary:hover,
-:host ::ng-deep .ant-modal-wrap .ant-btn-primary:hover,
-:host ::ng-deep .ant-modal .ant-btn-primary:hover,
-:host ::ng-deep button.ant-btn-primary:hover,
-:host ::ng-deep .ant-btn.ant-btn-primary:hover {
-  background: linear-gradient(135deg, #a5765a, #6d4934) !important;
-  background-color: #a5765a !important;
-  border-color: #a5765a !important;
-  transform: translateY(-1px) !important;
-  box-shadow: 0 6px 20px rgba(92, 61, 46, 0.4) !important;
-  color: white !important;
+.modal-footer {
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  flex-shrink: 0;
 }
 
-/* Form controls styling */
-:host ::ng-deep .ant-modal .ant-input,
-:host ::ng-deep .ant-modal .ant-input-number {
-  border-radius: 8px !important;
-  border-color: rgba(148, 105, 76, 0.2) !important;
-  transition: all 0.3s ease !important;
+.btn-secondary {
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
-:host ::ng-deep .ant-modal .ant-input:focus,
-:host ::ng-deep .ant-modal .ant-input-focused,
-:host ::ng-deep .ant-modal .ant-input-number:focus,
-:host ::ng-deep .ant-modal .ant-input-number-focused {
-  border-color: #94694c !important;
-  box-shadow: 0 0 0 2px rgba(148, 105, 76, 0.1) !important;
+.btn-secondary:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+  color: #1f2937;
 }
 
-/* Modal title styling */
-:host ::ng-deep .ant-modal .ant-modal-header .ant-modal-title {
-  color: #5c3d2e !important;
-  font-weight: 700 !important;
+.btn-primary {
+  background: linear-gradient(135deg, #94694c, #5c3d2e);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
-/* Close button styling */
-:host ::ng-deep .ant-modal .ant-modal-close {
-  color: #8a6b55 !important;
+.btn-primary:hover {
+  background: linear-gradient(135deg, #a5765a, #6d4934);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(92, 61, 46, 0.3);
 }
 
-:host ::ng-deep .ant-modal .ant-modal-close:hover {
-  color: #5c3d2e !important;
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
-/* Ultra specific overrides - Use HTML tag selectors for maximum specificity */
-:host ::ng-deep nz-modal .ant-modal .ant-modal-content {
-  border-radius: 16px !important;
-  overflow: hidden !important;
-  box-shadow: 0 8px 32px rgba(92, 61, 46, 0.15) !important;
+.btn-danger {
+  background: #ef4444;
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
-:host ::ng-deep nz-modal .ant-modal .ant-modal-header {
-  border-radius: 16px 16px 0 0 !important;
-  background: linear-gradient(135deg, #fdf9f4 0%, #f4e6d6 100%) !important;
-  border-bottom: 1px solid rgba(148, 105, 76, 0.1) !important;
+.btn-danger:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-:host ::ng-deep nz-modal .ant-modal .ant-modal-body {
-  background: #fefdfb !important;
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
-:host ::ng-deep nz-modal .ant-modal .ant-modal-footer {
-  background: #fefdfb !important;
-  border-top: 1px solid rgba(148, 105, 76, 0.1) !important;
-  border-radius: 0 0 16px 16px !important;
+/* Form Styling */
+.form-field {
+  margin-bottom: 1.5rem;
 }
 
-/* Direct HTML element targeting for buttons */
-:host ::ng-deep nz-modal button[nz-button][nztype="primary"],
-:host ::ng-deep nz-modal button.ant-btn-primary,
-:host ::ng-deep nz-modal .ant-btn-primary {
-  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
-  background-color: #94694c !important;
-  border-color: #94694c !important;
-  color: white !important;
-  border-radius: 12px !important;
-  font-weight: 600 !important;
-  box-shadow: 0 4px 15px rgba(92, 61, 46, 0.3) !important;
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
 }
 
-:host ::ng-deep nz-modal button[nz-button][nztype="primary"]:hover,
-:host ::ng-deep nz-modal button.ant-btn-primary:hover,
-:host ::ng-deep nz-modal .ant-btn-primary:hover {
-  background: linear-gradient(135deg, #a5765a, #6d4934) !important;
-  background-color: #a5765a !important;
-  border-color: #a5765a !important;
-  color: white !important;
+.form-error {
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin-top: 0.25rem;
 }
 
-/* Backup CSS using inline style simulation */
-:host ::ng-deep nz-modal [style*="background"],
-:host ::ng-deep nz-modal [class*="primary"] {
-  background: linear-gradient(135deg, #94694c, #5c3d2e) !important;
-  border-color: #94694c !important;
+/* Animation Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Responsive modal sizing */
+@media (max-width: 768px) {
+  .modal-container {
+    margin: 0.5rem;
+    max-width: calc(100vw - 1rem);
+  }
+  
+  .modal-content {
+    max-height: 50vh;
+  }
+  
+  .modal-header,
+  .modal-footer {
+    padding: 1rem;
+  }
 }
 
 /* Card entrance animations */
