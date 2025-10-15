@@ -91,7 +91,7 @@ export class Updatestatus implements OnInit {
     },
     SERVED: {
       label: 'เสิร์ฟแล้ว',
-      icon: 'smile',
+      icon: 'check',
       color: '#6b7280',
       bgColor: 'rgba(107, 114, 128, 0.1)',
       next: null

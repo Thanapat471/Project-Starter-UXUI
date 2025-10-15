@@ -47,7 +47,11 @@ import {
   MinusOutline,
   ScanOutline,
   FileTextOutline,
-  ShopOutline
+  ShopOutline,
+  FireOutline,
+  SyncOutline,
+  ReloadOutline,
+  RightOutline
 } from '@ant-design/icons-angular/icons';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
@@ -103,7 +107,11 @@ export const appConfig: ApplicationConfig = {
   MinusOutline,
   ScanOutline,
   FileTextOutline,
-  ShopOutline
+  ShopOutline,
+  FireOutline,
+  SyncOutline,
+  ReloadOutline,
+  RightOutline
     ]),
     provideNzConfig({
       theme: {

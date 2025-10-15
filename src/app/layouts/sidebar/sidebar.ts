@@ -51,7 +51,7 @@ export class Sidebar {
     },
     {
       label: 'อัปเดตสถานะ',
-      icon: 'sync',
+      icon: 'reload',
       route: '/features/update-status'
     }
   ];

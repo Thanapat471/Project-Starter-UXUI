@@ -6,7 +6,7 @@
       <p class="page-subtitle">จัดการและเปลี่ยนสถานะออเดอร์ของครัว</p>
     </div>
     <button type="button" class="refresh-btn" (click)="loadOrders()" [disabled]="loading()">
-      <span nz-icon [nzType]="loading() ? 'loading' : 'reload'" [nzSpin]="loading()"></span>
+      <span nz-icon [nzType]="loading() ? 'loading' : 'sync'" [nzSpin]="loading()"></span>
       รีเฟรช
     </button>
   </header>
@@ -62,7 +62,7 @@
       [class.active]="selectedFilter() === 'SERVED'"
       (click)="setFilter('SERVED')"
     >
-      <span nz-icon nzType="smile"></span>
+      <span nz-icon nzType="check"></span>
       <span class="filter-label">เสิร์ฟแล้ว</span>
       <span class="filter-count">{{ statusCounts().SERVED }}</span>
     </button>
@@ -105,7 +105,7 @@
                 <span>{{ order.source === 'COUNTER' ? 'เคาน์เตอร์' : 'สั่งผ่าน QR' }}</span>
               </div>
               <div class="detail-row">
-                <span nz-icon nzType="shopping"></span>
+                <span nz-icon nzType="shopping-cart"></span>
                 <span>{{ order.orderItems.length }} รายการ</span>
               </div>
               <div class="detail-row">
@@ -138,7 +138,7 @@
                 (click)="updateStatus(order)"
                 [style.background]="getStatusConfig(order.status).color"
               >
-                <span nz-icon [nzType]="order.isUpdating ? 'loading' : 'arrow-right'" [nzSpin]="order.isUpdating"></span>
+                <span nz-icon [nzType]="order.isUpdating ? 'loading' : 'right'" [nzSpin]="order.isUpdating"></span>
                 <ng-container *ngIf="getStatusConfig(order.status).next as nextStatus; else completedTemplate">
                   เปลี่ยนเป็น "{{ getStatusConfig(nextStatus).label }}"
                 </ng-container>
