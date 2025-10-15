@@ -233,21 +233,26 @@
 
         <!-- Dynamic Options from API -->
         <div *ngFor="let option of selectedItem?.options" class="option-group mb-6">
-          <h3 class="option-title text-lg font-semibold text-gray-800 mb-3">
-            <i class="mr-2">{{ getOptionIcon(option.type) }}</i>{{ option.name }}
-            <span *ngIf="option.isRequired" class="text-red-500 text-sm ml-1">*</span>
+          <h3 class="option-title text-lg font-semibold text-gray-800 mb-3 flex items-center justify-between">
+            <span>
+              <i class="mr-2">{{ getOptionIcon(option.type) }}</i>{{ option.name }}
+              <span *ngIf="option.isRequired" class="text-red-500 text-sm ml-1">*</span>
+            </span>
+            <span *ngIf="option.maxSelections > 1" class="text-sm text-gray-500">
+              {{ getSelectedCount(option.id) }}/{{ option.maxSelections }}
+            </span>
           </h3>
 
-          <!-- Grid layout for most option types -->
+          <!-- Grid layout for single selection options (SIZE, SWEETNESS, TEMPERATURE) -->
           <div
-            *ngIf="option.type !== 'SIZE'"
+            *ngIf="option.maxSelections === 1 && option.type !== 'SIZE'"
             class="option-buttons grid grid-cols-2 gap-3"
           >
             <button
               *ngFor="let opt of option.options"
               (click)="selectOption(option.id, opt.value)"
               [class]="'option-btn p-4 rounded-xl border-2 transition-all duration-300 text-center relative min-h-[5rem] flex flex-col justify-center items-center ' +
-                       (selectedOptions[option.id.toString()] === opt.value ? 'border-[#94694c] bg-[#f7f3f0] text-[#5c3d2e]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
+                       (isOptionSelected(option.id, opt.value) ? 'border-[#94694c] bg-[#f7f3f0] text-[#5c3d2e]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
             >
               <div class="font-medium">{{ opt.value }}</div>
               <div *ngIf="opt.price > 0" class="text-sm text-gray-600 mt-1">
@@ -256,10 +261,40 @@
 
               <!-- Selected indicator -->
               <div
-                *ngIf="selectedOptions[option.id.toString()] === opt.value"
+                *ngIf="isOptionSelected(option.id, opt.value)"
                 class="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#94694c] flex items-center justify-center"
               >
                 <i nz-icon nzType="check" nzTheme="outline" class="text-white text-xs"></i>
+              </div>
+            </button>
+          </div>
+
+          <!-- Grid layout for multiple selection options (TOPPING) -->
+          <div
+            *ngIf="option.maxSelections > 1"
+            class="option-buttons grid grid-cols-2 gap-3"
+          >
+            <button
+              *ngFor="let opt of option.options"
+              (click)="selectOption(option.id, opt.value)"
+              [disabled]="!isOptionSelected(option.id, opt.value) && getSelectedCount(option.id) >= option.maxSelections"
+              [class]="'option-btn p-4 rounded-xl border-2 transition-all duration-300 text-center relative min-h-[5rem] flex flex-col justify-center items-center ' +
+                       (isOptionSelected(option.id, opt.value) ? 'border-[#94694c] bg-[#f7f3f0] text-[#5c3d2e]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50') + 
+                       ((!isOptionSelected(option.id, opt.value) && getSelectedCount(option.id) >= option.maxSelections) ? ' opacity-50 cursor-not-allowed' : '')"
+            >
+              <div class="font-medium">{{ opt.value }}</div>
+              <div *ngIf="opt.price > 0" class="text-sm text-gray-600 mt-1">
+                +{{ opt.price }}฿
+              </div>
+
+              <!-- Selected indicator for multiple selection -->
+              <div
+                class="absolute top-2 right-2 w-5 h-5 rounded border-2 flex items-center justify-center transition-all"
+                [class.border-gray-300]="!isOptionSelected(option.id, opt.value)"
+                [class.border-[#94694c]]="isOptionSelected(option.id, opt.value)"
+                [class.bg-[#94694c]]="isOptionSelected(option.id, opt.value)"
+              >
+                <i *ngIf="isOptionSelected(option.id, opt.value)" nz-icon nzType="check" nzTheme="outline" class="text-white text-xs"></i>
               </div>
             </button>
           </div>
@@ -273,7 +308,7 @@
               *ngFor="let opt of option.options"
               (click)="selectOption(option.id, opt.value)"
               [class]="'option-btn p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 flex items-center justify-between min-h-[5rem] ' +
-                       (selectedOptions[option.id.toString()] === opt.value ? 'border-[#94694c] bg-[#f7f3f0]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
+                       (isOptionSelected(option.id, opt.value) ? 'border-[#94694c] bg-[#f7f3f0]' : 'border-gray-200 hover:border-[#94694c] hover:bg-gray-50')"
             >
               <div class="flex items-center">
                 <span class="font-medium text-gray-800">{{ opt.value }}</span>
@@ -283,9 +318,9 @@
               </div>
               <div
                 [class]="'w-5 h-5 rounded-full border-2 flex items-center justify-center ' +
-                         (selectedOptions[option.id.toString()] === opt.value ? 'border-[#94694c] bg-[#94694c]' : 'border-gray-300')"
+                         (isOptionSelected(option.id, opt.value) ? 'border-[#94694c] bg-[#94694c]' : 'border-gray-300')"
               >
-                <div *ngIf="selectedOptions[option.id.toString()] === opt.value" class="w-2 h-2 bg-white rounded-full"></div>
+                <div *ngIf="isOptionSelected(option.id, opt.value)" class="w-2 h-2 bg-white rounded-full"></div>
               </div>
             </div>
           </div>

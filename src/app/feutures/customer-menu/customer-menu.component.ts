@@ -21,7 +21,7 @@ interface MenuOption {
 interface MenuItemOption {
   id: number;
   name: string;
-  type: 'SWEETNESS' | 'TEMPERATURE' | 'SIZE';
+  type: 'SWEETNESS' | 'TEMPERATURE' | 'SIZE' | 'TOPPING';
   options: MenuOption[];
   isRequired: boolean;
   maxSelections: number;
@@ -106,7 +106,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
   showItemModal = false;
   selectedItem: MenuItem | null = null;
   modalQuantity = 1;
-  selectedOptions: { [key: string]: string | number } = {};
+  selectedOptions: { [key: string]: string | string[] } = {};
 
   constructor(
     private readonly cartService: CartService,
@@ -361,8 +361,15 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     if (item.options && item.options.length > 0) {
       item.options.forEach(option => {
         if (option.options && option.options.length > 0) {
-          // Select first option as default
-          this.selectedOptions[option.id.toString()] = option.options[0].value;
+          if (option.maxSelections === 1) {
+            // Single selection - select first option as default for required options
+            if (option.isRequired) {
+              this.selectedOptions[option.id.toString()] = option.options[0].value;
+            }
+          } else {
+            // Multiple selection - initialize as empty array
+            this.selectedOptions[option.id.toString()] = [];
+          }
         }
       });
     }
@@ -375,7 +382,46 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
   }
 
   selectOption(optionId: number, value: string): void {
-    this.selectedOptions[optionId.toString()] = value;
+    const option = this.selectedItem?.options.find(opt => opt.id === optionId);
+    if (!option) return;
+
+    const optionKey = optionId.toString();
+
+    if (option.maxSelections === 1) {
+      // Single selection (SIZE, SWEETNESS, TEMPERATURE)
+      this.selectedOptions[optionKey] = value;
+    } else {
+      // Multiple selection (TOPPING)
+      let currentSelections = this.selectedOptions[optionKey] as string[] || [];
+      
+      if (currentSelections.includes(value)) {
+        // Remove if already selected
+        currentSelections = currentSelections.filter(v => v !== value);
+      } else {
+        // Add if not at max limit
+        if (currentSelections.length < option.maxSelections) {
+          currentSelections = [...currentSelections, value];
+        }
+      }
+      
+      this.selectedOptions[optionKey] = currentSelections;
+    }
+  }
+
+  isOptionSelected(optionId: number, value: string): boolean {
+    const selected = this.selectedOptions[optionId.toString()];
+    if (Array.isArray(selected)) {
+      return selected.includes(value);
+    }
+    return selected === value;
+  }
+
+  getSelectedCount(optionId: number): number {
+    const selected = this.selectedOptions[optionId.toString()];
+    if (Array.isArray(selected)) {
+      return selected.length;
+    }
+    return selected ? 1 : 0;
   }
 
   increaseQuantity(): void {
@@ -397,10 +443,22 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     if (this.selectedItem.options) {
       this.selectedItem.options.forEach(option => {
         const selectedValue = this.selectedOptions[option.id.toString()];
+        
         if (selectedValue) {
-          const selectedOption = option.options.find(opt => opt.value === selectedValue);
-          if (selectedOption) {
-            totalPrice += selectedOption.price;
+          if (Array.isArray(selectedValue)) {
+            // Multiple selections (TOPPING)
+            selectedValue.forEach(value => {
+              const selectedOption = option.options.find(opt => opt.value === value);
+              if (selectedOption) {
+                totalPrice += selectedOption.price;
+              }
+            });
+          } else {
+            // Single selection (SIZE, etc.)
+            const selectedOption = option.options.find(opt => opt.value === selectedValue);
+            if (selectedOption) {
+              totalPrice += selectedOption.price;
+            }
           }
         }
       });
@@ -419,15 +477,30 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     if (this.selectedItem.options) {
       this.selectedItem.options.forEach(option => {
         const selectedValue = this.selectedOptions[option.id.toString()];
+        
         if (selectedValue) {
-          const selectedOption = option.options.find(opt => opt.value === selectedValue);
-          if (selectedOption) {
-            finalPrice += selectedOption.price;
-            // Add option in new format {type, value}
-            cartOptions.push({
-              type: option.type,
-              value: selectedValue.toString()
+          if (Array.isArray(selectedValue)) {
+            // Multiple selections (TOPPING)
+            selectedValue.forEach(value => {
+              const selectedOption = option.options.find(opt => opt.value === value);
+              if (selectedOption) {
+                finalPrice += selectedOption.price;
+                cartOptions.push({
+                  type: option.type,
+                  value: value.toString()
+                });
+              }
             });
+          } else {
+            // Single selection (SIZE, etc.)
+            const selectedOption = option.options.find(opt => opt.value === selectedValue);
+            if (selectedOption) {
+              finalPrice += selectedOption.price;
+              cartOptions.push({
+                type: option.type,
+                value: selectedValue.toString()
+              });
+            }
           }
         }
       });
@@ -455,7 +528,8 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     const icons: { [key: string]: string } = {
       'SWEETNESS': '🍯',
       'TEMPERATURE': '🌡️',
-      'SIZE': '📏'
+      'SIZE': '📏',
+      'TOPPING': '🧊'
     };
     return icons[optionType] || '⚙️';
   }
