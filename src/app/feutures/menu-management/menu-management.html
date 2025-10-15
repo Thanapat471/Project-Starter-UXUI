@@ -45,7 +45,7 @@
       <ng-container *ngIf="!error(); else errorTemplate">
         <ng-container *ngIf="filteredMenuItems().length; else emptyTemplate">
           <div class="menu-grid">
-            <article class="menu-card" *ngFor="let item of filteredMenuItems(); let i = index; trackBy: trackByMenuId">
+            <article class="menu-card" *ngFor="let item of paginatedMenuItems(); let i = index; trackBy: trackByMenuId">
               <div class="menu-card__header">
                 <h3>{{ item.name }}</h3>
                 <span class="status-badge" [ngClass]="item.statusClass">{{ item.statusLabel }}</span>
@@ -107,6 +107,60 @@
               </div>
             </article>
           </div>
+
+          <!-- Custom Pagination Component -->
+          <div class="custom-pagination" *ngIf="filteredMenuItems().length > 0">
+            <div class="pagination-info">
+              <span>แสดง {{ startIndex() }}-{{ endIndex() }} จาก {{ total() }} รายการ</span>
+            </div>
+
+            <div class="pagination-controls">
+              <!-- Page Size Selector -->
+              <div class="page-size-selector">
+                <span>แสดง:</span>
+                <select
+                  class="page-size-select"
+                  [value]="pageSize()"
+                  (change)="onPageSizeSelectChange($event)">
+                  <option value="8">8</option>
+                  <option value="12">12</option>
+                  <option value="16">16</option>
+                  <option value="24">24</option>
+                </select>
+                <span>รายการ</span>
+              </div>
+
+              <!-- Page Navigation -->
+              <div class="page-navigation">
+                <button
+                  class="page-btn page-btn--prev"
+                  [disabled]="!hasPrevPage()"
+                  (click)="goToPrevPage()">
+                  <span nz-icon nzType="left"></span>
+                </button>
+
+                <div class="page-numbers">
+                  <ng-container *ngFor="let page of pageNumbers()">
+                    <button
+                      *ngIf="page !== '...'"
+                      class="page-number"
+                      [class.active]="page === currentPage()"
+                      (click)="onPageNumberClick(page)">
+                      {{ page }}
+                    </button>
+                    <span *ngIf="page === '...'" class="page-dots">...</span>
+                  </ng-container>
+                </div>
+
+                <button
+                  class="page-btn page-btn--next"
+                  [disabled]="!hasNextPage()"
+                  (click)="goToNextPage()">
+                  <span nz-icon nzType="right"></span>
+                </button>
+              </div>
+            </div>
+          </div>
         </ng-container>
       </ng-container>
     </ng-container>
@@ -151,19 +205,24 @@
 
         <div class="form-field" nz-form-item>
           <span class="form-label">หมวดหมู่</span>
-          <nz-select
-            formControlName="categoryId"
-            nzPlaceHolder="เลือกหมวดหมู่"
-            nzSize="large"
-            nzNotFoundContent="ไม่มีหมวดหมู่"
-            [nzDisabled]="!hasCategories()"
-          >
-            <nz-option
-              *ngFor="let category of categories()"
-              [nzLabel]="category.name"
-              [nzValue]="category.id"
-            ></nz-option>
-          </nz-select>
+          <div class="custom-select-wrapper">
+            <select
+              formControlName="categoryId"
+              class="custom-select"
+              [disabled]="!hasCategories()"
+            >
+              <option value="" disabled selected>เลือกหมวดหมู่</option>
+              <option
+                *ngFor="let category of categories()"
+                [value]="category.id"
+              >{{ category.name }}</option>
+            </select>
+            <span class="select-arrow">
+              <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </span>
+          </div>
           <span class="form-error" *ngIf="addMenuForm.controls.categoryId.invalid && addMenuForm.controls.categoryId.touched">
             กรุณาเลือกหมวดหมู่
           </span>
@@ -199,8 +258,10 @@
 
         <!-- Has Options Checkbox -->
         <div class="form-field form-field--full" nz-form-item>
-          <label nz-checkbox formControlName="hasOptions">
-            เมนูนี้มีตัวเลือกเพิ่มเติม (เช่น ขนาด, ความหวาน, ท็อปปิ้ง)
+          <label class="custom-checkbox">
+            <input type="checkbox" formControlName="hasOptions" />
+            <span class="checkbox-mark"></span>
+            <span class="checkbox-label">เมนูนี้มีตัวเลือกเพิ่มเติม (เช่น ขนาด, ความหวาน, ท็อปปิ้ง)</span>
           </label>
         </div>
 
