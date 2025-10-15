@@ -11,9 +11,9 @@ import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
-import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { ToastService } from '../../core/services/toast.service';
 
 interface TableData {
   id: number;
@@ -52,14 +52,13 @@ interface TableStats {
     NzSkeletonModule,
     NzSpinModule
   ],
-  providers: [NzMessageService],
   templateUrl: './table.html',
   styleUrl: './table.css'
 })
 export class Table implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly fb = inject(FormBuilder);
-  private readonly message = inject(NzMessageService);
+  private readonly toastService = inject(ToastService);
   private readonly modal = inject(NzModalService);
   private readonly apiUrl = 'http://localhost:8080/api/tables';
 
@@ -110,7 +109,7 @@ export class Table implements OnInit {
       },
       error: (error) => {
         console.error('Error loading tables:', error);
-        this.message.error('เกิดข้อผิดพลาดในการโหลดข้อมูลโต๊ะ');
+        this.toastService.error('เกิดข้อผิดพลาดในการโหลดข้อมูลโต๊ะ');
         this.isLoading = false;
         this.isInitialLoad = false;
       }
@@ -152,15 +151,13 @@ export class Table implements OnInit {
 
   downloadQR(table: TableData): void {
     const downloadUrl = `${this.apiUrl}/${table.id}/qr`;
-    const loadingMsgId = this.message.loading('กำลังดาวน์โหลด QR Code...', { nzDuration: 0 }).messageId;
+    this.toastService.info('กำลังดาวน์โหลด QR Code...');
     
     this.http.get(downloadUrl, { 
       responseType: 'blob',
       observe: 'response'
     }).subscribe({
       next: (response) => {
-        this.message.remove(loadingMsgId);
-        
         // Get filename from Content-Disposition header or use default
         const contentDisposition = response.headers.get('content-disposition');
         let filename = `table-${table.code}-qr.png`;
@@ -181,13 +178,12 @@ export class Table implements OnInit {
           link.download = filename;
           link.click();
           window.URL.revokeObjectURL(url);
-          this.message.success('✓ ดาวน์โหลด QR Code สำเร็จ', { nzDuration: 3000 });
+          this.toastService.success('ดาวน์โหลด QR Code สำเร็จ');
         }
       },
       error: (error) => {
-        this.message.remove(loadingMsgId);
         console.error('Error downloading QR:', error);
-        this.message.error('✗ เกิดข้อผิดพลาดในการดาวน์โหลด QR Code', { nzDuration: 3000 });
+        this.toastService.error('เกิดข้อผิดพลาดในการดาวน์โหลด QR Code');
       }
     });
   }
@@ -209,7 +205,7 @@ export class Table implements OnInit {
         control.markAsDirty();
         control.updateValueAndValidity();
       });
-      this.message.warning('กรุณากรอกข้อมูลให้ครบถ้วน');
+      this.toastService.warning('กรุณากรอกข้อมูลให้ครบถ้วน');
       return;
     }
 
@@ -218,7 +214,7 @@ export class Table implements OnInit {
 
     this.http.post(this.apiUrl, formData).subscribe({
       next: (response: any) => {
-        this.message.success('✓ เพิ่มโต๊ะสำเร็จ', { nzDuration: 3000 });
+        this.toastService.success('เพิ่มโต๊ะสำเร็จ');
         this.isAddModalVisible = false;
         this.addTableForm.reset({ seats: 4 });
         this.loadTables();
@@ -226,7 +222,7 @@ export class Table implements OnInit {
       error: (error) => {
         console.error('Error adding table:', error);
         const errorMsg = error.error?.message || 'เกิดข้อผิดพลาดในการเพิ่มโต๊ะ';
-        this.message.error(`✗ ${errorMsg}`, { nzDuration: 3000 });
+        this.toastService.error(errorMsg);
       },
       complete: () => {
         this.isSubmitting = false;
@@ -257,7 +253,7 @@ export class Table implements OnInit {
         control.markAsDirty();
         control.updateValueAndValidity();
       });
-      this.message.warning('กรุณากรอกข้อมูลให้ครบถ้วน');
+      this.toastService.warning('กรุณากรอกข้อมูลให้ครบถ้วน');
       return;
     }
 
@@ -267,7 +263,7 @@ export class Table implements OnInit {
 
     this.http.put(updateUrl, formData).subscribe({
       next: (response: any) => {
-        this.message.success('✓ อัพเดทโต๊ะสำเร็จ', { nzDuration: 3000 });
+        this.toastService.success('อัพเดทโต๊ะสำเร็จ');
         this.isEditModalVisible = false;
         this.selectedTable = null;
         this.editTableForm.reset();
@@ -276,7 +272,7 @@ export class Table implements OnInit {
       error: (error) => {
         console.error('Error updating table:', error);
         const errorMsg = error.error?.message || 'เกิดข้อผิดพลาดในการอัพเดทโต๊ะ';
-        this.message.error(`✗ ${errorMsg}`, { nzDuration: 3000 });
+        this.toastService.error(errorMsg);
       },
       complete: () => {
         this.isSubmitting = false;
@@ -301,14 +297,14 @@ export class Table implements OnInit {
           
           this.http.delete(deleteUrl).subscribe({
             next: (response: any) => {
-              this.message.success('✓ ลบโต๊ะสำเร็จ', { nzDuration: 3000 });
+              this.toastService.success('ลบโต๊ะสำเร็จ');
               this.loadTables();
               resolve();
             },
             error: (error) => {
               console.error('Error deleting table:', error);
               const errorMsg = error.error?.message || 'เกิดข้อผิดพลาดในการลบโต๊ะ';
-              this.message.error(`✗ ${errorMsg}`, { nzDuration: 3000 });
+              this.toastService.error(errorMsg);
               reject(error);
             }
           });
