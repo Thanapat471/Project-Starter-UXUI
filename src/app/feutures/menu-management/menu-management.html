@@ -191,14 +191,14 @@
 
         <div class="form-field" nz-form-item>
           <span class="form-label">ราคา (บาท)</span>
-          <input 
-            nz-input 
-            nzSize="large" 
-            formControlName="price" 
+          <input
+            nz-input
+            nzSize="large"
+            formControlName="price"
             type="number"
             min="0"
             step="1"
-            placeholder="80" 
+            placeholder="80"
           />
           <span class="form-error" *ngIf="addMenuForm.controls.price.invalid && addMenuForm.controls.price.touched">
             กรุณาระบุราคาให้ถูกต้อง

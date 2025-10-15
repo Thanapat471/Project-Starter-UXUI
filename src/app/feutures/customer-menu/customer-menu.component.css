@@ -1,3 +1,40 @@
+/* Mobile: sticky search/category, scrollable menu cards */
+.menu-scroll-area {
+  height: calc(100vh - 8.5rem);
+  overflow-y: auto;
+  padding-bottom: 2rem;
+}
+.search-container {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.category-tabs-container {
+  position: sticky;
+  top: 5.5rem;
+  z-index: 40;
+}
+
+/* Desktop: disable sticky and scroll area */
+@media (min-width: 1024px) {
+  .menu-scroll-area {
+    height: auto;
+    overflow-y: visible;
+    padding-bottom: 0;
+  }
+  .search-container,
+  .category-tabs-container {
+    position: static;
+    top: auto;
+    z-index: auto;
+  }
+}
+/* Make only menu cards scrollable, keep search/category fixed at top of customer-menu */
+.menu-scroll-area {
+  height: calc(100vh - 8.5rem); /* header (4rem) + search (3rem) + category (1.5rem) = 8.5rem, adjust as needed */
+  overflow-y: auto;
+  padding-bottom: 2rem;
+}
 :host {
   display: block;
   min-height: 100vh;
@@ -42,8 +79,9 @@
 
 /* Search Bar Styles */
 .search-container {
-  position: relative;
-  z-index: 1;
+  position: sticky;
+  top: 0;
+  z-index: 50;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   padding: 1.5rem 2rem;
@@ -117,8 +155,9 @@
 
 /* Category Tabs Container - Better balanced spacing */
 .category-tabs-container {
-  position: relative;
-  z-index: 1;
+  position: sticky;
+  top: 5.5rem;
+  z-index: 40;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 16px;
@@ -1241,20 +1280,20 @@
     margin: 1rem;
     max-width: calc(100vw - 2rem);
   }
-  
+
   .modal-content {
     max-height: 50vh;
   }
-  
+
   .option-buttons.grid-cols-2 {
     grid-template-columns: 1fr;
   }
-  
+
   .qty-btn {
     width: 2.5rem;
     height: 2.5rem;
   }
-  
+
   .quantity-display {
     font-size: 1.25rem;
   }
