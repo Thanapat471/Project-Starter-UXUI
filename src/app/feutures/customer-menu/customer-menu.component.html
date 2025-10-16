@@ -243,7 +243,7 @@
             </span>
           </h3>
 
-          <!-- Grid layout for single selection options (SIZE, SWEETNESS, TEMPERATURE) -->
+          <!-- Grid layout for single selection options (SWEETNESS, TEMPERATURE) -->
           <div
             *ngIf="option.maxSelections === 1 && option.type !== 'SIZE'"
             class="option-buttons grid grid-cols-2 gap-3"
@@ -269,7 +269,16 @@
             </button>
           </div>
 
-          <!-- Grid layout for multiple selection options (TOPPING) -->
+          <!-- Validation message for required single selection options -->
+          <div 
+            *ngIf="option.isRequired && option.maxSelections === 1 && !selectedOptions[option.id.toString()]" 
+            class="text-red-500 text-sm mt-2 flex items-center gap-1"
+          >
+            <i nz-icon nzType="exclamation-circle" nzTheme="outline" class="text-xs"></i>
+            กรุณาเลือก{{ option.name }}
+          </div>
+
+          <!-- List layout for multiple selection options (TOPPING) -->
           <div
             *ngIf="option.maxSelections > 1"
             class="option-buttons grid grid-cols-2 gap-3"
@@ -324,6 +333,24 @@
               </div>
             </div>
           </div>
+
+          <!-- Validation message for SIZE options -->
+          <div 
+            *ngIf="option.isRequired && option.type === 'SIZE' && !selectedOptions[option.id.toString()]" 
+            class="text-red-500 text-sm mt-2 flex items-center gap-1"
+          >
+            <i nz-icon nzType="exclamation-circle" nzTheme="outline" class="text-xs"></i>
+            กรุณาเลือกขนาด
+          </div>
+
+          <!-- Validation message for multiple selection options -->
+          <div 
+            *ngIf="option.isRequired && option.maxSelections > 1 && getSelectedCount(option.id) === 0" 
+            class="text-red-500 text-sm mt-2 flex items-center gap-1"
+          >
+            <i nz-icon nzType="exclamation-circle" nzTheme="outline" class="text-xs"></i>
+            กรุณาเลือก{{ option.name }}อย่างน้อย 1 รายการ
+          </div>
         </div>
 
         <!-- Quantity -->
@@ -363,11 +390,14 @@
 
         <button
           (click)="addToCartWithOptions()"
-          class="add-to-cart-btn w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-white"
-          style="background: linear-gradient(135deg, #94694c, #5c3d2e);"
+          [disabled]="!canAddToCart()"
+          [class]="canAddToCart() ? 
+            'add-to-cart-btn w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl flex items-center justify-center gap-3 text-white' : 
+            'add-to-cart-btn w-full py-4 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 text-gray-500 bg-gray-300 cursor-not-allowed'"
+          [style]="canAddToCart() ? 'background: linear-gradient(135deg, #94694c, #5c3d2e);' : ''"
         >
-          <i nz-icon nzType="shopping-cart" nzTheme="outline"></i>
-          เพิ่มลงตะกร้า {{ modalQuantity }} รายการ
+          <i nz-icon [nzType]="canAddToCart() ? 'shopping-cart' : 'exclamation-circle'" nzTheme="outline"></i>
+          {{ canAddToCart() ? 'เพิ่มลงตะกร้า ' + modalQuantity + ' รายการ' : 'เลือกตัวเลือกที่จำเป็น' }}
         </button>
       </div>
     </div>

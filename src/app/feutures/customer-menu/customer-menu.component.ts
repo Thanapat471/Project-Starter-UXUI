@@ -356,6 +356,12 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     this.showItemModal = true;
     this.modalQuantity = 1;
 
+    // Check if item has no options - can add directly to cart
+    if (!item.options || item.options.length === 0) {
+      this.addToCart(item);
+      return;
+    }
+
     // Initialize selectedOptions with default values for each option
     this.selectedOptions = {};
     if (item.options && item.options.length > 0) {
@@ -470,6 +476,23 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
   addToCartWithOptions(): void {
     if (!this.selectedItem) return;
 
+    // Validate required options
+    const missingRequiredOptions = this.selectedItem.options.filter(option => {
+      if (!option.isRequired) return false;
+      
+      const selected = this.selectedOptions[option.id.toString()];
+      if (Array.isArray(selected)) {
+        return selected.length === 0;
+      }
+      return !selected;
+    });
+
+    if (missingRequiredOptions.length > 0) {
+      const missingNames = missingRequiredOptions.map(opt => opt.name).join(', ');
+      this.toastService.error(`กรุณาเลือก: ${missingNames}`);
+      return;
+    }
+
     let finalPrice = this.selectedItem.price;
     const cartOptions: CartItemOption[] = [];
 
@@ -532,5 +555,20 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
       'TOPPING': '🧊'
     };
     return icons[optionType] || '⚙️';
+  }
+
+  canAddToCart(): boolean {
+    if (!this.selectedItem) return false;
+    
+    // Check if all required options are selected
+    return this.selectedItem.options.every(option => {
+      if (!option.isRequired) return true;
+      
+      const selected = this.selectedOptions[option.id.toString()];
+      if (Array.isArray(selected)) {
+        return selected.length > 0;
+      }
+      return !!selected;
+    });
   }
 }
