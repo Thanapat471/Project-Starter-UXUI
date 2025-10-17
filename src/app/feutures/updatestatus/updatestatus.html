@@ -72,12 +72,13 @@
   <div class="orders-container">
     <ng-container *ngIf="!loading(); else loadingTemplate">
       <ng-container *ngIf="filteredOrders().length > 0; else emptyTemplate">
-        <div class="orders-grid">
-          <article
-            class="order-card"
-            *ngFor="let order of filteredOrders(); trackBy: trackByOrderId"
-            [class.updating]="order.isUpdating"
-          >
+        <div class="orders-grid-container">
+          <div class="orders-grid">
+            <article
+              class="order-card"
+              *ngFor="let order of filteredOrders(); trackBy: trackByOrderId"
+              [class.updating]="order.isUpdating"
+            >
             <!-- Order Header -->
             <div class="order-header">
               <div class="order-info">
@@ -148,6 +149,7 @@
               </button>
             </div>
           </article>
+        </div>
         </div>
       </ng-container>
     </ng-container>
