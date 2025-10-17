@@ -96,7 +96,7 @@
     <!-- Menu Items Grid (only show when not loading and no error) -->
     <div *ngIf="!isLoadingMenu && !menuError" class="menu-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div
-        *ngFor="let item of displayedItems"
+        *ngFor="let item of filteredItems"
         class="menu-card card-login-theme rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1"
       >
         <!-- Food Image -->
@@ -164,19 +164,6 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Show More/Less Button -->
-  <div *ngIf="!isLoadingMenu && !menuError && (hasMoreItems || showAll)" class="show-more-container flex justify-center mt-8 mb-6">
-    <button
-      (click)="toggleShowMore()"
-      [class]="'show-more-btn px-8 py-3 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl flex items-center gap-3 ' + (showAll ? 'show-less-btn' : '')"
-      [style]="showAll ? 'background: rgba(148, 105, 76, 0.1); color: #5c3d2e; border: 2px solid #94694c;' : 'background: linear-gradient(135deg, #94694c, #5c3d2e); color: white;'"
-    >
-      <i class="fas" [class.fa-chevron-down]="!showAll" [class.fa-chevron-up]="showAll"></i>
-      <span *ngIf="!showAll">แสดงเพิ่มเติม ({{ filteredItems.length - currentDisplayCount }} รายการ)</span>
-      <span *ngIf="showAll">แสดงน้อยลง</span>
-    </button>
   </div>
 
   <!-- Empty State -->
