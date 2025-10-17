@@ -1,20 +1,21 @@
-<div class="table-management">
-  <!-- Header -->
-  <div class="header">
+<div class="table-page">
+  <header class="page-header">
     <div>
-      <h1 class="title">จัดการโต๊ะ</h1>
-      <p class="subtitle">เพิ่ม แก้ไข และจัดการโต๊ะพร้อม QR Code</p>
+      <h1>จัดการโต๊ะ</h1>
+      <p class="page-subtitle">เพิ่ม แก้ไข และจัดการโต๊ะพร้อม QR Code</p>
     </div>
-    <button nz-button nzType="primary" nzSize="large" class="add-button" (click)="showAddModal()">
-      <span nz-icon nzType="plus" nzTheme="outline"></span>
-      เพิ่มโต๊ะใหม่
-    </button>
-  </div>
+    <div class="header-actions">
+      <button type="button" class="add-table-btn" (click)="showAddModal()">
+        <span nz-icon nzType="plus"></span>
+        เพิ่มโต๊ะใหม่
+      </button>
+    </div>
+  </header>
 
   <!-- Stats Cards -->
-  <div nz-row [nzGutter]="16" class="stats-container">
-    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="12" [nzLg]="12" [nzXl]="12">
-      <nz-card class="stat-card stat-available">
+  <div class="stats-section">
+    <div class="stats-container">
+      <div class="stat-card stat-available">
         <nz-skeleton [nzActive]="true" [nzLoading]="isLoading" [nzParagraph]="{ rows: 1 }">
           <div class="stat-content">
             <div>
@@ -24,10 +25,8 @@
             <span nz-icon nzType="user" nzTheme="outline" class="stat-icon"></span>
           </div>
         </nz-skeleton>
-      </nz-card>
-    </div>
-    <div nz-col [nzXs]="24" [nzSm]="24" [nzMd]="12" [nzLg]="12" [nzXl]="12">
-      <nz-card class="stat-card stat-in-use">
+      </div>
+      <div class="stat-card stat-in-use">
         <nz-skeleton [nzActive]="true" [nzLoading]="isLoading" [nzParagraph]="{ rows: 1 }">
           <div class="stat-content">
             <div>
@@ -37,98 +36,75 @@
             <span nz-icon nzType="user" nzTheme="outline" class="stat-icon"></span>
           </div>
         </nz-skeleton>
-      </nz-card>
+      </div>
     </div>
   </div>
 
-  <!-- Table Grid -->
-  <div nz-row [nzGutter]="[16, 16]" class="tables-grid">
-    <!-- Skeleton Loading -->
-    <ng-container *ngIf="isInitialLoad">
-      <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6" [nzXl]="6" *ngFor="let item of [1,2,3,4,5,6,7,8]">
-        <nz-card class="table-card skeleton-card">
-          <nz-skeleton [nzActive]="true" [nzLoading]="true" [nzAvatar]="true" [nzParagraph]="{ rows: 3 }">
-          </nz-skeleton>
-        </nz-card>
-      </div>
-    </ng-container>
+  <section class="table-content">
+    <ng-container *ngIf="!isInitialLoad; else loadingTemplate">
+      <ng-container *ngIf="!isLoading">
+        <ng-container *ngIf="tables.length; else emptyTemplate">
+          <div class="table-grid-container">
+            <div class="table-grid">
+              <!-- Table Cards -->
+              <article class="table-card" [ngClass]="getCardClass(table.status)" *ngFor="let table of displayedTables">
+                <div class="table-card__header">
+                  <h3 class="table-name">
+                    <span nz-icon nzType="table" nzTheme="outline"></span>
+                    {{ table.name }}
+                  </h3>
+                  <span class="status-badge" [ngClass]="'status--' + table.status">
+                    {{ getStatusText(table.status) }}
+                  </span>
+                </div>
 
-    <!-- Table Cards -->
-    <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="8" [nzLg]="6" [nzXl]="6" *ngFor="let table of displayedTables">
-      <nz-card [ngClass]="getCardClass(table.status)" class="table-card">
-        <div class="table-header">
-          <h3 class="table-name">
-            <span nz-icon nzType="table" nzTheme="outline"></span>
-            {{ table.name }}
-          </h3>
-          <nz-badge
-            [nzText]="getStatusText(table.status)"
-            [nzColor]="getStatusColor(table.status)"
-            class="status-badge">
-          </nz-badge>
-        </div>
+                <div class="table-card__meta">
+                  <div class="table-info">
+                    <span nz-icon nzType="user" nzTheme="outline"></span>
+                    <span>{{ table.seats }} ที่นั่ง</span>
+                  </div>
+                </div>
 
-        <div class="table-info">
-          <span nz-icon nzType="user" nzTheme="outline"></span>
-          <span>{{ table.seats }} ที่นั่ง</span>
-        </div>
+                <div class="table-card__footer">
+                  <button
+                    type="button"
+                    class="action-btn qr-btn"
+                    (click)="downloadQR(table)">
+                    <span nz-icon nzType="download" nzTheme="outline"></span>
+                    ดาวน์โหลด QR
+                  </button>
+                  <button
+                    type="button"
+                    class="table-action table-action--edit"
+                    (click)="showEditModal(table)">
+                    <span nz-icon nzType="edit" nzTheme="outline"></span>
+                  </button>
+                  <button
+                    type="button"
+                    class="table-action table-action--delete"
+                    (click)="deleteTable(table)">
+                    <span nz-icon nzType="delete" nzTheme="outline"></span>
+                  </button>
+                </div>
+              </article>
+            </div>
+          </div>
 
-        <div class="table-actions">
-          <button
-            nz-button
-            nzType="default"
-            class="action-btn qr-btn"
-            (click)="downloadQR(table)">
-            <span nz-icon nzType="download" nzTheme="outline"></span>
-            ดาวน์โหลด QR
-          </button>
-          <div class="action-group">
+          <!-- Show More Button -->
+          <div *ngIf="tables.length > CARDS_PER_PAGE" class="show-more-container">
             <button
-              nz-button
-              nzType="text"
-              class="icon-btn"
-              (click)="showEditModal(table)">
-              <span nz-icon nzType="edit" nzTheme="outline"></span>
-            </button>
-            <button
-              nz-button
-              nzType="text"
-              nzDanger
-              class="icon-btn"
-              (click)="deleteTable(table)">
-              <span nz-icon nzType="delete" nzTheme="outline"></span>
+              type="button"
+              class="show-more-btn"
+              [ngClass]="{ 'show-less-btn': isShowingAll() }"
+              (click)="loadMoreTables()">
+              <span>{{ getLoadMoreButtonText() }}</span>
+              <span nz-icon [nzType]="canLoadMore() ? 'down' : 'up'" nzTheme="outline"></span>
             </button>
           </div>
-        </div>
-      </nz-card>
-    </div>
-
-
-
-    <!-- Empty State -->
-    <div *ngIf="!isInitialLoad && !isLoading && tables.length === 0" class="empty-state">
-      <div class="empty-icon">
-        <span nz-icon nzType="coffee" nzTheme="outline"></span>
-      </div>
-      <h3>ยังไม่มีโต๊ะ</h3>
-      <p>เริ่มต้นเพิ่มโต๊ะแรกของคุณ</p>
-      <button nz-button nzType="primary" (click)="showAddModal()">
-        <span nz-icon nzType="plus" nzTheme="outline"></span>
-        เพิ่มโต๊ะใหม่
-      </button>
-    </div>
-  </div>
-   <!-- Load More / Collapse Button -->
-    <div nz-col [nzSpan]="24" *ngIf="!isInitialLoad && !isLoading && tables.length > CARDS_PER_PAGE" class="load-more-section">
-      <button
-        type="button"
-        class="show-more-btn"
-        [ngClass]="{ 'show-less-btn': isShowingAll() }"
-        (click)="loadMoreTables()">
-        <span class="ng-star-inserted">{{ getLoadMoreButtonText() }}</span>
-        <span nz-icon [nzType]="canLoadMore() ? 'down' : 'up'" nzTheme="outline"></span>
-      </button>
-    </div>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </section>
   <!-- Loading Overlay for Refresh -->
   <div *ngIf="isLoading && !isInitialLoad" class="loading-overlay">
     <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
@@ -419,3 +395,31 @@
     </div>
   </div>
 </div>
+
+<!-- Templates -->
+<ng-template #loadingTemplate>
+  <div class="table-state table-state--loading">
+    <div class="table-grid">
+      <div class="table-card skeleton-card" *ngFor="let item of [1,2,3,4,5,6,7,8]">
+        <nz-skeleton [nzActive]="true" [nzLoading]="true" [nzAvatar]="true" [nzParagraph]="{ rows: 3 }">
+        </nz-skeleton>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #emptyTemplate>
+  <div class="table-state table-state--empty">
+    <div class="empty-state">
+      <div class="empty-icon">
+        <span nz-icon nzType="coffee" nzTheme="outline"></span>
+      </div>
+      <h3>ยังไม่มีโต๊ะ</h3>
+      <p>เริ่มต้นเพิ่มโต๊ะแรกของคุณ</p>
+      <button type="button" class="add-table-btn" (click)="showAddModal()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        เพิ่มโต๊ะใหม่
+      </button>
+    </div>
+  </div>
+</ng-template>
