@@ -81,7 +81,7 @@
       <!-- Modal Header -->
       <div class="modal-header bg-white text-gray-800 p-4 border-b border-gray-200">
         <h2 class="text-xl font-bold text-gray-800">
-          Your Order
+          ออเดอร์ของคุณ
         </h2>
         <button
           (click)="closeCartModal()"
@@ -95,8 +95,8 @@
       <div class="cart-items max-h-96 overflow-y-auto">
         <div *ngIf="cartItems.length === 0" class="empty-cart text-center py-12">
           <i class="fas fa-shopping-basket text-6xl text-gray-300 mb-4"></i>
-          <p class="text-gray-500 text-lg">Your cart is empty</p>
-          <p class="text-gray-400 text-sm mt-2">Add some delicious items to get started!</p>
+          <p class="text-gray-500 text-lg">ตะกร้าของคุณยังว่างอยู่</p>
+          <p class="text-gray-400 text-sm mt-2">เพิ่มของอร่อย ๆ สักหน่อยเพื่อเริ่มต้นกันเถอะ!</p>
         </div>
 
         <div *ngFor="let item of cartItems" class="cart-item flex items-center gap-4 p-4 border-b border-gray-100 dark:border-gray-700">
