@@ -433,17 +433,22 @@
   font-weight: 700;
   white-space: nowrap;
   border: none;
-  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px -2px rgba(0,0,0,0.08);
   transition: all 0.2s ease;
-  color: white;
+  color: #fff;
+  letter-spacing: 0.5px;
 }
 
 .status--available {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  background: linear-gradient(135deg, rgba(34,197,94,0.13) 0%, rgba(34,197,94,0.09) 100%);
+  color: #198754;
+  box-shadow: none;
 }
 
 .status--in-use {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: linear-gradient(135deg, rgba(239,68,68,0.13) 0%, rgba(239,68,68,0.09) 100%);
+  color: #b91c1c;
+  box-shadow: none;
 }
 
 .table-card__meta {
