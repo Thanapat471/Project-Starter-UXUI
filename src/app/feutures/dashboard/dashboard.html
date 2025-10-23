@@ -4,17 +4,6 @@
       <h1>แดชบอร์ด</h1>
       <p class="page-subtitle">ภาพรวมการทำงานของระบบ</p>
     </div>
-    <div class="header-actions">
-      <button 
-        nz-button 
-        nzType="primary" 
-        nzSize="large"
-        class="counter-order-btn" 
-        (click)="navigateToCounterOrder()">
-        <span nz-icon nzType="shopping-cart"></span>
-        สั่งหน้าเคาน์เตอร์
-      </button>
-    </div>
   </section>
 
   <section class="metrics-grid">
@@ -73,20 +62,20 @@
               <span class="order-time">{{ order.displayTime | date: 'HH:mm' }}</span>
             </div>
           </article>
-          
+
           <!-- Custom Pagination Component -->
           <div class="custom-pagination" *ngIf="orders().length > 0">
             <div class="pagination-info">
               <span>แสดง {{ startIndex() }}-{{ endIndex() }} จาก {{ total() }} รายการ</span>
             </div>
-            
+
             <div class="pagination-controls">
               <!-- Page Size Selector -->
               <div class="page-size-selector">
                 <span>แสดง:</span>
-                <select 
-                  class="page-size-select" 
-                  [value]="pageSize()" 
+                <select
+                  class="page-size-select"
+                  [value]="pageSize()"
                   (change)="onPageSizeSelectChange($event)">
                   <option value="5">5</option>
                   <option value="10">10</option>
@@ -95,21 +84,21 @@
                 </select>
                 <span>รายการ</span>
               </div>
-              
+
               <!-- Page Navigation -->
               <div class="page-navigation">
-                <button 
-                  class="page-btn page-btn--prev" 
+                <button
+                  class="page-btn page-btn--prev"
                   [disabled]="!hasPrevPage()"
                   (click)="goToPrevPage()">
                   <span nz-icon nzType="left"></span>
                 </button>
-                
+
                 <div class="page-numbers">
                   <ng-container *ngFor="let page of pageNumbers()">
-                    <button 
-                      *ngIf="page !== '...'" 
-                      class="page-number" 
+                    <button
+                      *ngIf="page !== '...'"
+                      class="page-number"
                       [class.active]="page === currentPage()"
                       (click)="onPageNumberClick(page)">
                       {{ page }}
@@ -117,9 +106,9 @@
                     <span *ngIf="page === '...'" class="page-dots">...</span>
                   </ng-container>
                 </div>
-                
-                <button 
-                  class="page-btn page-btn--next" 
+
+                <button
+                  class="page-btn page-btn--next"
                   [disabled]="!hasNextPage()"
                   (click)="goToNextPage()">
                   <span nz-icon nzType="right"></span>

@@ -314,12 +314,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     this.showItemModal = true;
     this.modalQuantity = 1;
 
-    // Check if item has no options - can add directly to cart
-    if (!item.options || item.options.length === 0) {
-      this.addToCart(item);
-      return;
-    }
-
+    // ✅ เอาส่วนที่เพิ่มอัตโนมัติออก - ให้เพิ่มผ่าน modal เสมอ
     // Initialize selectedOptions with default values for each option
     this.selectedOptions = {};
     if (item.options && item.options.length > 0) {
@@ -357,7 +352,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     } else {
       // Multiple selection (TOPPING)
       let currentSelections = this.selectedOptions[optionKey] as string[] || [];
-      
+
       if (currentSelections.includes(value)) {
         // Remove if already selected
         currentSelections = currentSelections.filter(v => v !== value);
@@ -367,7 +362,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
           currentSelections = [...currentSelections, value];
         }
       }
-      
+
       this.selectedOptions[optionKey] = currentSelections;
     }
   }
@@ -407,7 +402,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     if (this.selectedItem.options) {
       this.selectedItem.options.forEach(option => {
         const selectedValue = this.selectedOptions[option.id.toString()];
-        
+
         if (selectedValue) {
           if (Array.isArray(selectedValue)) {
             // Multiple selections (TOPPING)
@@ -437,7 +432,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     // Validate required options
     const missingRequiredOptions = this.selectedItem.options.filter(option => {
       if (!option.isRequired) return false;
-      
+
       const selected = this.selectedOptions[option.id.toString()];
       if (Array.isArray(selected)) {
         return selected.length === 0;
@@ -458,7 +453,7 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     if (this.selectedItem.options) {
       this.selectedItem.options.forEach(option => {
         const selectedValue = this.selectedOptions[option.id.toString()];
-        
+
         if (selectedValue) {
           if (Array.isArray(selectedValue)) {
             // Multiple selections (TOPPING)
@@ -517,11 +512,11 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
 
   canAddToCart(): boolean {
     if (!this.selectedItem) return false;
-    
+
     // Check if all required options are selected
     return this.selectedItem.options.every(option => {
       if (!option.isRequired) return true;
-      
+
       const selected = this.selectedOptions[option.id.toString()];
       if (Array.isArray(selected)) {
         return selected.length > 0;

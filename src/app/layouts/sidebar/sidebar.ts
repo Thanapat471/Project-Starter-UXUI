@@ -35,6 +35,11 @@ export class Sidebar {
       route: '/features/dashboard'
     },
     {
+      label: 'จัดการคำสั่งซื้อ',
+      icon: 'shopping-cart',
+      route: '/features/counter-order'
+    },
+    {
       label: 'จัดการเมนู',
       icon: 'coffee',
       route: '/features/menu'
