@@ -1,72 +1,110 @@
 <div class="update-status-page">
   <!-- Header -->
   <header class="page-header">
-    <div>
-      <h1>อัพเดทสถานะออเดอร์</h1>
-      <p class="page-subtitle">จัดการและเปลี่ยนสถานะออเดอร์ของครัว</p>
+    <div class="page-header__content">
+      <ng-container *ngIf="!loading(); else headerSkeleton">
+        <h1>อัพเดทสถานะออเดอร์</h1>
+        <p class="page-subtitle">จัดการและเปลี่ยนสถานะออเดอร์ของครัว</p>
+      </ng-container>
     </div>
-    <button type="button" class="refresh-btn" (click)="loadOrders()" [disabled]="loading()">
-      <span nz-icon [nzType]="loading() ? 'loading' : 'sync'" [nzSpin]="loading()"></span>
-      รีเฟรช
-    </button>
+    <div class="page-header__action">
+      <ng-container *ngIf="!loading(); else headerButtonSkeleton">
+        <button type="button" class="refresh-btn" (click)="loadOrders()" [disabled]="loading()">
+          <span nz-icon [nzType]="loading() ? 'loading' : 'sync'" [nzSpin]="loading()"></span>
+          รีเฟรช
+        </button>
+      </ng-container>
+    </div>
   </header>
+  <ng-template #headerSkeleton>
+    <nz-skeleton
+      class="page-header__skeleton"
+      [nzActive]="true"
+      [nzLoading]="true"
+      [nzTitle]="{ width: '240px' }"
+      [nzParagraph]="{ rows: 1, width: ['320px'] }"
+    ></nz-skeleton>
+  </ng-template>
+  <ng-template #headerButtonSkeleton>
+    <nz-skeleton
+      class="page-header__button-skeleton"
+      [nzActive]="true"
+      [nzLoading]="true"
+      [nzTitle]="false"
+      [nzParagraph]="{ rows: 1, width: ['120px'] }"
+    ></nz-skeleton>
+  </ng-template>
 
   <!-- Status Filter Tabs -->
   <div class="status-filters">
-    <button
-      type="button"
-      class="filter-btn"
-      [class.active]="selectedFilter() === 'ALL'"
-      (click)="setFilter('ALL')"
-    >
-      <span class="filter-label">ทั้งหมด</span>
-      <span class="filter-count">{{ statusCounts().ALL }}</span>
-    </button>
+    <ng-container *ngIf="!loading(); else filtersSkeleton">
+      <button
+        type="button"
+        class="filter-btn"
+        [class.active]="selectedFilter() === 'ALL'"
+        (click)="setFilter('ALL')"
+      >
+        <span class="filter-label">ทั้งหมด</span>
+        <span class="filter-count">{{ statusCounts().ALL }}</span>
+      </button>
 
-    <button
-      type="button"
-      class="filter-btn"
-      [class.active]="selectedFilter() === 'PENDING'"
-      (click)="setFilter('PENDING')"
-    >
-      <span nz-icon nzType="clock-circle"></span>
-      <span class="filter-label">รอทำ</span>
-      <span class="filter-count">{{ statusCounts().PENDING }}</span>
-    </button>
+      <button
+        type="button"
+        class="filter-btn"
+        [class.active]="selectedFilter() === 'PENDING'"
+        (click)="setFilter('PENDING')"
+      >
+        <span nz-icon nzType="clock-circle"></span>
+        <span class="filter-label">รอทำ</span>
+        <span class="filter-count">{{ statusCounts().PENDING }}</span>
+      </button>
 
-    <button
-      type="button"
-      class="filter-btn"
-      [class.active]="selectedFilter() === 'IN_PROGRESS'"
-      (click)="setFilter('IN_PROGRESS')"
-    >
-      <span nz-icon nzType="fire"></span>
-      <span class="filter-label">กำลังทำ</span>
-      <span class="filter-count">{{ statusCounts().IN_PROGRESS }}</span>
-    </button>
+      <button
+        type="button"
+        class="filter-btn"
+        [class.active]="selectedFilter() === 'IN_PROGRESS'"
+        (click)="setFilter('IN_PROGRESS')"
+      >
+        <span nz-icon nzType="fire"></span>
+        <span class="filter-label">กำลังทำ</span>
+        <span class="filter-count">{{ statusCounts().IN_PROGRESS }}</span>
+      </button>
 
-    <button
-      type="button"
-      class="filter-btn"
-      [class.active]="selectedFilter() === 'READY'"
-      (click)="setFilter('READY')"
-    >
-      <span nz-icon nzType="check-circle"></span>
-      <span class="filter-label">พร้อมเสิร์ฟ</span>
-      <span class="filter-count">{{ statusCounts().READY }}</span>
-    </button>
+      <button
+        type="button"
+        class="filter-btn"
+        [class.active]="selectedFilter() === 'READY'"
+        (click)="setFilter('READY')"
+      >
+        <span nz-icon nzType="check-circle"></span>
+        <span class="filter-label">พร้อมเสิร์ฟ</span>
+        <span class="filter-count">{{ statusCounts().READY }}</span>
+      </button>
 
-    <button
-      type="button"
-      class="filter-btn"
-      [class.active]="selectedFilter() === 'SERVED'"
-      (click)="setFilter('SERVED')"
-    >
-      <span nz-icon nzType="check"></span>
-      <span class="filter-label">เสิร์ฟแล้ว</span>
-      <span class="filter-count">{{ statusCounts().SERVED }}</span>
-    </button>
+      <button
+        type="button"
+        class="filter-btn"
+        [class.active]="selectedFilter() === 'SERVED'"
+        (click)="setFilter('SERVED')"
+      >
+        <span nz-icon nzType="check"></span>
+        <span class="filter-label">เสิร์ฟแล้ว</span>
+        <span class="filter-count">{{ statusCounts().SERVED }}</span>
+      </button>
+    </ng-container>
   </div>
+  <ng-template #filtersSkeleton>
+    <div class="status-filters__skeleton">
+      <div class="filter-skeleton-item" *ngFor="let _ of [1,2,3,4,5]">
+        <nz-skeleton
+          [nzActive]="true"
+          [nzLoading]="true"
+          [nzTitle]="false"
+          [nzParagraph]="{ rows: 1, width: ['100%'] }"
+        ></nz-skeleton>
+      </div>
+    </div>
+  </ng-template>
 
   <!-- Orders Grid -->
   <div class="orders-container">
@@ -158,15 +196,48 @@
 
 <!-- Loading Template -->
 <ng-template #loadingTemplate>
-  <div class="loading-state">
+  <div class="orders-grid-container orders-grid-container--loading">
     <div class="orders-grid">
-      <article class="order-card" *ngFor="let i of [1,2,3,4,5,6]">
-        <nz-skeleton
-          [nzActive]="true"
-          [nzLoading]="true"
-          [nzAvatar]="{ size: 'large', shape: 'square' }"
-          [nzParagraph]="{ rows: 5 }"
-        ></nz-skeleton>
+      <article class="order-card order-card--skeleton" *ngFor="let i of [1,2,3,4,5,6]">
+        <div class="order-card__skeleton-header">
+          <nz-skeleton
+            [nzActive]="true"
+            [nzLoading]="true"
+            [nzTitle]="{ width: '50%' }"
+            [nzParagraph]="{ rows: 1, width: ['30%'] }"
+          ></nz-skeleton>
+          <nz-skeleton
+            class="status-chip-skeleton"
+            [nzActive]="true"
+            [nzLoading]="true"
+            [nzTitle]="false"
+            [nzParagraph]="{ rows: 1, width: ['80px'] }"
+          ></nz-skeleton>
+        </div>
+        <div class="order-card__skeleton-body">
+          <nz-skeleton
+            [nzActive]="true"
+            [nzLoading]="true"
+            [nzTitle]="false"
+            [nzParagraph]="{ rows: 4, width: ['60%', '45%', '70%', '50%'] }"
+          ></nz-skeleton>
+        </div>
+        <div class="order-card__skeleton-items">
+          <nz-skeleton
+            [nzActive]="true"
+            [nzLoading]="true"
+            [nzTitle]="false"
+            [nzParagraph]="{ rows: 3, width: ['80%', '75%', '60%'] }"
+          ></nz-skeleton>
+        </div>
+        <div class="order-card__skeleton-footer">
+          <nz-skeleton
+            [nzActive]="true"
+            [nzLoading]="true"
+            [nzTitle]="false"
+            [nzParagraph]="{ rows: 1, width: ['50%'] }"
+          ></nz-skeleton>
+        </div>
       </article>
     </div>
   </div>
