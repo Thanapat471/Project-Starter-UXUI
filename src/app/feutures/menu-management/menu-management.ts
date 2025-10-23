@@ -108,6 +108,8 @@ export class MenuManagement {
   private readonly maxImageSizeBytes = 5 * 1024 * 1024;
 
   @ViewChild('imageInput') private imageInputRef?: ElementRef<HTMLInputElement>;
+  @ViewChild('createModal') private createModalRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('menuNameInput') private menuNameInputRef?: ElementRef<HTMLInputElement>;
 
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
@@ -301,9 +303,29 @@ export class MenuManagement {
     // No-op: allow browser scroll
   }
 
+  private scrollToCreateModal(): void {
+    const modalElement = this.createModalRef?.nativeElement;
+    if (modalElement) {
+      modalElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  private focusCreateModal(): void {
+    const input = this.menuNameInputRef?.nativeElement;
+    if (input) {
+      input.focus({ preventScroll: true });
+    }
+  }
+
   openCreateModal(): void {
     this.prepareCreateForm();
     this.addModalOpen.set(true);
+    setTimeout(() => {
+      this.scrollToCreateModal();
+      this.focusCreateModal();
+    }, 0);
   }
 
   closeCreateModal(): void {
@@ -570,6 +592,10 @@ export class MenuManagement {
     this.addMenuForm.markAsPristine();
     this.addMenuForm.markAsUntouched();
     this.addModalOpen.set(true);
+    setTimeout(() => {
+      this.scrollToCreateModal();
+      this.focusCreateModal();
+    }, 0);
   }
 
   confirmDeleteMenu(menu: MenuCard): void {

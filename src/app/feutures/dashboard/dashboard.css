@@ -23,6 +23,7 @@
   background: linear-gradient(160deg, rgba(148, 105, 76, 0.16), rgba(92, 61, 46, 0.08));
   filter: blur(0);
   z-index: 0;
+  pointer-events: none;
 }
 
 .dashboard-page::before {
@@ -209,6 +210,8 @@
   background: linear-gradient(160deg, rgba(255, 255, 255, 0.98), rgba(255, 244, 230, 0.94));
   border: 1px solid rgba(119, 65, 34, 0.08);
   box-shadow: 0 22px 44px -28px rgba(59, 28, 13, 0.5);
+  position: relative;
+  z-index: 1;
 }
 
 .orders-card__header {

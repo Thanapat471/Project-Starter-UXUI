@@ -173,6 +173,7 @@
 
 <!-- Custom Add/Edit Menu Modal -->
 <div
+  #createModal
   *ngIf="addModalOpen()"
   class="modal-overlay fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
   (click)="closeCreateModal()"
@@ -201,7 +202,13 @@
       <form [formGroup]="addMenuForm" (ngSubmit)="submitCreateMenu()" class="add-menu-form p-6" nz-form>
         <div class="form-field form-field--full" nz-form-item>
           <span class="form-label">ชื่อเมนู</span>
-          <input nz-input nzSize="large" formControlName="name" placeholder="เช่น กาแฟลาเต้" />
+          <input
+            #menuNameInput
+            nz-input
+            nzSize="large"
+            formControlName="name"
+            placeholder="เช่น กาแฟลาเต้"
+          />
           <span class="form-error" *ngIf="addMenuForm.controls.name.invalid && addMenuForm.controls.name.touched">
             กรุณากรอกชื่อเมนู
           </span>
