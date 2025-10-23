@@ -80,6 +80,19 @@
   gap: 1rem;
 }
 
+.header-actions__skeleton {
+  width: 100%;
+}
+
+.header-actions__skeleton .ant-skeleton-paragraph > li {
+  height: 48px;
+  border-radius: 12px;
+}
+
+.page-filters .filter-skeleton {
+  width: 100%;
+}
+
 .category-btn {
   display: inline-flex;
   align-items: center;

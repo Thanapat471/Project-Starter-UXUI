@@ -1,43 +1,87 @@
 <div class="menu-page">
   <header class="page-header">
     <div>
-      <h1>จัดการเมนู</h1>
-      <p class="page-subtitle">เพิ่ม แก้ไข และจัดการรายการเมนู</p>
+      <ng-container *ngIf="!loading(); else headerSummarySkeleton">
+        <h1>จัดการเมนู</h1>
+        <p class="page-subtitle">เพิ่ม แก้ไข และจัดการรายการเมนู</p>
+      </ng-container>
     </div>
+    <ng-template #headerSummarySkeleton>
+      <nz-skeleton
+        [nzActive]="true"
+        [nzLoading]="true"
+        [nzTitle]="{ width: '160px' }"
+        [nzParagraph]="{ rows: 1, width: ['260px'] }"
+      ></nz-skeleton>
+    </ng-template>
+
     <div class="header-actions">
-      <button type="button" class="category-btn" (click)="openCategoryModal()">
-        <span nz-icon nzType="appstore"></span>
-        จัดการหมวดหมู่
-      </button>
-      <button type="button" class="add-menu-btn" (click)="openCreateModal()">
-        <span nz-icon nzType="plus"></span>
-        เพิ่มเมนูใหม่
-      </button>
+      <ng-container *ngIf="!loading(); else headerActionsSkeleton">
+        <button type="button" class="category-btn" (click)="openCategoryModal()">
+          <span nz-icon nzType="appstore"></span>
+          จัดการหมวดหมู่
+        </button>
+        <button type="button" class="add-menu-btn" (click)="openCreateModal()">
+          <span nz-icon nzType="plus"></span>
+          เพิ่มเมนูใหม่
+        </button>
+      </ng-container>
     </div>
+    <ng-template #headerActionsSkeleton>
+      <nz-skeleton
+        class="header-actions__skeleton"
+        [nzActive]="true"
+        [nzLoading]="true"
+        [nzTitle]="false"
+        [nzParagraph]="{ rows: 1, width: ['180px', '160px'] }"
+      ></nz-skeleton>
+    </ng-template>
   </header>
 
   <div class="page-filters">
     <label class="search-group">
-      <span nz-icon nzType="search"></span>
-      <input
-        #searchBox
-        type="search"
-        placeholder="ค้นหาเมนู..."
-        [value]="searchTerm()"
-        (input)="onSearch(searchBox.value)"
-      />
+      <ng-container *ngIf="!loading(); else searchSkeleton">
+        <span nz-icon nzType="search"></span>
+        <input
+          #searchBox
+          type="search"
+          placeholder="ค้นหาเมนู..."
+          [value]="searchTerm()"
+          (input)="onSearch(searchBox.value)"
+        />
+      </ng-container>
     </label>
+    <ng-template #searchSkeleton>
+      <nz-skeleton
+        class="filter-skeleton"
+        [nzActive]="true"
+        [nzLoading]="true"
+        [nzTitle]="false"
+        [nzParagraph]="{ rows: 1, width: ['100%'] }"
+      ></nz-skeleton>
+    </ng-template>
 
     <label class="select-group">
-      <select
-        #categorySelect
-        [value]="selectedCategory()"
-        (change)="onSelectCategory(categorySelect.value)"
-      >
-        <option value="all">ทุกหมวดหมู่</option>
-        <option *ngFor="let category of categories()" [value]="category.id">{{ category.name }}</option>
-      </select>
+      <ng-container *ngIf="!loading(); else categorySkeleton">
+        <select
+          #categorySelect
+          [value]="selectedCategory()"
+          (change)="onSelectCategory(categorySelect.value)"
+        >
+          <option value="all">ทุกหมวดหมู่</option>
+          <option *ngFor="let category of categories()" [value]="category.id">{{ category.name }}</option>
+        </select>
+      </ng-container>
     </label>
+    <ng-template #categorySkeleton>
+      <nz-skeleton
+        class="filter-skeleton"
+        [nzActive]="true"
+        [nzLoading]="true"
+        [nzTitle]="false"
+        [nzParagraph]="{ rows: 1, width: ['100%'] }"
+      ></nz-skeleton>
+    </ng-template>
   </div>
 
   <section class="menu-content">

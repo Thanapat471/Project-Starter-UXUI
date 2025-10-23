@@ -122,142 +122,172 @@
         <!-- Cart Section (Always Visible) -->
     <section class="cart-section">
       <div class="cart-panel">
-        <header class="cart-header">
-          <div class="cart-title">
-            <span nz-icon nzType="shopping-cart"></span>
-            <h2>ตะกร้าสินค้า</h2>
-          </div>
-        </header>
+        <nz-skeleton
+          [nzActive]="true"
+          [nzLoading]="loading()"
+          [nzTitle]="{ width: '140px' }"
+          [nzParagraph]="false"
+        >
+          <header class="cart-header">
+            <div class="cart-title">
+              <span nz-icon nzType="shopping-cart"></span>
+              <h2>ตะกร้าสินค้า</h2>
+            </div>
+          </header>
+        </nz-skeleton>
 
         <div class="cart-content">
-          <ng-container *ngIf="cart().length > 0; else emptyCart">
+          <ng-container *ngIf="loading(); else cartData">
             <div class="cart-items">
-              <article class="cart-item" *ngFor="let item of cart(); let i = index">
-                <div class="cart-item-main">
-                  <div class="cart-item-header">
-                    <div class="cart-item-info">
-                      <h4 class="cart-item-name">{{ item.name }}</h4>
-                      <div class="cart-item-price-unit">{{ item.price | currency:'THB':'symbol':'1.0-0' }}/ชิ้น</div>
+              <article class="cart-item" *ngFor="let skeletonIndex of [1,2,3]">
+                <nz-skeleton
+                  [nzActive]="true"
+                  [nzLoading]="true"
+                  [nzAvatar]="false"
+                  [nzParagraph]="{ rows: 4 }"
+                  [nzTitle]="{ width: '60%' }"
+                ></nz-skeleton>
+              </article>
+            </div>
+            <div class="cart-summary">
+              <nz-skeleton
+                [nzActive]="true"
+                [nzLoading]="true"
+                [nzParagraph]="{ rows: 3, width: ['80%', '60%', '100%'] }"
+                [nzTitle]="false"
+              ></nz-skeleton>
+            </div>
+          </ng-container>
+          <ng-template #cartData>
+            <ng-container *ngIf="cart().length > 0; else emptyCart">
+              <div class="cart-items">
+                <article class="cart-item" *ngFor="let item of cart(); let i = index">
+                  <div class="cart-item-main">
+                    <div class="cart-item-header">
+                      <div class="cart-item-info">
+                        <h4 class="cart-item-name">{{ item.name }}</h4>
+                        <div class="cart-item-price-unit">{{ item.price | currency:'THB':'symbol':'1.0-0' }}/ชิ้น</div>
+                      </div>
+                      <div class="cart-item-total">{{ item.total | currency:'THB':'symbol':'1.0-0' }}</div>
                     </div>
-                    <div class="cart-item-total">{{ item.total | currency:'THB':'symbol':'1.0-0' }}</div>
-                  </div>
 
-                  <!-- Show Options -->
-                  <div class="cart-item-options" *ngIf="item.options && item.options.length > 0">
-                    <span nz-icon nzType="setting" class="options-icon"></span>
-                    <div class="options-list">
-                      <span class="option-tag" *ngFor="let option of item.options">
-                        {{ option.value }}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="cart-item-footer">
-                    <div class="cart-quantity-section">
-                      <span class="quantity-label">จำนวน:</span>
-                      <div class="cart-quantity-controls">
-                        <button
-                          class="cart-qty-btn minus"
-                          (click)="updateCartItemQuantity(i, item.quantity - 1)"
-                          [disabled]="item.quantity <= 1">
-                          <span nz-icon nzType="minus"></span>
-                        </button>
-                        <span class="cart-quantity-display">{{ item.quantity }}</span>
-                        <button
-                          class="cart-qty-btn plus"
-                          (click)="updateCartItemQuantity(i, item.quantity + 1)">
-                          <span nz-icon nzType="plus"></span>
-                        </button>
+                    <!-- Show Options -->
+                    <div class="cart-item-options" *ngIf="item.options && item.options.length > 0">
+                      <span nz-icon nzType="setting" class="options-icon"></span>
+                      <div class="options-list">
+                        <span class="option-tag" *ngFor="let option of item.options">
+                          {{ option.value }}
+                        </span>
                       </div>
                     </div>
 
-                    <div class="cart-item-actions">
+                    <div class="cart-item-footer">
+                      <div class="cart-quantity-section">
+                        <span class="quantity-label">จำนวน:</span>
+                        <div class="cart-quantity-controls">
+                          <button
+                            class="cart-qty-btn minus"
+                            (click)="updateCartItemQuantity(i, item.quantity - 1)"
+                            [disabled]="item.quantity <= 1">
+                            <span nz-icon nzType="minus"></span>
+                          </button>
+                          <span class="cart-quantity-display">{{ item.quantity }}</span>
+                          <button
+                            class="cart-qty-btn plus"
+                            (click)="updateCartItemQuantity(i, item.quantity + 1)">
+                            <span nz-icon nzType="plus"></span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="cart-item-actions">
+                        <button
+                          class="action-btn edit-btn"
+                          (click)="openEditCartItemModal(item, i)"
+                          title="แก้ไขตัวเลือก">
+                          <span nz-icon nzType="edit"></span>
+                        </button>
+                        <button
+                          class="action-btn remove-btn"
+                          (click)="removeFromCart(i)"
+                          title="ลบออกจากตะกร้า">
+                          <span nz-icon nzType="delete"></span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="cart-summary">
+                <div class="summary-row">
+                  <span class="summary-label">รวมทั้งหมด</span>
+                  <span class="summary-value">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
+                </div>
+
+                <!-- Payment Method Selection -->
+                <div class="payment-section">
+                  <h4 class="payment-title">วิธีการชำระเงิน</h4>
+                  <div class="payment-methods">
+                    <button
+                      class="payment-method-btn"
+                      [class.active]="paymentMethod() === 'CASH'"
+                      (click)="setPaymentMethod('CASH')">
+                      <span nz-icon nzType="dollar"></span>
+                      <span>เงินสด</span>
+                    </button>
+                    <button
+                      class="payment-method-btn"
+                      [class.active]="paymentMethod() === 'PROMPTPAY'"
+                      (click)="setPaymentMethod('PROMPTPAY')">
+                      <span nz-icon nzType="credit-card"></span>
+                      <span>PromptPay</span>
+                    </button>
+                  </div>
+
+                  <!-- Cash Payment Form -->
+                  <div *ngIf="paymentMethod() === 'CASH'" class="cash-payment-form">
+                    <div class="amount-input-group">
+                      <label for="paidAmount">จำนวนเงินที่ได้รับ:</label>
+                      <nz-input-number
+                        id="paidAmount"
+                        [ngModel]="paidAmount()"
+                        (ngModelChange)="paidAmount.set($event)"
+                        [nzMin]="cartTotal"
+                        [nzStep]="1"
+                        [nzPlaceHolder]="'กรอกจำนวนเงิน'"
+                        style="width: 100%">
+                      </nz-input-number>
+                    </div>
+                    <div class="change-display" *ngIf="paidAmount() > cartTotal">
+                      <span class="change-label">เงินทอน:</span>
+                      <span class="change-amount">{{ changeAmount | currency:'THB':'symbol':'1.0-0' }}</span>
+                    </div>
+                    <button
+                      class="checkout-btn cash-checkout"
+                      [disabled]="!validateCashAmount() || processingPayment()"
+                      (click)="processCashPayment()">
+                      <span nz-icon nzType="check"></span>
+                      <span>{{ processingPayment() ? 'กำลังดำเนินการ...' : 'ยืนยันการชำระเงิน' }}</span>
+                    </button>
+                  </div>
+
+                  <!-- PromptPay Payment Form -->
+                  <div *ngIf="paymentMethod() === 'PROMPTPAY'" class="promptpay-payment-form">
+                    <div class="qr-generate">
                       <button
-                        class="action-btn edit-btn"
-                        (click)="openEditCartItemModal(item, i)"
-                        title="แก้ไขตัวเลือก">
-                        <span nz-icon nzType="edit"></span>
-                      </button>
-                      <button
-                        class="action-btn remove-btn"
-                        (click)="removeFromCart(i)"
-                        title="ลบออกจากตะกร้า">
-                        <span nz-icon nzType="delete"></span>
+                        class="checkout-btn qr-btn"
+                        [disabled]="processingPayment() || cart().length === 0"
+                        (click)="generatePromptPay()">
+                        <span nz-icon nzType="scan"></span>
+                        <span>{{ processingPayment() ? 'กำลังสร้าง QR...' : 'สร้าง QR Code' }}</span>
                       </button>
                     </div>
                   </div>
                 </div>
-              </article>
-            </div>
-
-            <div class="cart-summary">
-              <div class="summary-row">
-                <span class="summary-label">รวมทั้งหมด</span>
-                <span class="summary-value">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
               </div>
-
-              <!-- Payment Method Selection -->
-              <div class="payment-section">
-                <h4 class="payment-title">วิธีการชำระเงิน</h4>
-                <div class="payment-methods">
-                  <button
-                    class="payment-method-btn"
-                    [class.active]="paymentMethod() === 'CASH'"
-                    (click)="setPaymentMethod('CASH')">
-                    <span nz-icon nzType="dollar"></span>
-                    <span>เงินสด</span>
-                  </button>
-                  <button
-                    class="payment-method-btn"
-                    [class.active]="paymentMethod() === 'PROMPTPAY'"
-                    (click)="setPaymentMethod('PROMPTPAY')">
-                    <span nz-icon nzType="credit-card"></span>
-                    <span>PromptPay</span>
-                  </button>
-                </div>
-
-                <!-- Cash Payment Form -->
-                <div *ngIf="paymentMethod() === 'CASH'" class="cash-payment-form">
-                  <div class="amount-input-group">
-                    <label for="paidAmount">จำนวนเงินที่ได้รับ:</label>
-                    <nz-input-number
-                      id="paidAmount"
-                      [ngModel]="paidAmount()"
-                      (ngModelChange)="paidAmount.set($event)"
-                      [nzMin]="cartTotal"
-                      [nzStep]="1"
-                      [nzPlaceHolder]="'กรอกจำนวนเงิน'"
-                      style="width: 100%">
-                    </nz-input-number>
-                  </div>
-                  <div class="change-display" *ngIf="paidAmount() > cartTotal">
-                    <span class="change-label">เงินทอน:</span>
-                    <span class="change-amount">{{ changeAmount | currency:'THB':'symbol':'1.0-0' }}</span>
-                  </div>
-                  <button
-                    class="checkout-btn cash-checkout"
-                    [disabled]="!validateCashAmount() || processingPayment()"
-                    (click)="processCashPayment()">
-                    <span nz-icon nzType="check"></span>
-                    <span>{{ processingPayment() ? 'กำลังดำเนินการ...' : 'ยืนยันการชำระเงิน' }}</span>
-                  </button>
-                </div>
-
-                <!-- PromptPay Payment Form -->
-                <div *ngIf="paymentMethod() === 'PROMPTPAY'" class="promptpay-payment-form">
-                  <div class="qr-generate">
-                    <button
-                      class="checkout-btn qr-btn"
-                      [disabled]="processingPayment() || cart().length === 0"
-                      (click)="generatePromptPay()">
-                      <span nz-icon nzType="scan"></span>
-                      <span>{{ processingPayment() ? 'กำลังสร้าง QR...' : 'สร้าง QR Code' }}</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ng-container>
+            </ng-container>
+          </ng-template>
         </div>
       </div>
     </section>
@@ -591,4 +621,3 @@
     </div>
   </div>
 </div>
-
