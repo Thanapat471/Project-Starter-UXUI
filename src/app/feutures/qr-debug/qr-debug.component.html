@@ -1,7 +1,9 @@
 <div class="debug-container">
   <div class="page-header">
-    <h1>QR Debug Tool</h1>
-    <p class="page-subtitle">เครื่องมือทดสอบ QR Code และ Session สำหรับการสั่งอาหาร</p>
+    <nz-skeleton [nzActive]="true" [nzLoading]="loading" [nzTitle]="false" [nzParagraph]="{ rows: 2 }">
+      <h1>QR Debug Tool</h1>
+      <p class="page-subtitle">เครื่องมือทดสอบ QR Code และ Session สำหรับการสั่งอาหาร</p>
+    </nz-skeleton>
   </div>
 
   <div class="debug-content">
@@ -13,17 +15,18 @@
     <!-- Tables Section -->
     <div class="section">
       <div class="section-title">
-        <i class="fa fa-table"></i> โต๊ะที่มีอยู่
-        <button class="btn btn-secondary" (click)="loadTables()" [disabled]="loading" style="float: right;">
-          <span *ngIf="loading" class="loading-spinner"></span>
-          <i *ngIf="!loading" class="fa fa-refresh"></i>
-          รีเฟรช
-        </button>
+        <nz-skeleton [nzActive]="true" [nzLoading]="loading && tables.length === 0" [nzTitle]="false" [nzParagraph]="{ rows: 1 }">
+          <i class="fa fa-table"></i> โต๊ะที่มีอยู่
+          <button class="btn btn-secondary" (click)="loadTables()" [disabled]="loading" style="float: right;">
+            <span *ngIf="loading" class="loading-spinner"></span>
+            <i *ngIf="!loading" class="fa fa-refresh"></i>
+            รีเฟรช
+          </button>
+        </nz-skeleton>
       </div>
 
       <div *ngIf="loading && tables.length === 0" class="text-center">
-        <div class="loading-spinner"></div>
-        กำลังโหลดข้อมูลโต๊ะ...
+        <nz-skeleton [nzActive]="true" [nzLoading]="true" [nzParagraph]="{ rows: 4 }"></nz-skeleton>
       </div>
 
       <div class="tables-grid" *ngIf="tables.length > 0">

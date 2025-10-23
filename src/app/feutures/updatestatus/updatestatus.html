@@ -159,8 +159,16 @@
 <!-- Loading Template -->
 <ng-template #loadingTemplate>
   <div class="loading-state">
-    <span nz-icon nzType="loading" nzTheme="outline" [style.fontSize.px]="48"></span>
-    <p>กำลังโหลดรายการออเดอร์...</p>
+    <div class="orders-grid">
+      <article class="order-card" *ngFor="let i of [1,2,3,4,5,6]">
+        <nz-skeleton
+          [nzActive]="true"
+          [nzLoading]="true"
+          [nzAvatar]="{ size: 'large', shape: 'square' }"
+          [nzParagraph]="{ rows: 5 }"
+        ></nz-skeleton>
+      </article>
+    </div>
   </div>
 </ng-template>
 

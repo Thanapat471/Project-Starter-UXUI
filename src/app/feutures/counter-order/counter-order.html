@@ -1,21 +1,25 @@
 <div class="counter-order-page">
   <!-- Header Section -->
   <section class="page-header">
-    <div class="header-left">
-      <div>
-        <h1>สั่งหน้าเคาน์เตอร์</h1>
-        <p class="page-subtitle">เลือกเมนูและจัดการออเดอร์</p>
-      </div>
-    </div>
-    <div class="header-actions">
-      <!-- Cart info display -->
-      <div class="header-cart-info" *ngIf="cartItemCount > 0">
-        <div class="cart-quick-summary">
-          <span class="cart-count">{{ cartItemCount }} รายการ</span>
-          <span class="cart-total">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
+    <nz-skeleton [nzActive]="true" [nzLoading]="loading()" [nzTitle]="false" [nzParagraph]="{ rows: 2 }">
+      <div class="header-left">
+        <div>
+          <h1>สั่งหน้าเคาน์เตอร์</h1>
+          <p class="page-subtitle">เลือกเมนูและจัดการออเดอร์</p>
         </div>
       </div>
-    </div>
+    </nz-skeleton>
+    <nz-skeleton [nzActive]="true" [nzLoading]="loading()" [nzTitle]="false" [nzParagraph]="{ rows: 1 }">
+      <div class="header-actions">
+        <!-- Cart info display -->
+        <div class="header-cart-info" *ngIf="cartItemCount > 0">
+          <div class="cart-quick-summary">
+            <span class="cart-count">{{ cartItemCount }} รายการ</span>
+            <span class="cart-total">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
+          </div>
+        </div>
+      </div>
+    </nz-skeleton>
   </section>
 
   <div class="page-content">
@@ -23,34 +27,50 @@
     <section class="menu-section">
       <!-- Search and Filter Bar -->
       <div class="search-filter-bar">
-        <div class="search-input-container">
-          <div class="search-wrapper">
-            <span nz-icon nzType="search" class="search-icon"></span>
-            <input
-              type="text"
-              class="search-input"
-              placeholder="ค้นหาเมนู..."
-              [ngModel]="searchTerm()"
-              (ngModelChange)="onSearch($event)" />
+        <nz-skeleton [nzActive]="true" [nzLoading]="loading()" [nzTitle]="false" [nzParagraph]="{ rows: 1 }">
+          <div class="search-input-container">
+            <div class="search-wrapper">
+              <span nz-icon nzType="search" class="search-icon"></span>
+              <input
+                type="text"
+                class="search-input"
+                placeholder="ค้นหาเมนู..."
+                [ngModel]="searchTerm()"
+                (ngModelChange)="onSearch($event)" />
+            </div>
           </div>
-        </div>
+        </nz-skeleton>
 
         <!-- Category Filter -->
-        <div class="category-filter">
-          <button
-            *ngFor="let category of categories()"
-            class="category-btn"
-            [class.active]="selectedCategory() === category.name"
-            (click)="selectCategory(category.name)">
-            {{ category.name }}
-          </button>
-        </div>
+        <nz-skeleton [nzActive]="true" [nzLoading]="loading()" [nzTitle]="false" [nzParagraph]="{ rows: 1 }">
+          <div class="category-filter">
+            <button
+              *ngFor="let category of categories()"
+              class="category-btn"
+              [class.active]="selectedCategory() === category.name"
+              (click)="selectCategory(category.name)">
+              {{ category.name }}
+            </button>
+          </div>
+        </nz-skeleton>
       </div>
 
       <!-- Menu Items Grid -->
       <div class="menu-grid-container">
-        <nz-spin [nzSpinning]="loading()" nzTip="กำลังโหลดเมนู...">
-          <div class="menu-grid" *ngIf="!loading()">
+        <ng-container *ngIf="loading(); else menuContent">
+          <div class="menu-grid">
+            <article class="menu-item-card" *ngFor="let i of [1,2,3,4,5,6,7,8]">
+              <nz-skeleton
+                [nzActive]="true"
+                [nzLoading]="true"
+                [nzAvatar]="{ size: 'large', shape: 'square' }"
+                [nzParagraph]="{ rows: 3 }"
+              ></nz-skeleton>
+            </article>
+          </div>
+        </ng-container>
+        <ng-template #menuContent>
+          <div class="menu-grid">
             <article
               class="menu-item-card"
               *ngFor="let item of filteredMenuItems">
@@ -87,7 +107,7 @@
               </div>
             </article>
           </div>
-        </nz-spin>
+        </ng-template>
 
         <!-- Empty State -->
         <div class="empty-menu" *ngIf="!loading() && filteredMenuItems.length === 0">

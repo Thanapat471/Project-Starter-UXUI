@@ -1,45 +1,58 @@
 <div class="dashboard-page">
   <section class="page-header">
-    <div>
-      <h1>แดชบอร์ด</h1>
-      <p class="page-subtitle">ภาพรวมการทำงานของระบบ</p>
-    </div>
+    <nz-skeleton [nzActive]="true" [nzLoading]="loading()" [nzTitle]="false" [nzParagraph]="{ rows: 2 }">
+      <div>
+        <h1>แดชบอร์ด</h1>
+        <p class="page-subtitle">ภาพรวมการทำงานของระบบ</p>
+      </div>
+    </nz-skeleton>
   </section>
 
   <section class="metrics-grid">
-    <article
-      class="metric-card"
-      *ngFor="let metric of metrics()"
-      [ngClass]="'metric-card--' + metric.accent"
-    >
-      <div class="metric-icon">
-        <span nz-icon [nzType]="metric.icon"></span>
-      </div>
-      <div class="metric-info">
-        <p class="metric-title">{{ metric.title }}</p>
-        <p class="metric-value" [ngSwitch]="metric.format">
-          <ng-container *ngSwitchCase="'currency'">
-            {{ metric.value | currency: 'THB':'symbol':'1.0-0' }}
-          </ng-container>
-          <ng-container *ngSwitchDefault>
-            {{ metric.value }}
-          </ng-container>
-        </p>
-        <p class="metric-description">{{ metric.description }}</p>
-      </div>
-    </article>
+    <ng-container *ngIf="loading(); else metricsContent">
+      <article class="metric-card" *ngFor="let i of [1,2,3,4]">
+        <nz-skeleton [nzActive]="true" [nzLoading]="true" [nzAvatar]="{ size: 'large', shape: 'square' }" [nzParagraph]="{ rows: 2 }"></nz-skeleton>
+      </article>
+    </ng-container>
+    <ng-template #metricsContent>
+      <article
+        class="metric-card"
+        *ngFor="let metric of metrics()"
+        [ngClass]="'metric-card--' + metric.accent"
+      >
+        <div class="metric-icon">
+          <span nz-icon [nzType]="metric.icon"></span>
+        </div>
+        <div class="metric-info">
+          <p class="metric-title">{{ metric.title }}</p>
+          <p class="metric-value" [ngSwitch]="metric.format">
+            <ng-container *ngSwitchCase="'currency'">
+              {{ metric.value | currency: 'THB':'symbol':'1.0-0' }}
+            </ng-container>
+            <ng-container *ngSwitchDefault>
+              {{ metric.value }}
+            </ng-container>
+          </p>
+          <p class="metric-description">{{ metric.description }}</p>
+        </div>
+      </article>
+    </ng-template>
   </section>
 
   <section class="orders-card">
     <header class="orders-card__header">
-      <div class="orders-card__title">
-        <span nz-icon nzType="clock-circle" class="orders-card__icon"></span>
-        <div>
-          <h2>ออเดอร์ที่กำลังดำเนินการ</h2>
-          <p>ติดตามสถานะออเดอร์ที่ยังไม่เสร็จสิ้น</p>
+      <nz-skeleton [nzActive]="true" [nzLoading]="loading()" [nzTitle]="false" [nzParagraph]="{ rows: 2 }">
+        <div class="orders-card__title">
+          <span nz-icon nzType="clock-circle" class="orders-card__icon"></span>
+          <div>
+            <h2>ออเดอร์ที่กำลังดำเนินการ</h2>
+            <p>ติดตามสถานะออเดอร์ที่ยังไม่เสร็จสิ้น</p>
+          </div>
         </div>
-      </div>
-      <span class="orders-count">{{ ordersCount() }} ออเดอร์</span>
+      </nz-skeleton>
+      <nz-skeleton [nzActive]="true" [nzLoading]="loading()" [nzTitle]="false" [nzParagraph]="{ rows: 1 }">
+        <span class="orders-count">{{ ordersCount() }} ออเดอร์</span>
+      </nz-skeleton>
     </header>
 
     <ng-container *ngIf="!loading(); else loadingOrders">
@@ -131,8 +144,11 @@
 
 <ng-template #loadingOrders>
   <div class="orders-loading">
-    <span nz-icon nzType="loading"></span>
-    <p>กำลังโหลดข้อมูลออเดอร์...</p>
+    <nz-skeleton
+      [nzActive]="true"
+      [nzLoading]="true"
+      [nzParagraph]="{ rows: 6 }"
+    ></nz-skeleton>
   </div>
 </ng-template>
 

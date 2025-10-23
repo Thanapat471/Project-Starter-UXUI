@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, computed, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { OrdersService } from '../../core/services/orders.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -53,7 +54,7 @@ interface OrderResponse {
 @Component({
   selector: 'app-updatestatus',
   standalone: true,
-  imports: [CommonModule, NzIconModule],
+  imports: [CommonModule, NzIconModule, NzSkeletonModule],
   templateUrl: './updatestatus.html',
   styleUrl: './updatestatus.css'
 })

@@ -9,6 +9,7 @@ import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { firstValueFrom, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -91,7 +92,8 @@ interface MenuItemWithOptions {
     NzSelectModule,
     NzInputNumberModule,
     NzButtonModule,
-    NzCheckboxModule
+    NzCheckboxModule,
+    NzSkeletonModule
   ],
   providers: [NzModalService],
   templateUrl: './menu-management.html',

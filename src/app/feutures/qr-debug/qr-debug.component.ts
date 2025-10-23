@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 
 interface Table {
   id: number;
@@ -22,7 +23,7 @@ interface SessionResponse {
 @Component({
   selector: 'app-qr-debug',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NzSkeletonModule],
   templateUrl: './qr-debug.component.html',
   styleUrls: ['./qr-debug.component.css']
 })
