@@ -68,6 +68,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   categories = signal<MenuCategory[]>([]);
   loading = signal<boolean>(false);
   cart = signal<CartItem[]>([]);
+  private readonly imageErrorIds = signal<Set<string>>(new Set());
 
   // Modal/select options state
   private optionModalVisible = signal<boolean>(false);
@@ -144,6 +145,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     this.menuService.getMenuItems().subscribe({
       next: (items) => {
         this.menuItems.set(items.filter(item => item.isAvailable));
+        this.imageErrorIds.set(new Set());
         this.loading.set(false);
       },
       error: (error) => {
@@ -175,6 +177,13 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
 
   get cartItemCount() {
     return this.cart().reduce((total, item) => total + item.quantity, 0);
+  }
+
+  hasValidImage(item: MenuItem): boolean {
+    if (!item?.imageUrl) {
+      return false;
+    }
+    return !this.imageErrorIds().has(String(item.id));
   }
 
   selectCategory(category: string) {
@@ -753,7 +762,12 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     this.searchTerm.set(value);
   }
 
-  onImageError(event: any) {
-    event.target.src = 'https://images.unsplash.com/photo-1546173159-315724a31696?w=300&h=200&fit=crop';
+  onImageError(event: any, itemId: string) {
+    const current = new Set(this.imageErrorIds());
+    current.add(String(itemId));
+    this.imageErrorIds.set(current);
+    if (event?.target) {
+      event.target.removeAttribute('src');
+    }
   }
 }
