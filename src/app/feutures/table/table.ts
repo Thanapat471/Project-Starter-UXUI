@@ -71,7 +71,7 @@ export class Table implements OnInit {
   };
 
   // Pagination for load more
-  readonly CARDS_PER_PAGE = 8;
+  readonly CARDS_PER_PAGE = 6;
   currentDisplayCount = this.CARDS_PER_PAGE;
 
   // Loading states

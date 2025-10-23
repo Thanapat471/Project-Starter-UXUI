@@ -69,66 +69,18 @@ export class Dashboard {
   readonly error = signal<string | null>(null);
   readonly orders = signal<DashboardOrder[]>([]);
 
-  // Pagination properties
-  readonly currentPage = signal(1);
-    readonly pageSize = signal(5);
-  readonly total = computed(() => this.orders().length);
+  private readonly defaultItemsToShow = 5;
+  private readonly loadMoreStep = 5;
 
-  // Paginated orders
-  readonly paginatedOrders = computed(() => {
-    const allOrders = this.orders();
-    const page = this.currentPage();
-    const size = this.pageSize();
-    const startIndex = (page - 1) * size;
-    const endIndex = startIndex + size;
-    return allOrders.slice(startIndex, endIndex);
+  readonly itemsToShow = signal(this.defaultItemsToShow);
+  readonly displayedOrders = computed(() => {
+    const limit = this.itemsToShow();
+    return this.orders().slice(0, limit);
   });
-
-  // Pagination helpers
-  readonly totalPages = computed(() => Math.ceil(this.total() / this.pageSize()));
-  readonly startIndex = computed(() => (this.currentPage() - 1) * this.pageSize() + 1);
-  readonly endIndex = computed(() => Math.min(this.currentPage() * this.pageSize(), this.total()));
-  readonly hasNextPage = computed(() => this.currentPage() < this.totalPages());
-  readonly hasPrevPage = computed(() => this.currentPage() > 1);
-
-  // Page numbers for pagination display
-  readonly pageNumbers = computed(() => {
-    const total = this.totalPages();
-    const current = this.currentPage();
-    const pages: (number | string)[] = [];
-
-    if (total <= 7) {
-      // Show all pages if total is small
-      for (let i = 1; i <= total; i++) {
-        pages.push(i);
-      }
-    } else {
-      // Show smart pagination
-      pages.push(1);
-
-      if (current > 4) {
-        pages.push('...');
-      }
-
-      const start = Math.max(2, current - 1);
-      const end = Math.min(total - 1, current + 1);
-
-      for (let i = start; i <= end; i++) {
-        if (i !== 1 && i !== total) {
-          pages.push(i);
-        }
-      }
-
-      if (current < total - 3) {
-        pages.push('...');
-      }
-
-      if (total > 1) {
-        pages.push(total);
-      }
-    }
-
-    return pages;
+  readonly canShowMore = computed(() => this.orders().length > this.itemsToShow());
+  readonly showResetButton = computed(() => {
+    const total = this.orders().length;
+    return total > this.defaultItemsToShow && this.itemsToShow() >= total;
   });
 
   readonly ordersCount = computed(() => this.orders().length);
@@ -194,6 +146,8 @@ export class Dashboard {
         next: (response: OrderDto[]) => {
           const mapped = response.map((order: OrderDto) => this.mapOrder(order));
           this.orders.set(mapped);
+          const resetCount = Math.min(this.defaultItemsToShow, mapped.length || this.defaultItemsToShow);
+          this.itemsToShow.set(resetCount > 0 ? resetCount : this.defaultItemsToShow);
           this.loading.set(false);
         },
         error: (error: any) => {
@@ -248,45 +202,14 @@ export class Dashboard {
     this.router.navigate(['/features/counter-order']);
   }
 
-  onPageChange(page: number): void {
-    console.log('onPageChange called with page:', page);
-    if (page >= 1 && page <= this.totalPages()) {
-      this.currentPage.set(page);
-    }
+  loadMoreOrders(): void {
+    const nextCount = this.itemsToShow() + this.loadMoreStep;
+    this.itemsToShow.set(Math.min(nextCount, this.orders().length));
   }
 
-  onPageSizeChange(size: number): void {
-    console.log('onPageSizeChange called with size:', size);
-    this.pageSize.set(size);
-    this.currentPage.set(1); // Reset to first page when page size changes
-  }
-
-  onPageSizeSelectChange(event: Event): void {
-    console.log('onPageSizeSelectChange called');
-    const target = event.target as HTMLSelectElement;
-    if (target) {
-      this.onPageSizeChange(+target.value);
-    }
-  }
-
-  onPageNumberClick(page: string | number): void {
-    console.log('onPageNumberClick called with page:', page);
-    if (typeof page === 'number') {
-      this.onPageChange(page);
-    }
-  }
-
-  goToNextPage(): void {
-    console.log('goToNextPage called, current page:', this.currentPage());
-    if (this.hasNextPage()) {
-      this.currentPage.set(this.currentPage() + 1);
-    }
-  }
-
-  goToPrevPage(): void {
-    console.log('goToPrevPage called, current page:', this.currentPage());
-    if (this.hasPrevPage()) {
-      this.currentPage.set(this.currentPage() - 1);
-    }
+  resetOrdersList(): void {
+    const total = this.orders().length;
+    const baseline = Math.min(this.defaultItemsToShow, total || this.defaultItemsToShow);
+    this.itemsToShow.set(baseline > 0 ? baseline : this.defaultItemsToShow);
   }
 }
