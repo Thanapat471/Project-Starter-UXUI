@@ -73,7 +73,7 @@ export class Table implements OnInit {
   // Pagination for load more
   readonly CARDS_PER_PAGE = 8;
   currentDisplayCount = this.CARDS_PER_PAGE;
-  
+
   // Loading states
   isLoading = true;
   isInitialLoad = true;
@@ -107,7 +107,7 @@ export class Table implements OnInit {
 
   loadTables(): void {
     this.isLoading = true;
-    
+
     this.http.get<TableData[]>(this.apiUrl).subscribe({
       next: (data) => {
         this.tables = data;
@@ -170,7 +170,6 @@ export class Table implements OnInit {
     switch (status) {
       case 'AVAILABLE': return 'ว่าง';
       case 'OCCUPIED': return 'ใช้งาน';
-      case 'RESERVED': return 'จองแล้ว';
       default: return status;
     }
   }
@@ -178,8 +177,7 @@ export class Table implements OnInit {
   getStatusColor(status: string): string {
     switch (status) {
       case 'AVAILABLE': return 'green';
-      case 'OCCUPIED': return 'orange';
-      case 'RESERVED': return 'red';
+      case 'OCCUPIED': return 'red';
       default: return 'default';
     }
   }
@@ -188,7 +186,6 @@ export class Table implements OnInit {
     switch (status) {
       case 'AVAILABLE': return 'card-available';
       case 'OCCUPIED': return 'card-in-use';
-      case 'RESERVED': return 'card-reserved';
       default: return '';
     }
   }
@@ -196,8 +193,8 @@ export class Table implements OnInit {
   downloadQR(table: TableData): void {
     const downloadUrl = `${this.apiUrl}/${table.id}/qr`;
     this.toastService.info('กำลังดาวน์โหลด QR Code...');
-    
-    this.http.get(downloadUrl, { 
+
+    this.http.get(downloadUrl, {
       responseType: 'blob',
       observe: 'response'
     }).subscribe({
@@ -205,7 +202,7 @@ export class Table implements OnInit {
         // Get filename from Content-Disposition header or use default
         const contentDisposition = response.headers.get('content-disposition');
         let filename = `table-${table.code}-qr.png`;
-        
+
         if (contentDisposition) {
           const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
           if (filenameMatch && filenameMatch[1]) {
@@ -338,10 +335,10 @@ export class Table implements OnInit {
 
   executeDelete(): void {
     if (!this.deleteTarget) return;
-    
+
     this.isDeleteSubmitting = true;
     const deleteUrl = `${this.apiUrl}/${this.deleteTarget.id}`;
-    
+
     this.http.delete(deleteUrl).subscribe({
       next: (response: any) => {
         this.toastService.success('ลบโต๊ะสำเร็จ');

@@ -58,6 +58,20 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+/* Skeleton styles for header */
+.page-header nz-skeleton {
+  width: 100%;
+}
+
+.page-header > *:first-child {
+  flex: 1;
+  min-width: 200px;
+}
+
+.page-header .header-actions {
+  flex-shrink: 0;
+}
+
 @media (max-width: 767px) {
   .page-header {
     flex-direction: column;
@@ -98,21 +112,18 @@
 .add-table-btn {
   position: relative;
   z-index: 1;
-  height: 44px;
-  padding: 0 1.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border-radius: 24px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   background: linear-gradient(135deg, #94694c, #5c3d2e);
-  color: white;
   border: none;
+  color: white;
+  font-weight: 700;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(92, 61, 46, 0.3);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(92, 61, 46, 0.3);
   overflow: hidden;
 }
 
@@ -120,12 +131,17 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent);
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: left 0.5s, opacity 0.3s ease;
 }
 
 .add-table-btn:hover::before {
+  left: 100%;
   opacity: 1;
 }
 
@@ -135,16 +151,9 @@
 }
 
 .add-table-btn:active {
-  transform: translateY(-1px);
+  transform: translateY(0) scale(0.98);
+  transition: all 0.1s ease;
   box-shadow: 0 6px 20px rgba(92, 61, 46, 0.35);
-}
-
-@media (min-width: 768px) {
-  .add-table-btn {
-    height: 48px;
-    padding: 0 2rem;
-    font-size: 1rem;
-  }
 }
 
 @media (max-width: 767px) {
@@ -324,7 +333,7 @@
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .table-grid-container {
     padding: 1rem;
   }
@@ -418,31 +427,23 @@
 }
 
 .status-badge {
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.25rem 0.75rem;
-  border-radius: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  line-height: 1;
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border: none;
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+  color: white;
 }
 
 .status--available {
-  background: rgba(34, 197, 94, 0.1);
-  color: #16a34a;
-  border: 1px solid rgba(34, 197, 94, 0.2);
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
 }
 
 .status--in-use {
-  background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.status--reserved {
-  background: rgba(245, 158, 11, 0.1);
-  color: #d97706;
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
 }
 
 .table-card__meta {
@@ -683,12 +684,12 @@
     gap: 2px;
     border-radius: 16px;
   }
-  
+
   .table-action {
     width: 2rem;
     height: 2rem;
   }
-  
+
   .qr-btn span[nz-icon] {
     font-size: 0.75rem;
   }
@@ -702,7 +703,7 @@
     padding: 0 0.75rem;
     gap: 3px;
   }
-  
+
   .qr-btn span[nz-icon] {
     font-size: 0.75rem;
   }
@@ -716,7 +717,7 @@
     padding: 0 0.75rem;
     gap: 3px;
   }
-  
+
   .qr-btn span[nz-icon] {
     font-size: 0.75rem;
   }
@@ -730,7 +731,7 @@
     padding: 0 0.75rem;
     gap: 3px;
   }
-  
+
   .qr-btn span[nz-icon] {
     font-size: 0.75rem;
   }
@@ -744,7 +745,7 @@
     padding: 0 0.75rem;
     gap: 3px;
   }
-  
+
   .qr-btn span[nz-icon] {
     font-size: 0.75rem;
   }
@@ -777,7 +778,7 @@
 }
 
 /* Force white text but keep brown background at all times */
-.qr-btn, 
+.qr-btn,
 .qr-btn *,
 .qr-btn:hover,
 .qr-btn:hover *,
@@ -1084,7 +1085,7 @@
     width: 100%;
     max-width: 320px;
   }
-  
+
   .load-more-section {
     padding: 1.5rem 1rem;
   }
@@ -1521,11 +1522,11 @@
     margin: 0.5rem;
     max-width: calc(100vw - 1rem);
   }
-  
+
   .modal-content {
     max-height: 50vh;
   }
-  
+
   .modal-header,
   .modal-footer {
     padding: 1rem;

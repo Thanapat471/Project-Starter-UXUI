@@ -1,14 +1,19 @@
 <div class="table-page">
+  <!-- Header with Skeleton -->
   <header class="page-header">
-    <div>
-      <h1>จัดการโต๊ะ</h1>
-      <p class="page-subtitle">เพิ่ม แก้ไข และจัดการโต๊ะพร้อม QR Code</p>
-    </div>
+    <nz-skeleton [nzActive]="true" [nzLoading]="isInitialLoad" [nzTitle]="false" [nzParagraph]="{ rows: 2 }">
+      <div>
+        <h1>จัดการโต๊ะ</h1>
+        <p class="page-subtitle">เพิ่ม แก้ไข และจัดการโต๊ะพร้อม QR Code</p>
+      </div>
+    </nz-skeleton>
     <div class="header-actions">
-      <button type="button" class="add-table-btn" (click)="showAddModal()">
-        <span nz-icon nzType="plus"></span>
-        เพิ่มโต๊ะใหม่
-      </button>
+      <nz-skeleton [nzActive]="true" [nzLoading]="isInitialLoad" [nzTitle]="false" [nzParagraph]="{ rows: 1 }">
+        <button type="button" class="add-table-btn" (click)="showAddModal()">
+          <span nz-icon nzType="plus"></span>
+          เพิ่มโต๊ะใหม่
+        </button>
+      </nz-skeleton>
     </div>
   </header>
 
@@ -16,7 +21,7 @@
   <div class="stats-section">
     <div class="stats-container">
       <div class="stat-card stat-available">
-        <nz-skeleton [nzActive]="true" [nzLoading]="isLoading" [nzParagraph]="{ rows: 1 }">
+        <nz-skeleton [nzActive]="true" [nzLoading]="isInitialLoad" [nzParagraph]="{ rows: 1 }">
           <div class="stat-content">
             <div>
               <div class="stat-label">โต๊ะว่าง</div>
@@ -27,7 +32,7 @@
         </nz-skeleton>
       </div>
       <div class="stat-card stat-in-use">
-        <nz-skeleton [nzActive]="true" [nzLoading]="isLoading" [nzParagraph]="{ rows: 1 }">
+        <nz-skeleton [nzActive]="true" [nzLoading]="isInitialLoad" [nzParagraph]="{ rows: 1 }">
           <div class="stat-content">
             <div>
               <div class="stat-label">กำลังใช้งาน</div>
@@ -53,7 +58,7 @@
                     <span nz-icon nzType="table" nzTheme="outline"></span>
                     {{ table.name }}
                   </h3>
-                  <span class="status-badge" [ngClass]="'status--' + table.status">
+                  <span class="status-badge" [ngClass]="table.status === 'AVAILABLE' ? 'status--available' : 'status--in-use'">
                     {{ getStatusText(table.status) }}
                   </span>
                 </div>
