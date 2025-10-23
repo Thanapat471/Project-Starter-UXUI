@@ -2,12 +2,10 @@
   <!-- Header Section -->
   <section class="page-header">
     <div class="header-left">
-      <nz-skeleton [nzActive]="true" [nzLoading]="loading()" [nzTitle]="false" [nzParagraph]="{ rows: 2 }">
-        <div>
-          <h1>สั่งหน้าเคาน์เตอร์</h1>
-          <p class="page-subtitle">เลือกเมนูและจัดการออเดอร์</p>
-        </div>
-      </nz-skeleton>
+      <div>
+        <h1>สั่งหน้าเคาน์เตอร์</h1>
+        <p class="page-subtitle">เลือกเมนูและจัดการออเดอร์</p>
+      </div>
     </div>
     <div class="header-actions">
       <!-- Cart info display -->
@@ -25,32 +23,28 @@
     <section class="menu-section">
       <!-- Search and Filter Bar -->
       <div class="search-filter-bar">
-        <nz-skeleton [nzActive]="true" [nzLoading]="loading()" [nzTitle]="false" [nzParagraph]="{ rows: 1 }">
-          <div class="search-input-container">
-            <div class="search-wrapper">
-              <span nz-icon nzType="search" class="search-icon"></span>
-              <input
-                type="text"
-                class="search-input"
-                placeholder="ค้นหาเมนู..."
-                [ngModel]="searchTerm()"
-                (ngModelChange)="onSearch($event)" />
-            </div>
+        <div class="search-input-container">
+          <div class="search-wrapper">
+            <span nz-icon nzType="search" class="search-icon"></span>
+            <input
+              type="text"
+              class="search-input"
+              placeholder="ค้นหาเมนู..."
+              [ngModel]="searchTerm()"
+              (ngModelChange)="onSearch($event)" />
           </div>
-        </nz-skeleton>
+        </div>
 
         <!-- Category Filter -->
-        <nz-skeleton [nzActive]="true" [nzLoading]="loading()" [nzTitle]="false" [nzParagraph]="{ rows: 1 }">
-          <div class="category-filter">
-            <button
-              *ngFor="let category of categories()"
-              class="category-btn"
-              [class.active]="selectedCategory() === category.name"
-              (click)="selectCategory(category.name)">
-              {{ category.name }}
-            </button>
-          </div>
-        </nz-skeleton>
+        <div class="category-filter">
+          <button
+            *ngFor="let category of categories()"
+            class="category-btn"
+            [class.active]="selectedCategory() === category.name"
+            (click)="selectCategory(category.name)">
+            {{ category.name }}
+          </button>
+        </div>
       </div>
 
       <!-- Menu Items Grid -->

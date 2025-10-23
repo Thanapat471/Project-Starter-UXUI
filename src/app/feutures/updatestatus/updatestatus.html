@@ -1,80 +1,71 @@
 <div class="update-status-page">
   <!-- Header -->
   <header class="page-header">
-    <nz-skeleton [nzActive]="true" [nzLoading]="loading()" [nzTitle]="false" [nzParagraph]="{ rows: 2 }">
-      <div>
-        <h1>อัพเดทสถานะออเดอร์</h1>
-        <p class="page-subtitle">จัดการและเปลี่ยนสถานะออเดอร์ของครัว</p>
-      </div>
-    </nz-skeleton>
-    <nz-skeleton [nzActive]="true" [nzLoading]="loading()" [nzTitle]="false" [nzParagraph]="{ rows: 1 }">
-      <button type="button" class="refresh-btn" (click)="loadOrders()" [disabled]="loading()">
-        <span nz-icon [nzType]="loading() ? 'loading' : 'sync'" [nzSpin]="loading()"></span>
-        รีเฟรช
-      </button>
-    </nz-skeleton>
+    <div>
+      <h1>อัพเดทสถานะออเดอร์</h1>
+      <p class="page-subtitle">จัดการและเปลี่ยนสถานะออเดอร์ของครัว</p>
+    </div>
+    <button type="button" class="refresh-btn" (click)="loadOrders()" [disabled]="loading()">
+      <span nz-icon [nzType]="loading() ? 'loading' : 'sync'" [nzSpin]="loading()"></span>
+      รีเฟรช
+    </button>
   </header>
 
   <!-- Status Filter Tabs -->
   <div class="status-filters">
-    <ng-container *ngIf="loading()">
-      <nz-skeleton [nzActive]="true" [nzLoading]="true" [nzTitle]="false" [nzParagraph]="{ rows: 1 }"></nz-skeleton>
-    </ng-container>
-    <ng-container *ngIf="!loading()">
-      <button
-        type="button"
-        class="filter-btn"
-        [class.active]="selectedFilter() === 'ALL'"
-        (click)="setFilter('ALL')"
-      >
-        <span class="filter-label">ทั้งหมด</span>
-        <span class="filter-count">{{ statusCounts().ALL }}</span>
-      </button>
+    <button
+      type="button"
+      class="filter-btn"
+      [class.active]="selectedFilter() === 'ALL'"
+      (click)="setFilter('ALL')"
+    >
+      <span class="filter-label">ทั้งหมด</span>
+      <span class="filter-count">{{ statusCounts().ALL }}</span>
+    </button>
 
-      <button
-        type="button"
-        class="filter-btn"
-        [class.active]="selectedFilter() === 'PENDING'"
-        (click)="setFilter('PENDING')"
-      >
-        <span nz-icon nzType="clock-circle"></span>
-        <span class="filter-label">รอทำ</span>
-        <span class="filter-count">{{ statusCounts().PENDING }}</span>
-      </button>
+    <button
+      type="button"
+      class="filter-btn"
+      [class.active]="selectedFilter() === 'PENDING'"
+      (click)="setFilter('PENDING')"
+    >
+      <span nz-icon nzType="clock-circle"></span>
+      <span class="filter-label">รอทำ</span>
+      <span class="filter-count">{{ statusCounts().PENDING }}</span>
+    </button>
 
-      <button
-        type="button"
-        class="filter-btn"
-        [class.active]="selectedFilter() === 'IN_PROGRESS'"
-        (click)="setFilter('IN_PROGRESS')"
-      >
-        <span nz-icon nzType="fire"></span>
-        <span class="filter-label">กำลังทำ</span>
-        <span class="filter-count">{{ statusCounts().IN_PROGRESS }}</span>
-      </button>
+    <button
+      type="button"
+      class="filter-btn"
+      [class.active]="selectedFilter() === 'IN_PROGRESS'"
+      (click)="setFilter('IN_PROGRESS')"
+    >
+      <span nz-icon nzType="fire"></span>
+      <span class="filter-label">กำลังทำ</span>
+      <span class="filter-count">{{ statusCounts().IN_PROGRESS }}</span>
+    </button>
 
-      <button
-        type="button"
-        class="filter-btn"
-        [class.active]="selectedFilter() === 'READY'"
-        (click)="setFilter('READY')"
-      >
-        <span nz-icon nzType="check-circle"></span>
-        <span class="filter-label">พร้อมเสิร์ฟ</span>
-        <span class="filter-count">{{ statusCounts().READY }}</span>
-      </button>
+    <button
+      type="button"
+      class="filter-btn"
+      [class.active]="selectedFilter() === 'READY'"
+      (click)="setFilter('READY')"
+    >
+      <span nz-icon nzType="check-circle"></span>
+      <span class="filter-label">พร้อมเสิร์ฟ</span>
+      <span class="filter-count">{{ statusCounts().READY }}</span>
+    </button>
 
-      <button
-        type="button"
-        class="filter-btn"
-        [class.active]="selectedFilter() === 'SERVED'"
-        (click)="setFilter('SERVED')"
-      >
-        <span nz-icon nzType="check"></span>
-        <span class="filter-label">เสิร์ฟแล้ว</span>
-        <span class="filter-count">{{ statusCounts().SERVED }}</span>
-      </button>
-    </ng-container>
+    <button
+      type="button"
+      class="filter-btn"
+      [class.active]="selectedFilter() === 'SERVED'"
+      (click)="setFilter('SERVED')"
+    >
+      <span nz-icon nzType="check"></span>
+      <span class="filter-label">เสิร์ฟแล้ว</span>
+      <span class="filter-count">{{ statusCounts().SERVED }}</span>
+    </button>
   </div>
 
   <!-- Orders Grid -->

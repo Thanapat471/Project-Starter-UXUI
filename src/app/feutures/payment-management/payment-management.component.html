@@ -1,13 +1,12 @@
 <div class="payment-management-container">
   <div class="header">
-    <nz-skeleton [nzActive]="true" [nzLoading]="loading" [nzTitle]="false" [nzParagraph]="{ rows: 1 }">
-      <h2>การจัดการการชำระเงิน</h2>
-    </nz-skeleton>
+    <h2>การจัดการการชำระเงิน</h2>
+    
   </div>
 
   <!-- Loading State -->
   <div *ngIf="loading" class="loading">
-    <nz-skeleton [nzActive]="true" [nzLoading]="true" [nzParagraph]="{ rows: 6 }"></nz-skeleton>
+    <p>กำลังโหลดข้อมูล...</p>
   </div>
 
   <!-- Table Selection (if no specific order) -->

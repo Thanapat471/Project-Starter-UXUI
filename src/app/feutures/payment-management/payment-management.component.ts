@@ -8,7 +8,6 @@ import { ReceiptService } from '../../core/services/receipt.service';
 import { TableService } from '../../core/services/table.service';
 import { ToastService } from '../../core/services/toast.service';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import {
   PromptPayPaymentResponse,
   CheckoutRequest
@@ -19,7 +18,7 @@ import { Subject, takeUntil } from 'rxjs';
 @Component({
   selector: 'app-payment-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, NzIconModule, NzSkeletonModule],
+  imports: [CommonModule, FormsModule, NzIconModule],
   templateUrl: './payment-management.component.html',
   styleUrl: './payment-management.component.css'
 })

@@ -13,7 +13,6 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
-import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { MenuService, MenuItem, MenuCategory } from '../../core/services/menu.service';
 import { PaymentService } from '../../core/services/payment.service';
 import { OrdersService } from '../../core/services/orders.service';
@@ -53,8 +52,7 @@ interface CartItem {
     NzSpinModule,
     NzDrawerModule,
     NzRadioModule,
-    NzInputNumberModule,
-    NzSkeletonModule
+    NzInputNumberModule
   ],
   templateUrl: './counter-order.html',
   styleUrls: ['./counter-order.css']

@@ -4,7 +4,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 
 import { OrderDto, OrderStatus, OrdersService } from '../../core/services/orders.service';
 import { Order } from '../../shared/models/menu.model';
@@ -36,7 +35,7 @@ interface MetricCard {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, NzIconModule, NzButtonModule, NzSkeletonModule],
+  imports: [CommonModule, NzIconModule, NzButtonModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
