@@ -218,6 +218,12 @@
   gap: 16px;
 }
 
+.orders-card__count-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
 .orders-card__title {
   display: flex;
   align-items: center;
@@ -483,11 +489,9 @@
 /* Orders list footer & show more */
 .orders-list-footer {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  justify-content: center;
   margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(148, 105, 76, 0.15);
+  width: 100%;
 }
 
 .orders-list-footer__actions {

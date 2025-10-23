@@ -1002,42 +1002,10 @@
 
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
   width: 100%;
   overflow: visible;
-}
-
-/* Responsive grid columns */
-@media (min-width: 1400px) {
-  .menu-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (min-width: 1024px) and (max-width: 1399px) {
-  .menu-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-  .menu-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 767px) {
-  .menu-grid-container {
-    padding: 1rem 1.25rem;
-    border-radius: 12px;
-  }
-
-  .menu-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
 }
 
 .menu-card {
@@ -1346,28 +1314,26 @@
 
 @media (min-width: 1920px) {
   .menu-grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    max-width: 1800px;
+    max-width: 1600px;
     margin: 0 auto;
   }
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1199px) {
   .menu-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 1024px) {
-  .menu-grid {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+@media (max-width: 767px) {
+  .menu-grid-container {
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
   }
-}
 
-@media (max-width: 768px) {
   .menu-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
 

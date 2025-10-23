@@ -51,7 +51,9 @@
         </div>
       </nz-skeleton>
       <nz-skeleton [nzActive]="true" [nzLoading]="loading()" [nzTitle]="false" [nzParagraph]="{ rows: 1 }">
-        <span class="orders-count">{{ ordersCount() }} ออเดอร์</span>
+        <div class="orders-card__count-wrapper">
+          <span class="orders-count">{{ ordersCount() }} ออเดอร์</span>
+        </div>
       </nz-skeleton>
     </header>
 
@@ -75,31 +77,33 @@
               <span class="order-time">{{ order.displayTime | date: 'HH:mm' }}</span>
             </div>
           </article>
-
-          <div class="orders-list-footer" *ngIf="canShowMore() || showResetButton()">
-            <div class="orders-list-footer__actions">
-              <button
-                type="button"
-                class="show-more-btn"
-                *ngIf="canShowMore()"
-                (click)="loadMoreOrders()">
-                แสดงเพิ่มเติม
-                <span nz-icon nzType="down"></span>
-              </button>
-              <button
-                type="button"
-                class="show-more-btn show-less-btn"
-                *ngIf="showResetButton()"
-                (click)="resetOrdersList()">
-                แสดงน้อยลง
-                <span nz-icon nzType="up"></span>
-              </button>
-            </div>
-          </div>
         </div>
       </ng-container>
     </ng-container>
   </section>
+
+  <div
+    class="orders-list-footer"
+    *ngIf="orders().length > 0 && (canShowMore() || showResetButton())">
+    <div class="orders-list-footer__actions">
+      <button
+        type="button"
+        class="show-more-btn"
+        *ngIf="canShowMore()"
+        (click)="loadMoreOrders()">
+        แสดงเพิ่มเติม
+        <span nz-icon nzType="down"></span>
+      </button>
+      <button
+        type="button"
+        class="show-more-btn show-less-btn"
+        *ngIf="showResetButton()"
+        (click)="resetOrdersList()">
+        แสดงน้อยลง
+        <span nz-icon nzType="up"></span>
+      </button>
+    </div>
+  </div>
 </div>
 
 <ng-template #emptyOrders>

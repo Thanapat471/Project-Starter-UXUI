@@ -167,7 +167,9 @@ export class MenuManagement {
 
   // Show More functionality instead of pagination
   readonly showAll = signal(false);
-  readonly itemsToShow = signal(8);
+  readonly initialItemsToShow = 6;
+  readonly loadMoreStep = 6;
+  readonly itemsToShow = signal(this.initialItemsToShow);
   readonly total = computed(() => this.filteredMenuItems().length);
 
   readonly filteredMenuItems = computed(() => {
@@ -236,6 +238,7 @@ export class MenuManagement {
   onSearch(term: string): void {
     this.searchTerm.set(term);
     this.showAll.set(false); // Reset when searching
+    this.itemsToShow.set(this.initialItemsToShow);
   }
 
   onCategorySearch(term: string): void {
@@ -245,6 +248,7 @@ export class MenuManagement {
   onSelectCategory(category: string): void {
     this.selectedCategory.set(category);
     this.showAll.set(false); // Reset when changing category
+    this.itemsToShow.set(this.initialItemsToShow);
   }
 
   // Show More functionality
@@ -253,14 +257,14 @@ export class MenuManagement {
     if (currentShow) {
       // If currently showing all, reset to initial
       this.showAll.set(false);
-      this.itemsToShow.set(8); // Reset to initial 8 items
+      this.itemsToShow.set(this.initialItemsToShow); // Reset to initial items count
       // Scroll to top when showing less
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      // If currently showing limited, load 8 more items
+      // If currently showing limited, load more items
       const currentItems = this.itemsToShow();
       const totalItems = this.filteredMenuItems().length;
-      const newItemsCount = Math.min(currentItems + 8, totalItems);
+      const newItemsCount = Math.min(currentItems + this.loadMoreStep, totalItems);
 
       this.itemsToShow.set(newItemsCount);
 
@@ -754,6 +758,9 @@ export class MenuManagement {
         next: response => {
           const mapped = response.map(item => this.mapMenuItem(item));
           this.menuItems.set(mapped);
+          const initialCount = Math.min(this.initialItemsToShow, mapped.length || this.initialItemsToShow);
+          this.itemsToShow.set(initialCount > 0 ? initialCount : this.initialItemsToShow);
+          this.showAll.set(false);
           this.loading.set(false);
         },
         error: error => {

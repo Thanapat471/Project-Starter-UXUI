@@ -90,7 +90,7 @@
         <ng-container *ngIf="filteredMenuItems().length; else emptyTemplate">
           <div class="menu-grid-container">
             <div class="menu-grid">
-              <article class="menu-card" *ngFor="let item of displayedMenuItems().slice(0,8); let i = index; trackBy: trackByMenuId">
+              <article class="menu-card" *ngFor="let item of displayedMenuItems(); let i = index; trackBy: trackByMenuId">
               <div class="menu-card__header">
                 <h3>{{ item.name }}</h3>
                 <span class="status-badge" [ngClass]="item.statusClass">{{ item.statusLabel }}</span>
