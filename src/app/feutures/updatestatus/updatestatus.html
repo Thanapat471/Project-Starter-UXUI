@@ -151,6 +151,11 @@
                 <span nz-icon nzType="dollar"></span>
                 <span>{{ order.totalAmount.toLocaleString('th-TH') }} บาท</span>
               </div>
+              <div class="detail-row detail-row--notes" *ngIf="order.notes">
+                <span nz-icon nzType="file-text"></span>
+                <span class="notes-label">หมายเหตุ:</span>
+                <span class="notes-content">{{ order.notes }}</span>
+              </div>
             </div>
 
             <!-- Order Items -->

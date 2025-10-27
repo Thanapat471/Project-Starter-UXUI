@@ -348,6 +348,27 @@
   color: #94694c;
 }
 
+.detail-row--notes {
+  align-items: flex-start;
+}
+
+.detail-row--notes span[nz-icon] {
+  margin-top: 0.2rem;
+}
+
+.notes-label {
+  font-weight: 600;
+  color: #5c3d2e;
+}
+
+.notes-content {
+  flex: 1;
+  color: rgba(92, 61, 46, 0.85);
+  line-height: 1.4;
+  word-break: break-word;
+  white-space: pre-line;
+}
+
 /* Order Items */
 .order-items {
   display: flex;
