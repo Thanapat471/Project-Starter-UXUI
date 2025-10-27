@@ -51,10 +51,14 @@ export class MenuService {
       price: item.price,
       category_id: item.categoryId,
       description: item.description || undefined,
-      is_available: item.isAvailable ?? true
+      isAvailable: item.isAvailable ?? true
     };
 
-    if (item.image instanceof File) {
+    const hasImage = item.image instanceof File;
+    const options = Array.isArray(item.options) ? item.options : [];
+    const hasOptions = options.length > 0;
+
+    if (hasImage) {
       // ถ้ามีรูป ใช้ FormData
       const formData = new FormData();
       formData.append('name', item.name);
@@ -66,22 +70,20 @@ export class MenuService {
       }
 
       if (typeof item.isAvailable === 'boolean') {
-        formData.append('is_available', String(item.isAvailable));
+        formData.append('isAvailable', String(item.isAvailable));
       }
 
-      formData.append('image', item.image);
+      formData.append('image', item.image as Blob);
 
       // ถ้ามี options เพิ่มเข้าไปใน FormData
-      if (item.options && item.options.length > 0) {
-        formData.append('options', JSON.stringify(item.options));
-      }
+      formData.append('options', JSON.stringify(options));
 
       return this.http.post<MenuItem>(`${this.baseUrl}/menu`, formData);
     } else {
       // ไม่มีรูป ส่งเป็น JSON
       const payload = {
         ...basePayload,
-        ...(item.options && item.options.length > 0 ? { options: item.options } : {})
+        options
       };
 
       return this.http.post<MenuItem>(`${this.baseUrl}/menu`, payload, {
@@ -91,46 +93,44 @@ export class MenuService {
   }
 
   updateMenuItem(id: string, item: CreateMenuItemPayload): Observable<MenuItem> {
-    // ถ้ามี options ส่งเป็น JSON, ถ้าไม่มีใช้ FormData
-    if (item.options && item.options.length > 0 && !item.image) {
-      // ส่งเป็น JSON เมื่อมี options และไม่มีรูป
+    const options = Array.isArray(item.options) ? item.options : [];
+    const hasImage = item.image instanceof File;
+
+    if (!hasImage) {
       const payload = {
         name: item.name,
         price: item.price,
         category_id: item.categoryId,
         description: item.description || undefined,
-        is_available: item.isAvailable ?? true,
-        options: item.options
+        isAvailable: item.isAvailable ?? true,
+        options
       };
 
       return this.http.put<MenuItem>(`${this.baseUrl}/menu/${id}`, payload, {
         headers: { 'Content-Type': 'application/json' }
       });
-    } else {
-      // ใช้ FormData เมื่อมีรูปภาพ
-      const formData = new FormData();
-      formData.append('name', item.name);
-      formData.append('price', String(item.price));
-      formData.append('category_id', String(item.categoryId));
-
-      if (item.description) {
-        formData.append('description', item.description);
-      }
-
-      if (typeof item.isAvailable === 'boolean') {
-        formData.append('is_available', String(item.isAvailable));
-      }
-
-      if (item.options && item.options.length > 0) {
-        formData.append('options', JSON.stringify(item.options));
-      }
-
-      if (item.image instanceof File) {
-        formData.append('image', item.image);
-      }
-
-      return this.http.put<MenuItem>(`${this.baseUrl}/menu/${id}`, formData);
     }
+
+    const formData = new FormData();
+    formData.append('name', item.name);
+    formData.append('price', String(item.price));
+    formData.append('category_id', String(item.categoryId));
+
+    if (item.description) {
+      formData.append('description', item.description);
+    }
+
+    if (typeof item.isAvailable === 'boolean') {
+      formData.append('isAvailable', String(item.isAvailable));
+    }
+
+    formData.append('options', JSON.stringify(options));
+
+    if (hasImage) {
+      formData.append('image', item.image as Blob);
+    }
+
+    return this.http.put<MenuItem>(`${this.baseUrl}/menu/${id}`, formData);
   }
 
   deleteMenuItem(id: string): Observable<void> {

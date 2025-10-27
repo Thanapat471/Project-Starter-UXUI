@@ -258,6 +258,24 @@
           </span>
         </div>
 
+        <div class="form-field" nz-form-item>
+          <span class="form-label">สถานะการขาย</span>
+          <label class="availability-toggle">
+            <nz-switch
+              formControlName="isAvailable"
+              nzCheckedChildren=""
+              nzUnCheckedChildren=""
+              [attr.aria-label]="addMenuForm.controls.isAvailable.value ? 'เปิดขาย' : 'ปิดขาย'"
+            ></nz-switch>
+            <span
+              class="availability-status"
+              [class.availability-status--off]="!addMenuForm.controls.isAvailable.value"
+            >
+              {{ addMenuForm.controls.isAvailable.value ? 'เปิดขาย' : 'ปิดขาย' }}
+            </span>
+          </label>
+        </div>
+
         <div class="form-field form-field--full" nz-form-item>
           <span class="form-label">รายละเอียด (ถ้ามี)</span>
           <textarea

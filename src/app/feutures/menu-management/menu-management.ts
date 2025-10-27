@@ -10,6 +10,7 @@ import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { firstValueFrom, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -93,7 +94,8 @@ interface MenuItemWithOptions {
     NzInputNumberModule,
     NzButtonModule,
     NzCheckboxModule,
-    NzSkeletonModule
+    NzSkeletonModule,
+    NzSwitchModule
   ],
   providers: [NzModalService],
   templateUrl: './menu-management.html',
@@ -215,7 +217,8 @@ export class MenuManagement {
     price: [0, [Validators.required, Validators.min(0)]],
     description: [''],
     image: [null as File | null],
-    hasOptions: [false]
+    hasOptions: [false],
+    isAvailable: [true]
   });
 
   readonly categoryForm = this.fb.group({
@@ -409,7 +412,15 @@ export class MenuManagement {
   }
 
   resetMenuForm(): void {
-    this.addMenuForm.reset({ name: '', categoryId: '', price: 0, description: '', image: null, hasOptions: false });
+    this.addMenuForm.reset({
+      name: '',
+      categoryId: '',
+      price: 0,
+      description: '',
+      image: null,
+      hasOptions: false,
+      isAvailable: true
+    });
     this.addMenuForm.markAsPristine();
     this.addMenuForm.markAsUntouched();
     this.hasOptions.set(false);
@@ -426,14 +437,18 @@ export class MenuManagement {
       return;
     }
 
-    const { name, categoryId, price, description, image, hasOptions } = this.addMenuForm.value;
+    const { name, categoryId, price, description, image, hasOptions, isAvailable } = this.addMenuForm.value;
     const editingId = this.editingMenuId();
     const payload: CreateMenuItemPayload = {
       name: name!.trim(),
       categoryId: categoryId!,
       price: Number(price ?? 0),
       description: description?.trim() ? description.trim() : undefined,
-      isAvailable: editingId ? this.editingMenu()?.isAvailable ?? true : true
+      isAvailable: typeof isAvailable === 'boolean'
+        ? isAvailable
+        : editingId
+          ? this.editingMenu()?.isAvailable ?? true
+          : true
     };
 
     const optionPayload = hasOptions ? this.buildOptionPayload() : [];
@@ -587,7 +602,8 @@ export class MenuManagement {
       price: menu.price,
       description: menu.description,
       image: null,
-      hasOptions: hasExistingOptions
+      hasOptions: hasExistingOptions,
+      isAvailable: menu.isAvailable
     });
     this.addMenuForm.markAsPristine();
     this.addMenuForm.markAsUntouched();
