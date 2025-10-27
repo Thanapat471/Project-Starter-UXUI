@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, OnDestroy, computed, effect } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -69,6 +69,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   loading = signal<boolean>(false);
   cart = signal<CartItem[]>([]);
   private readonly imageErrorIds = signal<Set<string>>(new Set());
+  private readonly paidAmountManuallyEdited = signal<boolean>(false);
 
   // Modal/select options state
   private optionModalVisible = signal<boolean>(false);
@@ -92,18 +93,6 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   private countdownInterval: any = null;
 
   private readonly destroy$ = new Subject<void>();
-  private readonly syncPaidAmountEffect = effect(() => {
-    const method = this.paymentMethod();
-    const total = this.cartTotal;
-    const current = this.paidAmount();
-
-    if (method === 'CASH') {
-      const minimum = total > 0 ? total : 0;
-      if (current < minimum || (total === 0 && current !== 0)) {
-        this.paidAmount.set(minimum);
-      }
-    }
-  });
 
   constructor(
     private router: Router,
@@ -245,6 +234,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
           : item
       );
       this.cart.set(updatedCart);
+      this.syncPaidAmountWithCart();
     } else {
       const unitPrice = menuItem.price + this.getOptionExtraPrice(menuItem, options);
       const newItem: CartItem = {
@@ -256,6 +246,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
         options: options
       };
       this.cart.set([...currentCart, newItem]);
+      this.syncPaidAmountWithCart();
     }
   }
 
@@ -271,11 +262,13 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
         : item
     );
     this.cart.set(updatedCart);
+    this.syncPaidAmountWithCart();
   }
 
   removeFromCart(index: number) {
     const updatedCart = this.cart().filter((_, i) => i !== index);
     this.cart.set(updatedCart);
+    this.syncPaidAmountWithCart();
   }
 
   // ============ Menu Option Modal & Selection ============
@@ -417,6 +410,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
         options: selected
       } : it);
       this.cart.set(updated);
+      this.syncPaidAmountWithCart();
     } else {
       // Use addToCart logic qty times (preserving merge on same options)
       for (let i = 0; i < qty; i++) {
@@ -433,7 +427,11 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     this.showQRCode.set(false);
     this.promptPayData.set(null);
     if (method === 'CASH') {
-      this.paidAmount.set(this.cartTotal);
+      this.paidAmountManuallyEdited.set(false);
+      this.syncPaidAmountWithCart();
+    } else {
+      this.paidAmount.set(0);
+      this.paidAmountManuallyEdited.set(false);
     }
   }
 
@@ -448,11 +446,14 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   onPaidAmountChange(value: number | string): void {
     const numeric = Number(value);
     if (Number.isFinite(numeric)) {
-      this.paidAmount.set(numeric);
+      this.paidAmount.set(Math.max(0, numeric));
+      this.paidAmountManuallyEdited.set(true);
     } else if (this.cartTotal > 0) {
       this.paidAmount.set(this.cartTotal);
+      this.paidAmountManuallyEdited.set(false);
     } else {
       this.paidAmount.set(0);
+      this.paidAmountManuallyEdited.set(false);
     }
   }
 
@@ -659,8 +660,29 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   resetCart() {
     this.cart.set([]);
     this.paidAmount.set(0);
-    this.paymentMethod.set('CASH');
+    this.paidAmountManuallyEdited.set(false);
     this.orderNote.set('');
+    this.setPaymentMethod('CASH');
+  }
+
+  private syncPaidAmountWithCart() {
+    if (this.paymentMethod() !== 'CASH') {
+      return;
+    }
+
+    const total = this.cartTotal;
+
+    if (total === 0) {
+      if (this.paidAmount() !== 0) {
+        this.paidAmount.set(0);
+      }
+      this.paidAmountManuallyEdited.set(false);
+      return;
+    }
+
+    if (!this.paidAmountManuallyEdited()) {
+      this.paidAmount.set(total);
+    }
   }
 
   /**

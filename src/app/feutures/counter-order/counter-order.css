@@ -1944,9 +1944,12 @@
 }
 
 .checkout-btn:disabled {
-  opacity: 0.6;
+  background: #d1d5db;
+  color: #ffffff;
   cursor: not-allowed;
+  box-shadow: none;
   transform: none !important;
+  opacity: 1;
 }
 
 .cash-checkout {
@@ -1958,6 +1961,11 @@
 .cash-checkout:not(:disabled):hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(45, 90, 45, 0.4);
+}
+
+.cash-checkout:disabled {
+  background: #d1d5db !important;
+  color: #ffffff;
 }
 
 .promptpay-generate,
@@ -2513,8 +2521,11 @@
 }
 
 .mobile-checkout-btn:disabled {
-  opacity: 0.6;
+  background: #d1d5db;
+  color: #ffffff;
+  opacity: 1;
   cursor: not-allowed;
+  box-shadow: none;
   transform: none !important;
 }
 

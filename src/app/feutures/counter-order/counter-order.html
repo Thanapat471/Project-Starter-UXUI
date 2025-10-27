@@ -236,7 +236,7 @@
                       class="payment-method-btn"
                       [class.active]="paymentMethod() === 'PROMPTPAY'"
                       (click)="setPaymentMethod('PROMPTPAY')">
-                      <span nz-icon nzType="credit-card"></span>
+                      <span nz-icon nzType="scan"></span>
                       <span>PromptPay</span>
                     </button>
                   </div>
@@ -276,7 +276,6 @@
                       class="checkout-btn cash-checkout"
                       [disabled]="!validateCashAmount() || processingPayment()"
                       (click)="processCashPayment()">
-                      <span nz-icon nzType="check"></span>
                       <span>{{ processingPayment() ? 'กำลังดำเนินการ...' : 'ยืนยันการชำระเงิน' }}</span>
                     </button>
                   </div>
@@ -373,7 +372,7 @@
                   class="mobile-payment-method-btn"
                   [class.active]="paymentMethod() === 'PROMPTPAY'"
                   (click)="setPaymentMethod('PROMPTPAY')">
-                  <span nz-icon nzType="credit-card"></span>
+                  <span nz-icon nzType="scan"></span>
                   <span>PromptPay</span>
                 </button>
               </div>
@@ -411,7 +410,6 @@
                   class="mobile-checkout-btn"
                   [disabled]="!validateCashAmount() || processingPayment()"
                   (click)="processCashPayment()">
-                  <span nz-icon nzType="check"></span>
                   <span>{{ processingPayment() ? 'กำลังดำเนินการ...' : 'ยืนยันการชำระเงิน' }}</span>
                 </button>
               </div>
