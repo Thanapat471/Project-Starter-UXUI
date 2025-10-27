@@ -9,17 +9,6 @@
         </div>
       </div>
     </nz-skeleton>
-    <nz-skeleton [nzActive]="true" [nzLoading]="loading()" [nzTitle]="false" [nzParagraph]="{ rows: 1 }">
-      <div class="header-actions">
-        <!-- Cart info display -->
-        <div class="header-cart-info" *ngIf="cartItemCount > 0">
-          <div class="cart-quick-summary">
-            <span class="cart-count">{{ cartItemCount }} รายการ</span>
-            <span class="cart-total">{{ cartTotal | currency:'THB':'symbol':'1.0-0' }}</span>
-          </div>
-        </div>
-      </div>
-    </nz-skeleton>
   </section>
 
   <div class="page-content">
@@ -252,6 +241,18 @@
                     </button>
                   </div>
 
+                  <div class="order-note-section">
+                    <label for="counterOrderNote">หมายเหตุ (ถ้ามี)</label>
+                    <textarea
+                      id="counterOrderNote"
+                      nz-input
+                      rows="2"
+                      placeholder="ระบุหมายเหตุสำหรับการสั่งออเดอร์..."
+                      [ngModel]="orderNote()"
+                      (ngModelChange)="orderNote.set($event)"
+                    ></textarea>
+                  </div>
+
                   <!-- Cash Payment Form -->
                   <div *ngIf="paymentMethod() === 'CASH'" class="cash-payment-form">
                     <div class="amount-input-group">
@@ -374,6 +375,18 @@
                   <span nz-icon nzType="credit-card"></span>
                   <span>PromptPay</span>
                 </button>
+              </div>
+
+              <div class="order-note-section mobile-order-note-section">
+                <label for="counterOrderNoteMobile">หมายเหตุ (ถ้ามี)</label>
+                <textarea
+                  id="counterOrderNoteMobile"
+                  nz-input
+                  rows="2"
+                  placeholder="ระบุหมายเหตุสำหรับการสั่งออเดอร์..."
+                  [ngModel]="orderNote()"
+                  (ngModelChange)="orderNote.set($event)"
+                ></textarea>
               </div>
 
               <!-- Mobile Cash Payment -->

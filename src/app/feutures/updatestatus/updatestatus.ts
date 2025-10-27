@@ -5,6 +5,8 @@ import { NzSkeletonModule } from 'ng-zorro-antd/skeleton';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { OrdersService } from '../../core/services/orders.service';
 import { ToastService } from '../../core/services/toast.service';
+import { timer, of } from 'rxjs';
+import { switchMap, catchError } from 'rxjs/operators';
 
 type StatusFlow = 'PENDING' | 'IN_PROGRESS' | 'READY' | 'SERVED' | 'CANCELLED';
 
@@ -66,6 +68,8 @@ export class Updatestatus implements OnInit {
   readonly loading = signal(false);
   readonly orders = signal<OrderResponse[]>([]);
   readonly selectedFilter = signal<'ALL' | StatusFlow>('ALL');
+  private readonly autoRefreshIntervalMs = 5000;
+  private autoRefreshErrorShown = false;
 
   // Status configuration
   readonly statusConfig = {
@@ -130,12 +134,7 @@ export class Updatestatus implements OnInit {
   });
 
   ngOnInit(): void {
-    this.loadOrders();
-
-    // Auto refresh every 30 seconds
-    setInterval(() => {
-      this.loadOrders(true);
-    }, 30000);
+    this.setupAutoRefresh();
   }
 
   loadOrders(silent = false): void {
@@ -147,21 +146,7 @@ export class Updatestatus implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (orders: any[]) => {
-          // Map the response to our OrderResponse type
-          const mappedOrders: OrderResponse[] = orders.map(o => ({
-            id: String(o.id),
-            status: o.status,
-            totalAmount: o.totalAmount,
-            source: o.source,
-            notes: o.notes,
-            table: o.table,
-            sessionId: o.sessionId,
-            orderItems: o.orderItems,
-            createdAt: o.createdAt,
-            updatedAt: o.updatedAt,
-            isUpdating: false
-          }));
-          this.orders.set(mappedOrders);
+          this.applyOrders(orders);
           this.loading.set(false);
         },
         error: (error) => {
@@ -170,6 +155,52 @@ export class Updatestatus implements OnInit {
           this.loading.set(false);
         }
       });
+  }
+
+  private setupAutoRefresh(): void {
+    this.loading.set(true);
+    timer(0, this.autoRefreshIntervalMs)
+      .pipe(
+        switchMap(() =>
+          this.ordersService.getOrders().pipe(
+            catchError(error => {
+              console.error('Auto refresh failed:', error);
+              if (!this.autoRefreshErrorShown) {
+                this.toast.error('ไม่สามารถอัปเดตรายการออเดอร์แบบอัตโนมัติได้');
+                this.autoRefreshErrorShown = true;
+              }
+              return of(null);
+            })
+          )
+        ),
+        takeUntilDestroyed(this.destroyRef)
+      )
+      .subscribe(orders => {
+        if (!orders) {
+          return;
+        }
+        this.applyOrders(orders);
+        this.loading.set(false);
+        this.autoRefreshErrorShown = false;
+      });
+  }
+
+  private applyOrders(orders: any[]): void {
+    const mappedOrders: OrderResponse[] = orders.map(o => ({
+      id: String(o.id),
+      status: o.status,
+      totalAmount: o.totalAmount,
+      source: o.source,
+      notes: o.notes,
+      table: o.table,
+      sessionId: o.sessionId,
+      orderItems: o.orderItems,
+      createdAt: o.createdAt,
+      updatedAt: o.updatedAt,
+      isUpdating: false
+    }));
+    this.orders.set(mappedOrders);
+    this.autoRefreshErrorShown = false;
   }
 
   updateStatus(order: OrderResponse): void {
@@ -234,4 +265,3 @@ export class Updatestatus implements OnInit {
     return order.id;
   }
 }
-

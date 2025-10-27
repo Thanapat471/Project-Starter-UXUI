@@ -84,6 +84,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   processingPayment = signal<boolean>(false);
   showQRCode = signal<boolean>(false);
   promptPayData = signal<any>(null);
+  orderNote = signal<string>('');
 
   // Countdown timer properties
   countdownMinutes = signal<number>(0);
@@ -445,6 +446,8 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
 
     this.processingPayment.set(true);
 
+    const note = this.orderNote().trim();
+
     const checkoutRequest: CheckoutRequest = {
       paymentMethod: 'CASH',
       paidAmount: this.paidAmount(),
@@ -453,7 +456,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
         quantity: item.quantity,
         options: item.options && item.options.length > 0 ? item.options : undefined
       })),
-      notes: 'ลูกค้าจ่ายเงินสด'
+      ...(note ? { notes: note } : {})
     };
 
     this.ordersService.checkout(checkoutRequest).subscribe({
@@ -498,6 +501,8 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
 
     this.processingPayment.set(true);
 
+    const note = this.orderNote().trim();
+
     const checkoutRequest: CheckoutRequest = {
       paymentMethod: 'PROMPTPAY',
       items: this.cart().map(item => ({
@@ -505,7 +510,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
         quantity: item.quantity,
         options: item.options && item.options.length > 0 ? item.options : undefined
       })),
-      notes: 'ลูกค้าจ่ายผ่าน PromptPay'
+      ...(note ? { notes: note } : {})
     };
 
     this.ordersService.checkout(checkoutRequest).subscribe({
@@ -632,6 +637,7 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
     this.cart.set([]);
     this.paidAmount.set(0);
     this.paymentMethod.set('CASH');
+    this.orderNote.set('');
   }
 
   /**
