@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, OnDestroy, computed } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -92,6 +92,18 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
   private countdownInterval: any = null;
 
   private readonly destroy$ = new Subject<void>();
+  private readonly syncPaidAmountEffect = effect(() => {
+    const method = this.paymentMethod();
+    const total = this.cartTotal;
+    const current = this.paidAmount();
+
+    if (method === 'CASH') {
+      const minimum = total > 0 ? total : 0;
+      if (current < minimum || (total === 0 && current !== 0)) {
+        this.paidAmount.set(minimum);
+      }
+    }
+  });
 
   constructor(
     private router: Router,
@@ -431,6 +443,17 @@ export class CounterOrderComponent implements OnInit, OnDestroy {
 
   get changeAmount(): number {
     return Math.max(0, this.paidAmount() - this.cartTotal);
+  }
+
+  onPaidAmountChange(value: number | string): void {
+    const numeric = Number(value);
+    if (Number.isFinite(numeric)) {
+      this.paidAmount.set(numeric);
+    } else if (this.cartTotal > 0) {
+      this.paidAmount.set(this.cartTotal);
+    } else {
+      this.paidAmount.set(0);
+    }
   }
 
   processCashPayment() {

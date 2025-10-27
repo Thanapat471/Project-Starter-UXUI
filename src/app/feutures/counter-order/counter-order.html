@@ -257,15 +257,16 @@
                   <div *ngIf="paymentMethod() === 'CASH'" class="cash-payment-form">
                     <div class="amount-input-group">
                       <label for="paidAmount">จำนวนเงินที่ได้รับ:</label>
-                      <nz-input-number
+                      <input
                         id="paidAmount"
+                        type="number"
+                        class="cash-input"
                         [ngModel]="paidAmount()"
-                        (ngModelChange)="paidAmount.set($event)"
-                        [nzMin]="cartTotal"
-                        [nzStep]="1"
-                        [nzPlaceHolder]="'กรอกจำนวนเงิน'"
-                        style="width: 100%">
-                      </nz-input-number>
+                        (ngModelChange)="onPaidAmountChange($event)"
+                        [min]="cartTotal"
+                        step="1"
+                        placeholder="กรอกจำนวนเงินที่ได้รับ"
+                      />
                     </div>
                     <div class="change-display" *ngIf="paidAmount() > cartTotal">
                       <span class="change-label">เงินทอน:</span>
@@ -393,14 +394,15 @@
               <div *ngIf="paymentMethod() === 'CASH'" class="mobile-cash-payment">
                 <div class="mobile-amount-input">
                   <label>จำนวนเงินที่ได้รับ:</label>
-                  <nz-input-number
+                  <input
+                    type="number"
+                    class="cash-input"
                     [ngModel]="paidAmount()"
-                    (ngModelChange)="paidAmount.set($event)"
-                    [nzMin]="cartTotal"
-                    [nzStep]="1"
-                    [nzPlaceHolder]="'กรอกจำนวนเงิน'"
-                    style="width: 100%">
-                  </nz-input-number>
+                    (ngModelChange)="onPaidAmountChange($event)"
+                    [min]="cartTotal"
+                    step="1"
+                    placeholder="กรอกจำนวนเงินที่ได้รับ"
+                  />
                 </div>
                 <div class="mobile-change-display" *ngIf="paidAmount() > cartTotal">
                   <span>เงินทอน: {{ changeAmount | currency:'THB':'symbol':'1.0-0' }}</span>

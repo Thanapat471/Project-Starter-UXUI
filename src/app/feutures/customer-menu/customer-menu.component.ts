@@ -124,8 +124,8 @@ export class CustomerMenuComponent implements OnInit, OnDestroy {
     if (this.searchTerm.trim()) {
       const searchLower = this.searchTerm.toLowerCase().trim();
       items = items.filter(item =>
-        item.name.toLowerCase().includes(searchLower) ||
-        item.description.toLowerCase().includes(searchLower)
+        (item.name || '').toLowerCase().includes(searchLower) ||
+        (item.description || '').toLowerCase().includes(searchLower)
       );
     }
 
